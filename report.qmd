@@ -1,0 +1,546 @@
+---
+title: "New Weekly Report"
+author: "Tony Dunsworth, PhD"
+date: "2025-09-04"
+format: 
+  docx:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    fig-width: 6
+    fig-height: 4
+    fig-align: center
+    code-fold: true
+    code-summary: "Click to show/hide code"
+    code-line-numbers: true
+    highlight-style: "tango"
+    fontsize: 12pt
+    margin-left: 1in
+    margin-right: 1in
+    margin-top: 1in
+    margin-bottom: 1in
+    documentclass: article
+    linestretch: 1.5
+    keep-md: true
+    md_extensions: +autolink_bare_uris
+    prefer-html: true
+---
+
+```{r libraries}
+#| label: setup
+#| echo: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(tidymodels)
+library(devtools)
+library(remotes)
+library(ggpubr)
+library(ggrepel)
+library(ggraph)
+library(gt)
+library(gtExtras)
+library(GGally)
+library(rstatix)
+library(car)
+library(janitor)
+library(Hmisc)
+library(psych)
+library(corrr)
+library(ggcorrplot)
+library(ggthemes)
+library(ggridges)
+library(multcomp)
+library(emmeans)
+library(RVAideMemoire)
+library(FactoMineR)
+library(DescTools)
+library(nlme)
+library(funModeling)
+library(inspectdf)
+library(dlookr)
+library(viridis)
+library(merTools)
+library(factoextra)
+library(nortest)
+library(MASS)
+library(randtests)
+library(summarytools)
+library(report)
+library(knitr)
+library(kableExtra)
+library(modelbased)
+library(parameters)
+library(performance)
+library(insight)
+library(lubridate)
+library(broom)
+library(survival)
+```
+
+## Introduction
+
+This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management. 
+
+```{r data-load}
+#| echo: false
+#| output: false
+df <- read_csv("data\\week35.csv")
+ 
+# Use lubridate and across() to efficiently parse all date-time columns
+df <- df |>
+  mutate(across(c(Response_Date,
+                   Incident_Start_Time,
+                   TimeCallViewed,
+                   Incident_Queue_Time,
+                   Incident_Dispatch_Time,
+                   Incident_Phone_Stop,
+                   TimeFirstUnitDispatchAcknowledged,
+                   Incident_Enroute_Time,
+                   Incident_Arrival_Time,
+                   TimeFirstCallCleared,
+                   Incident_First_Close_Time,
+                   Final_Closed_Time,
+                   First_Reopen_Time), ymd_hms))
+
+df$WeekNo <- as.factor(df$WeekNo)
+df$Day <- as.factor(df$Day)
+df$Hour <- as.factor(df$Hour)
+
+# Convert DOW to an ordered factor to respect the sequence of days
+df$DOW <- factor(
+    df$DOW,
+    levels = c("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"),
+    ordered = TRUE
+)
+
+# Convert Priority_Number to an ordered factor as well
+df$Priority_Number <- ordered(df$Priority_Number)
+```
+
+For this week, there were a total of `r nrow(df)` calls for service. And example of the data is shown below:
+
+```{r example-data}
+#| echo: false
+#| tbl-cap: "A sample of the first 10 rows of incident data."
+
+head(df, n = 10)
+colnames(df)
+```
+
+## Data Cleaning
+
+In order to have a good dataset for analysis, some data cleaning was performed. The first step is to check for missing values in the dataset.
+
+```{r missing-values}
+#| echo: false
+#| fig-cap: "Prevalence of missing values. Only columns with missing data are shown."
+
+inspect_na(df) |>
+  dplyr::filter(cnt > 0) |> # Explicitly use dplyr's filter
+  show_plot(
+    col_palette = 4 # Mako palette from viridis
+  ) +
+  ggthemes::theme_fivethirtyeight(base_size = 10) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8), # Rotate x-axis labels
+    axis.text.y = element_text(size = 9) # Fine-tune y-axis label size
+  )
+```
+
+From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call. 
+
+## Exploratory Analysis
+
+One of the first analyses is to break down different factor elements to see what we have in the dataset. Starting with the day of the week, the barchart below shows the number of calls for service by day of the week.
+
+```{r day-of-week}
+#| echo: false
+#| fig-cap: "Number of calls for service by day of the week."
+# ggplot2
+barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service by Day of the Week",
+       x="Day of the Week",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) + 
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barDOW
+```
+
+From this chart, we can see that Thursday was the busiest day of the week with 214 service calls, and the slowest day was Sunday with 172 calls for service. We can also create a similar chart for the hour of the day.
+
+```{r hour-of-day}
+#| echo: false
+#| fig-cap: "Number of calls for service by hour of the day." 
+# ggplot2
+barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service by Hour of the Day",
+       x="Hour of the Day",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) + 
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=8),
+        axis.text.y = element_text(size=10))
+
+barHour
+```
+
+From this chart, we can see that the busiest hour of the day was 1500 hours, with 84 calls for service. 0400 and 0600 were the slowest hours of the day with 27 calls each. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below.
+
+```{r priority-level}
+#| echo: false
+#| fig-cap: "Number of calls for service by priority level."
+# ggplot2
+barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service by Priority Level",
+       x="Priority Level",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) + 
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barPriority
+```
+
+The majority of calls received were Priority 2 calls. This is followed by Priority 3 and Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are `r round((sum(df$Priority_Number == "2") / nrow(df)) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
+
+```{r discipline}
+#| echo: false
+#| fig-cap: "Number of calls for service by discipline."
+# ggplot2
+barDiscipline <- df |> ggplot(aes(x=Agency, fill=Agency)) +
+  geom_bar() + 
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service by Discipline",
+       x="Discipline",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) + 
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barDiscipline
+```
+
+As expected, the majority of calls are for APD. They represent `r round((sum(df$Agency == "POLICE") / nrow(df)) * 100, 1)`
+percent of the total number of calls. This is fairly consistent with previous analyses. We can also examine the way in which we are receiving the calls by looking at the Call_Reception column. That chart is below.
+
+```{r call-reception}
+#| echo: false
+#| fig-cap: "Number of calls for service by call reception."
+# ggplot2
+barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
+  geom_bar() + 
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service by Call Reception",
+       x="Call Reception",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) + 
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barReception
+```
+
+Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time. 
+
+The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
+
+```{r call-type}
+#| echo: false
+#| fig-cap: "Number of calls for service by call type."
+# ggplot2
+problem_counts <- df |>
+  count(Problem, sort = TRUE) |>
+  slice_head(n = 10)
+
+barProblem <- problem_counts |>
+  ggplot(aes(x=reorder(Problem, -n), y=n, fill=Problem)) +
+  geom_bar(stat="identity") +
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service by Call Type",
+       x="Call Type",
+       y="Number of Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5, 
+    size = 3) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barProblem
+```    
+
+This week, the most common problem nature was Disorderly Conduct. For AFD, the most common was Trouble Breathing. Over time, we will reveiw these results with other weeks to observe any emergent trends. This can also be used with our partners to assist them in their planning.
+
+We can also look at the number of calls taken by telecommunicators. Again, like the problem types, we will limit the chart to the top 10 telecommunicators to ensure visual clarity and legibility of the information.
+
+```{r telecommunicator}
+#| echo: false
+#| fig-cap: "Number of calls for service by telecommunicator."
+# ggplot2
+ct_counts <- df |> 
+  count(Call_Taker, sort = TRUE) |>
+  slice_head(n = 10)
+
+barCallTaker <- ct_counts |>
+  ggplot(aes(x=reorder(Call_Taker, -n), y=n, fill=Call_Taker)) +
+  geom_bar(stat="identity") +
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service by Call Taker",
+       x="Call Taker",
+       y="Number of Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5,
+    size = 3) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barCallTaker
+```
+
+It is interesting to note that the top "call taker" is CAD2CAD. This may represent an unexpected trend, so we can follow this in future iterations.
+
+#### Call Distribution: Hour by Day of Week
+
+The following visualization shows the distribution of calls throughout the day (by hour) for each day of the week. This helps identify patterns in call volume across different days and times.
+
+```{r hour-dow-analysis}
+#| label: hour-dow-analysis
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Call Volume by Hour and Day of Week"
+
+# Create summary data
+hourly_dow_summary <- df |>
+  group_by(DOW, Hour) |>
+  summarise(call_count = n(), .groups = 'drop') |>
+  mutate(Hour_numeric = as.numeric(as.character(Hour)))
+
+# Create a heatmap showing call patterns
+hour_dow_plot <- ggplot(hourly_dow_summary, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+  geom_tile(color = "white", linewidth = 0.1) +
+  scale_x_continuous(name = "Hour of Day", 
+                     breaks = seq(0, 23, 2),
+                     labels = sprintf("%02d:00", seq(0, 23, 2))) +
+  scale_y_discrete(name = "Day of Week", limits = rev) +
+  scale_fill_gradient2(name = "Calls", 
+                       low = "lightblue", 
+                       mid = "yellow",
+                       high = "red",
+                       midpoint = median(hourly_dow_summary$call_count)) +
+  labs(title = "Call Volume Heatmap by Hour and Day of Week",
+       subtitle = "Darker colors indicate higher call volumes") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_text(size = 12),
+    legend.position = "right",
+    panel.grid = element_blank()
+  )
+
+hour_dow_plot
+```
+
+```{r alternative-ridge-plot}
+#| label: alternative-ridge-plot  
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Ridge Plot Alternative - Calls per Hour by Day of Week"
+
+# Try to create actual ridge plot if ggridges is available
+tryCatch({
+  if (requireNamespace("ggridges", quietly = TRUE)) {
+    library(ggridges)
+    
+    # Create ridge plot
+    ridge_plot <- ggplot(hourly_dow_summary, aes(x = Hour_numeric, y = DOW, height = call_count)) +
+      ggridges::geom_ridgeline(aes(fill = DOW), 
+                               alpha = 0.7, 
+                               scale = 0.9) +
+      scale_x_continuous(name = "Hour of Day",
+                         breaks = seq(0, 23, 4),
+                         labels = seq(0, 23, 4)) +
+      scale_y_discrete(name = "Day of Week", limits = rev) +
+      scale_fill_brewer(name = "Day", palette = "Set3") +
+      labs(title = "Ridge Plot: Call Volume Distribution by Hour and Day of Week",
+           subtitle = "Each ridge shows the hourly distribution for one day") +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12),
+        axis.text = element_text(size = 10),
+        axis.title = element_text(size = 12),
+        legend.position = "none"
+      )
+    
+    print(ridge_plot)
+  } else {
+    cat("ggridges package not available. Using heatmap above instead.\n")
+  }
+}, error = function(e) {
+  cat("Could not create ridge plot. Error:", e$message, "\n")
+  cat("The heatmap above provides similar insights.\n")
+})
+```
+
+```{r ridge-plot-summary-stats}
+#| label: ridge-plot-summary-stats
+#| echo: false
+#| message: false
+#| warning: false
+
+# Summary statistics for calls by hour and DOW
+hourly_summary <- df |>
+  group_by(DOW) |>
+  summarise(
+    total_calls = n(),
+    peak_hour = names(sort(table(Hour), decreasing = TRUE))[1],
+    avg_calls_per_hour = round(n() / 24, 1),
+    .groups = 'drop'
+  ) |>
+  arrange(desc(total_calls))
+
+# Display summary table
+hourly_summary |>
+  gt() |>
+  tab_header(
+    title = "Call Volume Summary by Day of Week",
+    subtitle = "Peak hours and average calls per hour"
+  ) |>
+  cols_label(
+    DOW = "Day of Week",
+    total_calls = "Total Calls",
+    peak_hour = "Peak Hour",
+    avg_calls_per_hour = "Avg Calls/Hour"
+  ) |>
+  fmt_number(
+    columns = c(total_calls),
+    decimals = 0
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) |>
+  tab_options(
+    table.font.size = 12,
+    heading.title.font.size = 14,
+    heading.subtitle.font.size = 12
+  )
+```
+
+These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week. 
+
+### Summary statsitcs and analyses
+
+In this section, we will analyse the continuous variables that represent the elapsed time for various segments of the call process. The variables of interest include: Time_To_Queue, Time_To_Dispatch, Phone_Time, Processing_Time, Rollout_Time, Transit_Time, and Total_Call_Time. They are defined as follows: 
+
+* Time_To_Queue
+: The time from the start of the call to the time it is released to queue for dispatch.
+
+* Time_To_Dispatch
+: The time from the time the call is released for dispatch to the time the first unit is assigned.
+
+* Phone_Time
+: The time from the start of the call to the time the phone call ended.
+
+* Processing_Time
+: The time from the start of the call until the first unit is assigned.
+
+* Rollout_Time
+: The time from the assignment of the first unit to the first unit marking en route to the call.
+
+* Transit_Time
+: The time from the first unit marking en route to the call to the first unit arriving on scene.
+
+* Total_Call_Time
+: The total time from the start of the call to the time the call was closed. If the call is re-opened, then this clock stops with the first closure.
+
+```{r custom-summary}
+# Create a summary table of elapsed time variables
+summary_table <- df %>%
+  # 1. Select the columns of interest using dplyr::select to avoid conflicts
+  dplyr::select(
+    Time_To_Queue, Time_To_Dispatch, Phone_Time, Processing_Time, 
+    Rollout_Time, Transit_Time, Total_Call_Time
+  ) %>%
+  # 2. Summarize across all selected columns, converting difftime to numeric
+  summarise(across(everything(),
+    list(
+      Minimum  = ~ round(min(as.numeric(.), na.rm = TRUE), 2),
+      Mean     = ~ round(mean(as.numeric(.), na.rm = TRUE), 2),
+      Median   = ~ round(median(as.numeric(.), na.rm = TRUE), 2),
+      Std_Dev  = ~ round(sd(as.numeric(.), na.rm = TRUE), 2),
+      Skewness = ~ round(psych::skew(as.numeric(.), na.rm = TRUE), 2),
+      Kurtosis = ~ round(psych::kurtosi(as.numeric(.), na.rm = TRUE), 2)
+    ),
+    .names = "{.col}---{.fn}" # Use a unique separator
+  )) %>%
+  # 3. Reshape the data to a long format, then back to a clean wide format
+  pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+  separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
+  pivot_wider(names_from = Statistic, values_from = Value) %>%
+  mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
+
+summary_table %>%
+  kable(format = "markdown", caption = "Weekly Elapsed Time Summary Table") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
