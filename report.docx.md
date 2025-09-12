@@ -23,6 +23,7 @@ format:
     linestretch: 1.5
     keep-md: true
     md_extensions: +autolink_bare_uris
+    prefer-html: true
 ---
 
 
@@ -731,3 +732,881 @@ In this section, we will analyse the continuous variables that represent the ela
 * Time_To_Dispatch
 : The time from the time the call is released for dispatch to the time the first unit is assigned.
 
+* Phone_Time
+: The time from the start of the call to the time the phone call ended.
+
+* Processing_Time
+: The time from the start of the call until the first unit is assigned.
+
+* Rollout_Time
+: The time from the assignment of the first unit to the first unit marking en route to the call.
+
+* Transit_Time
+: The time from the first unit marking en route to the call to the first unit arriving on scene.
+
+* Total_Call_Time
+: The total time from the start of the call to the time the call was closed. If the call is re-opened, then this clock stops with the first closure.
+
+
+::: {.cell}
+::: {.cell-output-display}
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+    <w:pStyle w:val="caption"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="24"/>
+    </w:rPr>
+    <w:t xml:space="preserve">Table </w:t>
+  </w:r>
+  <w:r>
+    <w:fldChar w:fldCharType="begin" w:dirty="true"/>
+  </w:r>
+  <w:r>
+    <w:instrText xml:space="preserve" w:dirty="true"> SEQ Table \* ARABIC </w:instrText>
+  </w:r>
+  <w:r>
+    <w:fldChar w:fldCharType="separate" w:dirty="true"/>
+  </w:r>
+  <w:r>
+    <w:rPr>
+      <w:noProof/>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="24"/>
+    </w:rPr>
+    <w:t xml:space="default">1</w:t>
+  </w:r>
+  <w:r>
+    <w:fldChar w:fldCharType="end" w:dirty="true"/>
+  </w:r>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="24"/>
+    </w:rPr>
+    <w:t xml:space="preserve">: </w:t>
+  </w:r>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="24"/>
+      <w:color w:val="333333"/>
+    </w:rPr>
+    <w:t xml:space="default">Weekly Elapsed Time Summary Table</w:t>
+  </w:r>
+</w:p><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+    <w:pStyle w:val="caption"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+      <w:color w:val="333333"/>
+    </w:rPr>
+    <w:t xml:space="default">Statistical summary of call processing times</w:t>
+  </w:r>
+</w:p><w:tbl xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"><w:tblPr><w:tblCellMar><w:top w:w="0" w:type="dxa"></w:top><w:bottom w:w="0" w:type="dxa"></w:bottom><w:start w:w="60" w:type="dxa"></w:start><w:end w:w="60" w:type="dxa"></w:end></w:tblCellMar><w:tblW w:type="auto" w:w="0"></w:tblW><w:tblLook w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="0" w:noVBand="0"></w:tblLook><w:jc w:val="center"></w:jc></w:tblPr><w:tr><w:trPr><w:cantSplit></w:cantSplit><w:tblHeader></w:tblHeader></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Time Metric</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Min</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Mean</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Median</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Std Dev</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Skew</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Kurt</w:t>
+  </w:r>
+</w:p></w:tc></w:tr><w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Time To Queue</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">68.92</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">49.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">143.75</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">22.39</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">670.53</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Time To Dispatch</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">1,009.79</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">26.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">11,888.43</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">32.56</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">1,131.07</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Phone Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">250.94</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">162.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">416.93</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">7.56</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">82.85</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Processing Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">1,078.70</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">96.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">11,896.24</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">32.51</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">1,128.80</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Rollout Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">35.70</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">8.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">181.69</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">33.50</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">1,178.96</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Transit Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">406.67</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">274.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">1,001.22</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">12.06</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">175.80</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Total Call Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">38.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">3,818.03</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">2,269.50</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">4,838.55</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">4.01</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">26.27</w:t>
+  </w:r>
+</w:p></w:tc></w:tr></w:tbl>
+```
+
+
+:::
+:::
+
+
+The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 49 seconds. This puts our operations on good footing to meet the NENA and NFPA guidelines for dispatching emergency calls. The median time for calls to sit in queue is 26 seconds. The overall phone processing time is 96 seconds which is in range for dispatching emergency service calls. Additional analyses can be performed to look more deeply into how well emergency service calls were processed. The difference between the mean and median values for these time intervals indicates that there are some outliers that skewed the data. The skewness and kurtosis values also indicate that the data is not normally distributed and indicate a long right tail with a very sharp peak. These characteristics can be viewed in the histograms below.
+
+
+::: {.cell}
+::: {.cell-output-display}
+![](report_files/figure-docx/ttq-plots-1.png)
+:::
+:::
+
+
+::: {.cell}
+::: {.cell-output-display}
+![](report_files/figure-docx/elapsed-time-plots-1.png)
+:::
+
+::: {.cell-output-display}
+![](report_files/figure-docx/elapsed-time-plots-2.png)
+:::
+
+::: {.cell-output-display}
+![](report_files/figure-docx/elapsed-time-plots-3.png)
+:::
+
+::: {.cell-output-display}
+![](report_files/figure-docx/elapsed-time-plots-4.png)
+:::
+
+::: {.cell-output-display}
+![](report_files/figure-docx/elapsed-time-plots-5.png)
+:::
+
+::: {.cell-output-display}
+![](report_files/figure-docx/elapsed-time-plots-6.png)
+:::
+:::
+
+
+
+::: {.cell}
+::: {.cell-output-display}
+![](report_files/figure-docx/elapsed-time-grid-1.png)
+:::
+:::
+
+
+**Plot Key:**
+
+| Line Type/Color      | Meaning                |
+|---------------------|------------------------|
+| <span style="color:#d62728; font-weight:bold;">Dashed Red</span>    | Median                 |
+| <span style="color:#ff7f0e; font-weight:bold;">Dotted Orange</span> | 90th Percentile (P90)  |
+| <span style="color:#2ca02c; font-weight:bold;">Longdash Green</span> | NENA 0:15 Standard     |
+| <span style="color:#9467bd; font-weight:bold;">Longdash Purple</span> | NFPA 0:20 Standard     |

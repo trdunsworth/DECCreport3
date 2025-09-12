@@ -515,32 +515,379 @@ In this section, we will analyse the continuous variables that represent the ela
 : The total time from the start of the call to the time the call was closed. If the call is re-opened, then this clock stops with the first closure.
 
 ```{r custom-summary}
-# Create a summary table of elapsed time variables
-summary_table <- df %>%
-  # 1. Select the columns of interest using dplyr::select to avoid conflicts
-  dplyr::select(
-    Time_To_Queue, Time_To_Dispatch, Phone_Time, Processing_Time, 
-    Rollout_Time, Transit_Time, Total_Call_Time
-  ) %>%
-  # 2. Summarize across all selected columns, converting difftime to numeric
-  summarise(across(everything(),
-    list(
-      Minimum  = ~ round(min(as.numeric(.), na.rm = TRUE), 2),
-      Mean     = ~ round(mean(as.numeric(.), na.rm = TRUE), 2),
-      Median   = ~ round(median(as.numeric(.), na.rm = TRUE), 2),
-      Std_Dev  = ~ round(sd(as.numeric(.), na.rm = TRUE), 2),
-      Skewness = ~ round(psych::skew(as.numeric(.), na.rm = TRUE), 2),
-      Kurtosis = ~ round(psych::kurtosi(as.numeric(.), na.rm = TRUE), 2)
-    ),
-    .names = "{.col}---{.fn}" # Use a unique separator
-  )) %>%
-  # 3. Reshape the data to a long format, then back to a clean wide format
-  pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
-  separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
-  pivot_wider(names_from = Statistic, values_from = Value) %>%
-  mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
+#| label: custom-summary
+#| echo: false
+#| message: false
+#| warning: false
 
-summary_table %>%
-  kable(format = "markdown", caption = "Weekly Elapsed Time Summary Table") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+# Create a summary table of elapsed time variables
+tryCatch({
+  # Define the columns we want to analyze
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+                    "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
+  
+  # Check which columns actually exist in the data
+  existing_columns <- time_columns[time_columns %in% names(df)]
+  
+  if (length(existing_columns) == 0) {
+    cat("No time columns found in the data.\n")
+  } else {
+    
+    summary_table <- df %>%
+      # 1. Select only the columns that exist
+      dplyr::select(all_of(existing_columns)) %>%
+      # 2. Summarize across all selected columns, converting difftime to numeric safely
+      summarise(across(everything(),
+        list(
+          Minimum  = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(min(vals, na.rm = TRUE), 2)
+          },
+          Mean     = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(mean(vals, na.rm = TRUE), 2)
+          },
+          Median   = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(median(vals, na.rm = TRUE), 2)
+          },
+          Std_Dev  = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(sd(vals, na.rm = TRUE), 2)
+          },
+          Skewness = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else {
+              tryCatch(round(psych::skew(vals, na.rm = TRUE), 2), error = function(e) NA_real_)
+            }
+          },
+          Kurtosis = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals)) || length(vals[!is.na(vals)]) < 4) {
+              NA_real_
+            } else {
+              tryCatch({
+                # Remove NA values first
+                clean_vals <- vals[!is.na(vals)]
+                
+                # Try multiple approaches for kurtosis calculation
+                result <- tryCatch({
+                  # Method 1: Use psych::kurtosis with explicit namespace
+                  psych::kurtosis(clean_vals)
+                }, error = function(e1) {
+                  tryCatch({
+                    # Method 2: Use moments package if available
+                    if (requireNamespace("moments", quietly = TRUE)) {
+                      moments::kurtosis(clean_vals) - 3  # Convert to excess kurtosis
+                    } else {
+                      stop("moments not available")
+                    }
+                  }, error = function(e2) {
+                    # Method 3: Manual calculation
+                    n <- length(clean_vals)
+                    if (n < 4) return(NA_real_)
+                    
+                    mean_val <- mean(clean_vals)
+                    var_val <- var(clean_vals)
+                    
+                    if (var_val == 0) return(NA_real_)
+                    
+                    # Calculate fourth moment
+                    fourth_moment <- mean((clean_vals - mean_val)^4)
+                    # Calculate kurtosis (excess kurtosis = kurtosis - 3)
+                    kurt_val <- (fourth_moment / (var_val^2)) - 3
+                    kurt_val
+                  })
+                })
+                
+                round(result, 2)
+              }, error = function(e) {
+                # Final fallback
+                NA_real_
+              })
+            }
+          }
+        ),
+        .names = "{.col}---{.fn}" # Use a unique separator
+      )) %>%
+      # 3. Reshape the data to a long format, then back to a clean wide format
+      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+      separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
+      pivot_wider(names_from = Statistic, values_from = Value) %>%
+      mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
+    
+    # Use gt for better formatting compatibility with Word output
+    summary_table %>%
+      gt() %>%
+      tab_header(
+        title = "Weekly Elapsed Time Summary Table",
+        subtitle = "Statistical summary of call processing times"
+      ) %>%
+      cols_label(
+        Variable = "Time Metric",
+        Minimum = "Min",
+        Mean = "Mean", 
+        Median = "Median",
+        Std_Dev = "Std Dev",
+        Skewness = "Skew",
+        Kurtosis = "Kurt"
+      ) %>%
+      fmt_number(
+        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
+        decimals = 2,
+        use_seps = TRUE
+      ) %>%
+      tab_style(
+        style = cell_text(weight = "bold"),
+        locations = cells_column_labels()
+      ) %>%
+      tab_options(
+        table.font.size = 12,
+        heading.title.font.size = 14,
+        heading.subtitle.font.size = 12
+      )
+  }
+}, error = function(e) {
+  cat("Error creating summary table:", e$message, "\n")
+  cat("Available columns in df:", paste(names(df), collapse = ", "), "\n")
+})
 ```
+
+The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 49 seconds. This puts our operations on good footing to meet the NENA and NFPA guidelines for dispatching emergency calls. The median time for calls to sit in queue is 26 seconds. The overall phone processing time is 96 seconds which is in range for dispatching emergency service calls. Additional analyses can be performed to look more deeply into how well emergency service calls were processed. The difference between the mean and median values for these time intervals indicates that there are some outliers that skewed the data. The skewness and kurtosis values also indicate that the data is not normally distributed and indicate a long right tail with a very sharp peak. These characteristics can be viewed in the histograms below.
+
+```{r ttq-plots}
+#| label: ttq-plots
+#| echo: false
+#| message: false
+#| warning: false
+
+# Helper to format seconds as mm:ss or h:mm:ss
+sec_label <- function(x) {
+  s <- round(x)
+  h <- s %/% 3600
+  m <- (s %% 3600) %/% 60
+  sec <- s %% 60
+  ifelse(h > 0, sprintf("%d:%02d:%02d", h, m, sec), sprintf("%d:%02d", m, sec))
+}
+
+# Prepare TTQ values in seconds and basic stats
+ttq <- df |>
+  transmute(ttq_sec = as.numeric(Time_To_Queue)) |>
+  filter(!is.na(ttq_sec), ttq_sec >= 0)
+
+n_ttq <- nrow(ttq)
+ttq_med <- median(ttq$ttq_sec, na.rm = TRUE)
+ttq_p90 <- as.numeric(quantile(ttq$ttq_sec, 0.90, na.rm = TRUE))
+ttq_p99 <- as.numeric(quantile(ttq$ttq_sec, 0.99, na.rm = TRUE))
+n_clipped <- sum(ttq$ttq_sec > ttq_p99, na.rm = TRUE)
+
+# Adaptive bin width (Freedman–Diaconis) with nicening
+fd <- 2 * IQR(ttq$ttq_sec, na.rm = TRUE) / (n_ttq^(1/3))
+binw <- fd
+if (!is.finite(binw) || binw <= 0) binw <- 5
+binw <- dplyr::case_when(
+  binw < 1 ~ 1,
+  binw < 2 ~ 2,
+  binw < 5 ~ 5,
+  binw < 10 ~ 10,
+  binw < 15 ~ 15,
+  TRUE ~ round(binw, -1)
+)
+
+# Clip extreme tail for readability (ensure at least 20s to show reference lines)
+x_max <- max(20, ttq_p99)
+
+# Single plot: histogram (normalized to density) with density overlay and markers
+ttq_hist_dens <- ggplot(ttq, aes(x = ttq_sec)) +
+  # Histogram scaled to density for alignment with density curve
+  geom_histogram(aes(y = after_stat(density)),
+                 binwidth = binw, boundary = 0, closed = "left",
+                 fill = "#1c5789", color = "white", alpha = 0.6) +
+  # Density overlay
+  geom_density(color = "#1c5789", fill = "#1c5789", alpha = 0.2, adjust = 1.1, linewidth = 1) +
+  # Median and P90 reference lines
+  geom_vline(xintercept = ttq_med, linetype = "dashed", color = "#d62728", linewidth = 0.8) +
+  geom_vline(xintercept = ttq_p90, linetype = "dotted", color = "#ff7f0e", linewidth = 0.8) +
+  # NENA/NFPA reference lines at 0:15 and 0:20
+  geom_vline(xintercept = 15, linetype = "longdash", color = "#2ca02c", linewidth = 0.7) +
+  geom_vline(xintercept = 20, linetype = "longdash", color = "#9467bd", linewidth = 0.7) +
+  # Labels for markers (placed above the density peak area)
+  annotate("label", x = ttq_med, y = Inf, vjust = 1.2,
+           label = paste0("Median: ", round(ttq_med), "s"), size = 3, fill = "white") +
+  annotate("label", x = ttq_p90, y = Inf, vjust = 1.2,
+           label = paste0("P90: ", round(ttq_p90), "s"), size = 3, fill = "white") +
+  annotate("label", x = 15, y = Inf, vjust = 1.2,
+           label = "NENA 0:15", size = 3, fill = "white") +
+  annotate("label", x = 20, y = Inf, vjust = 1.2,
+           label = "NFPA 0:20", size = 3, fill = "white") +
+  scale_x_continuous(name = "Time to Queue (mm:ss)",
+                     limits = c(0, x_max),
+                     breaks = scales::pretty_breaks(8),
+                     labels = sec_label) +
+  scale_y_continuous(name = "Density") +
+  labs(title = "Time to Queue — Histogram with Density",
+    subtitle = paste0("Histogram normalized to density; clipped at 99th percentile (", scales::comma(n_clipped), " removed).\n",
+          "Median (dashed red), 90th percentile (dotted orange). Reference lines at 0:15 (NENA) and 0:20 (NFPA 1225)."),
+       caption = "Data: CAD") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12)
+  )
+
+ttq_hist_dens
+
+```
+```{r elapsed-time-plots}
+#| label: elapsed-time-plots
+#| echo: false
+#| message: false
+#| warning: false
+
+# Reusable plot helper: histogram normalized to density with density overlay and markers
+plot_time_hist_dens <- function(data, var, title_text) {
+  vals <- as.numeric(data[[var]])
+  vals <- vals[is.finite(vals) & vals >= 0]
+  if (length(vals) < 2) return(NULL)
+
+  # Stats
+  n <- length(vals)
+  med <- median(vals)
+  p90 <- as.numeric(quantile(vals, 0.90))
+  p99 <- as.numeric(quantile(vals, 0.99))
+  n_clipped <- sum(vals > p99)
+
+  # Freedman–Diaconis bin width with nicening
+  fd <- 2 * IQR(vals) / (n^(1/3))
+  binw <- fd
+  if (!is.finite(binw) || binw <= 0) binw <- 5
+  binw <- dplyr::case_when(
+    binw < 1 ~ 1,
+    binw < 2 ~ 2,
+    binw < 5 ~ 5,
+    binw < 10 ~ 10,
+    binw < 15 ~ 15,
+    TRUE ~ round(binw, -1)
+  )
+
+  x_max <- max(20, p99)
+
+  # mm:ss (or h:mm:ss) labels
+  sec_label <- function(x) {
+    s <- round(x)
+    h <- s %/% 3600
+    m <- (s %% 3600) %/% 60
+    sec <- s %% 60
+    ifelse(h > 0, sprintf("%d:%02d:%02d", h, m, sec), sprintf("%d:%02d", m, sec))
+  }
+
+  ggplot(data.frame(x = vals), aes(x = x)) +
+    geom_histogram(aes(y = after_stat(density)),
+                   binwidth = binw, boundary = 0, closed = "left",
+                   fill = "#1c5789", color = "white", alpha = 0.6) +
+    geom_density(color = "#1c5789", fill = "#1c5789", alpha = 0.2, adjust = 1.1, linewidth = 1) +
+    geom_vline(xintercept = med, linetype = "dashed", color = "#d62728", linewidth = 0.8) +
+    geom_vline(xintercept = p90, linetype = "dotted", color = "#ff7f0e", linewidth = 0.8) +
+    geom_vline(xintercept = 15, linetype = "longdash", color = "#2ca02c", linewidth = 0.7) +
+    geom_vline(xintercept = 20, linetype = "longdash", color = "#9467bd", linewidth = 0.7) +
+  annotate("label", x = med, y = Inf, vjust = 1.2,
+       label = "Median", size = 2.5, fill = "white") +
+  annotate("label", x = p90, y = Inf, vjust = 1.2,
+       label = "P90", size = 2.5, fill = "white") +
+  annotate("label", x = 15, y = Inf, vjust = 1.2,
+       label = "NENA", size = 2.5, fill = "white") +
+  annotate("label", x = 20, y = Inf, vjust = 1.2,
+       label = "NFPA", size = 2.5, fill = "white") +
+    scale_x_continuous(name = "Time (mm:ss)",
+                       limits = c(0, x_max),
+                       breaks = scales::pretty_breaks(8),
+                       labels = sec_label) +
+    scale_y_continuous(name = "Density") +
+    labs(title = title_text,
+      subtitle = NULL,
+      caption = "Data: CAD") +
+    theme_minimal(base_size = 12) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      axis.title.x = element_text(size = 12),
+      axis.title.y = element_text(size = 12)
+    )
+}
+
+# Build and print plots for other elapsed-time metrics
+p_dispatch   <- plot_time_hist_dens(df, "Time_To_Dispatch",  "Time to Dispatch — Histogram with Density")
+p_phone      <- plot_time_hist_dens(df, "Phone_Time",       "Phone Time — Histogram with Density")
+p_processing <- plot_time_hist_dens(df, "Processing_Time",  "Processing Time — Histogram with Density")
+p_rollout    <- plot_time_hist_dens(df, "Rollout_Time",     "Rollout Time — Histogram with Density")
+p_transit    <- plot_time_hist_dens(df, "Transit_Time",     "Transit Time — Histogram with Density")
+p_total      <- plot_time_hist_dens(df, "Total_Call_Time",  "Total Call Time — Histogram with Density")
+
+if (!is.null(p_dispatch))   print(p_dispatch)
+if (!is.null(p_phone))      print(p_phone)
+if (!is.null(p_processing)) print(p_processing)
+if (!is.null(p_rollout))    print(p_rollout)
+if (!is.null(p_transit))    print(p_transit)
+if (!is.null(p_total))      print(p_total)
+```
+
+```{r elapsed-time-grid}
+#| label: elapsed-time-grid
+#| echo: false
+#| message: false
+#| warning: false
+
+# Short-title versions for grid
+p_dispatch_grid   <- plot_time_hist_dens(df, "Time_To_Dispatch",  "Time to Dispatch")
+p_phone_grid      <- plot_time_hist_dens(df, "Phone_Time",       "Phone Time")
+p_processing_grid <- plot_time_hist_dens(df, "Processing_Time",  "Processing Time")
+p_rollout_grid    <- plot_time_hist_dens(df, "Rollout_Time",     "Rollout Time")
+p_transit_grid    <- plot_time_hist_dens(df, "Transit_Time",     "Transit Time")
+p_total_grid      <- plot_time_hist_dens(df, "Total_Call_Time",  "Total Call Time")
+
+# Arrange elapsed-time plots in a 2x3 grid (skip NULL plots)
+plots_list <- list(
+  p_dispatch_grid,  # Time To Dispatch
+  p_phone_grid,     # Phone Time
+  p_processing_grid,# Processing Time
+  p_rollout_grid,   # Rollout Time
+  p_transit_grid,   # Transit Time
+  p_total_grid      # Total Call Time
+)
+plots_list <- Filter(Negate(is.null), plots_list)
+
+if (length(plots_list) > 0) {
+  grid <- ggpubr::ggarrange(plotlist = plots_list, ncol = 3, nrow = 2, align = "hv")
+  print(grid)
+}
+```
+
+**Plot Key:**
+
+| Line Type/Color      | Meaning                |
+|---------------------|------------------------|
+| <span style="color:#d62728; font-weight:bold;">Dashed Red</span>    | Median                 |
+| <span style="color:#ff7f0e; font-weight:bold;">Dotted Orange</span> | 90th Percentile (P90)  |
+| <span style="color:#2ca02c; font-weight:bold;">Longdash Green</span> | NENA 0:15 Standard     |
+| <span style="color:#9467bd; font-weight:bold;">Longdash Purple</span> | NFPA 0:20 Standard     |
+
+These show that the processing times for DECC are well within the NENA and NFPA guidelines. This is good operational data to show how well we are performing with repsect ot those guidelines. Over time, we can track these metrics to ensure that we continue to meet or exceed those standards.
+
+### Additional Analyses.
+
+As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for futher analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset. 
+
+```{r new-datasets}
+#| label: new-datasets
+#| echo: false
+#| message: false
+#| warning: false
+
+df_hp <- df[which((df$Agency == "POLICE" & df$Priority_Number < 2) |
+                    (df$Agency %in% c("FIRE", "EMS") & df$Priority_Number < 3)), ]
+df_law <- df[which(df$Agency == "POLICE")]
+df_fire <- df[which(df$Agency == "FIRE")]
+df_ems <- df[which(df$Agency == "EMS")]
+df_ttq_delay <- df[which(df$Priority_Number < 2 & df$Time_To_Queue > 60)]
+df_ttd_delay <- df[which(df$Priority_Number < 2 & df$Time_To_Dispatch > 60)]
+df_ca <- df[which(df$Problem == "CARDIAC ARREST ALS 2- SUPV")]
