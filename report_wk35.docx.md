@@ -116,7 +116,7 @@ In order to have a good dataset for analysis, some data cleaning was performed. 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Prevalence of missing values. Only columns with missing data are shown.](report_files/figure-docx/missing-values-1.png)
+![Prevalence of missing values. Only columns with missing data are shown.](report_wk35_files/figure-docx/missing-values-1.png)
 :::
 :::
 
@@ -130,7 +130,7 @@ One of the first analyses is to break down different factor elements to see what
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by day of the week.](report_files/figure-docx/day-of-week-1.png)
+![Number of calls for service by day of the week.](report_wk35_files/figure-docx/day-of-week-1.png)
 :::
 :::
 
@@ -140,7 +140,7 @@ From this chart, we can see that Thursday was the busiest day of the week with 2
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by hour of the day.](report_files/figure-docx/hour-of-day-1.png)
+![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/hour-of-day-1.png)
 :::
 :::
 
@@ -150,7 +150,7 @@ From this chart, we can see that the busiest hour of the day was 1500 hours, wit
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by priority level.](report_files/figure-docx/priority-level-1.png)
+![Number of calls for service by priority level.](report_wk35_files/figure-docx/priority-level-1.png)
 :::
 :::
 
@@ -160,7 +160,7 @@ The majority of calls received were Priority 2 calls. This is followed by Priori
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by discipline.](report_files/figure-docx/discipline-1.png)
+![Number of calls for service by discipline.](report_wk35_files/figure-docx/discipline-1.png)
 :::
 :::
 
@@ -171,7 +171,7 @@ percent of the total number of calls. This is fairly consistent with previous an
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call reception.](report_files/figure-docx/call-reception-1.png)
+![Number of calls for service by call reception.](report_wk35_files/figure-docx/call-reception-1.png)
 :::
 :::
 
@@ -183,7 +183,7 @@ The following is a chart of the top 10 call types. The data is limited to ensure
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call type.](report_files/figure-docx/call-type-1.png)
+![Number of calls for service by call type.](report_wk35_files/figure-docx/call-type-1.png)
 :::
 :::
 
@@ -195,7 +195,7 @@ We can also look at the number of calls taken by telecommunicators. Again, like 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by telecommunicator.](report_files/figure-docx/telecommunicator-1.png)
+![Number of calls for service by telecommunicator.](report_wk35_files/figure-docx/telecommunicator-1.png)
 :::
 :::
 
@@ -209,7 +209,7 @@ The following visualization shows the distribution of calls throughout the day (
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Call Volume by Hour and Day of Week](report_files/figure-docx/hour-dow-analysis-1.png)
+![Call Volume by Hour and Day of Week](report_wk35_files/figure-docx/hour-dow-analysis-1.png)
 :::
 :::
 
@@ -217,7 +217,7 @@ The following visualization shows the distribution of calls throughout the day (
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Ridge Plot Alternative - Calls per Hour by Day of Week](report_files/figure-docx/alternative-ridge-plot-1.png)
+![Ridge Plot Alternative - Calls per Hour by Day of Week](report_wk35_files/figure-docx/alternative-ridge-plot-1.png)
 :::
 :::
 
@@ -1562,34 +1562,34 @@ The values from this table describe operations for the week being analyzed. In t
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](report_files/figure-docx/ttq-plots-1.png)
+![](report_wk35_files/figure-docx/ttq-plots-1.png)
 :::
 :::
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](report_files/figure-docx/elapsed-time-plots-1.png)
+![](report_wk35_files/figure-docx/elapsed-time-plots-1.png)
 :::
 
 ::: {.cell-output-display}
-![](report_files/figure-docx/elapsed-time-plots-2.png)
+![](report_wk35_files/figure-docx/elapsed-time-plots-2.png)
 :::
 
 ::: {.cell-output-display}
-![](report_files/figure-docx/elapsed-time-plots-3.png)
+![](report_wk35_files/figure-docx/elapsed-time-plots-3.png)
 :::
 
 ::: {.cell-output-display}
-![](report_files/figure-docx/elapsed-time-plots-4.png)
+![](report_wk35_files/figure-docx/elapsed-time-plots-4.png)
 :::
 
 ::: {.cell-output-display}
-![](report_files/figure-docx/elapsed-time-plots-5.png)
+![](report_wk35_files/figure-docx/elapsed-time-plots-5.png)
 :::
 
 ::: {.cell-output-display}
-![](report_files/figure-docx/elapsed-time-plots-6.png)
+![](report_wk35_files/figure-docx/elapsed-time-plots-6.png)
 :::
 :::
 
@@ -1597,7 +1597,7 @@ The values from this table describe operations for the week being analyzed. In t
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](report_files/figure-docx/elapsed-time-grid-1.png)
+![](report_wk35_files/figure-docx/elapsed-time-grid-1.png)
 :::
 :::
 
@@ -1630,7 +1630,7 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by day of the week.](report_files/figure-docx/apd-day-of-week-1.png)
+![Number of calls for service by day of the week.](report_wk35_files/figure-docx/apd-day-of-week-1.png)
 :::
 :::
 
@@ -1640,7 +1640,7 @@ Since the majority of service calls are for APD, Thursday should be the expected
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by hour of the day.](report_files/figure-docx/apd-hour-of-day-1.png)
+![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/apd-hour-of-day-1.png)
 :::
 :::
 
@@ -1650,7 +1650,7 @@ The busiest time of the week for APD calls is from 1200 to 1600 hours. That also
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call reception.](report_files/figure-docx/apd-call-reception-1.png)
+![Number of calls for service by call reception.](report_wk35_files/figure-docx/apd-call-reception-1.png)
 :::
 :::
 
@@ -1660,7 +1660,7 @@ As can be seen, the majority of calls came through telephone. This comports to t
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call type.](report_files/figure-docx/apd-call-type-1.png)
+![Number of calls for service by call type.](report_wk35_files/figure-docx/apd-call-type-1.png)
 :::
 :::
 
@@ -1670,7 +1670,7 @@ The largest call type was for Disorderly Conduct, which was also the largest cal
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by priority level.](report_files/figure-docx/apd-priority-level-1.png)
+![Number of calls for service by priority level.](report_wk35_files/figure-docx/apd-priority-level-1.png)
 :::
 :::
 
@@ -2496,52 +2496,52 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by day of the week.](report_files/figure-docx/afd-day-of-week-1.png)
+![Number of calls for service by day of the week.](report_wk35_files/figure-docx/afd-day-of-week-1.png)
 :::
 :::
 
 
-
+It is interesting to note that Thursday was also the busiest day of the week for fire-related calls. Friday followed closely behind, while Sunday and Monday were the lightest days of the week. Sunday had only 12 fire-related calls which is very interesting to note. With football season in full swing, I might have expected more fire-related calls for barbecues and get togethers on Sunday. There could be room to see if there are any correlations between football season and the number of service calls that arrive during the week. For example, if the Commanders play on a day other than Sunday, is there movement in the number of calls for that day? 
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by hour of the day.](report_files/figure-docx/afd-hour-of-day-1.png)
+![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/afd-hour-of-day-1.png)
 :::
 :::
 
 
-
+Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 2000 hour stands out as the hour where the most calls were received for the week. Future reports can determine if this is an anomaly or if there is a trend to more fire-related calls at some point in the evening after most people have returned to their residence for the evening. 
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call reception.](report_files/figure-docx/afd-call-reception-1.png)
+![Number of calls for service by call reception.](report_wk35_files/figure-docx/afd-call-reception-1.png)
 :::
 :::
 
 
-As can be seen, the majority of calls came through telephone. This comports to the call reception results for the week overall.
+Like APD calls, most fire-related calls for service came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented 37.1 percent of all fire-related service calls received.
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call type.](report_files/figure-docx/afd-call-type-1.png)
+![Number of calls for service by call type.](report_wk35_files/figure-docx/afd-call-type-1.png)
 :::
 :::
 
 
-The largest call type was for Disorderly Conduct, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time. 
+The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future. I do note that MUTUAL-CPR is listed as a "fire-related" call. That will be corrected in future reports. 
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by priority level.](report_files/figure-docx/afd-priority-level-1.png)
+![Number of calls for service by priority level.](report_wk35_files/figure-docx/afd-priority-level-1.png)
 :::
 :::
 
 
-
+It is interesting to note that Priority 3 represents the highest number of calls for service. That would correlate to the Fire Alarm call type being the most used. 
 
 
 ::: {.cell}
@@ -3353,3 +3353,6 @@ The largest call type was for Disorderly Conduct, which was also the largest cal
 :::
 
 
+Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 35 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing. 
+
+### AFD EMS Analyses
