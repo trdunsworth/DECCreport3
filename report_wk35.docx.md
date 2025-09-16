@@ -34,7 +34,7 @@ format:
 
 ## Introduction
 
-This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management. 
+This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 
 ::: {.cell}
@@ -121,7 +121,7 @@ In order to have a good dataset for analysis, some data cleaning was performed. 
 :::
 
 
-From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call. 
+From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
 
 ## Exploratory Analysis
 
@@ -176,7 +176,7 @@ percent of the total number of calls. This is fairly consistent with previous an
 :::
 
 
-Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only 2.7 percent of the total number of calls, this may be something to watch over time. 
+Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only 2.7 percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -202,7 +202,7 @@ We can also look at the number of calls taken by telecommunicators. Again, like 
 
 It is interesting to note that the top "call taker" is CAD2CAD. This may represent an unexpected trend, so we can follow this in future iterations.
 
-#### Call Distribution: Hour by Day of Week
+### Call Distribution: Hour by Day of Week
 
 The following visualization shows the distribution of calls throughout the day (by hour) for each day of the week. This helps identify patterns in call volume across different days and times.
 
@@ -720,11 +720,11 @@ The following visualization shows the distribution of calls throughout the day (
 :::
 
 
-These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week. 
+These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week.
 
 ### Summary statsitcs and analyses
 
-In this section, we will analyse the continuous variables that represent the elapsed time for various segments of the call process. The variables of interest include: Time_To_Queue, Time_To_Dispatch, Phone_Time, Processing_Time, Rollout_Time, Transit_Time, and Total_Call_Time. They are defined as follows: 
+In this section, we will analyse the continuous variables that represent the elapsed time for various segments of the call process. The variables of interest include: Time_To_Queue, Time_To_Dispatch, Phone_Time, Processing_Time, Rollout_Time, Transit_Time, and Total_Call_Time. They are defined as follows:
 
 * Time_To_Queue
 : The time from the start of the call to the time it is released to queue for dispatch.
@@ -1567,6 +1567,7 @@ The values from this table describe operations for the week being analyzed. In t
 :::
 
 
+
 ::: {.cell}
 ::: {.cell-output-display}
 ![](report_wk35_files/figure-docx/elapsed-time-plots-1.png)
@@ -1606,16 +1607,16 @@ The values from this table describe operations for the week being analyzed. In t
 
 | Line Type/Color      | Meaning                |
 |---------------------|------------------------|
-| <span style="color:#d62728; font-weight:bold;">Dashed Red</span>    | Median                 |
-| <span style="color:#ff7f0e; font-weight:bold;">Dotted Orange</span> | 90th Percentile (P90)  |
-| <span style="color:#2ca02c; font-weight:bold;">Longdash Green</span> | NENA 0:15 Standard     |
-| <span style="color:#9467bd; font-weight:bold;">Longdash Purple</span> | NFPA 0:20 Standard     |
+| **Dashed Red**    | Median                 |
+| **Dotted Orange** | 90th Percentile (P90)  |
+| **Longdash Green** | NENA 0:15 Standard     |
+| **Longdash Purple** | NFPA 0:20 Standard     |
 
 These show that the processing times for DECC are well within the NENA and NFPA guidelines. This is good operational data to show how well we are performing with repsect ot those guidelines. Over time, we can track these metrics to ensure that we continue to meet or exceed those standards.
 
-## Additional Analyses.
+## Discipline Analyses
 
-As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for futher analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset. 
+As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for futher analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset.
 
 
 ::: {.cell}
@@ -1635,7 +1636,7 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 :::
 
 
-Since the majority of service calls are for APD, Thursday should be the expected busiest day of the week, which it is by three calls over Monday. Wednesday appears to be the lightest day of the week for APD service calls. With a differnce of only 24 calls from the highest volume to the lowest, the week was remarkably consistent for service calls. 
+Since the majority of service calls are for APD, Thursday should be the expected busiest day of the week, which it is by three calls over Monday. Wednesday appears to be the lightest day of the week for APD service calls. With a differnce of only 24 calls from the highest volume to the lowest, the week was remarkably consistent for service calls.
 
 
 ::: {.cell}
@@ -1645,7 +1646,7 @@ Since the majority of service calls are for APD, Thursday should be the expected
 :::
 
 
-The busiest time of the week for APD calls is from 1200 to 1600 hours. That also is in keeping with the results found for the week overall. 
+The busiest time of the week for APD calls is from 1200 to 1600 hours. That also is in keeping with the results found for the week overall.
 
 
 ::: {.cell}
@@ -1665,7 +1666,7 @@ As can be seen, the majority of calls came through telephone. This comports to t
 :::
 
 
-The largest call type was for Disorderly Conduct, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time. 
+The largest call type was for Disorderly Conduct, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time.
 
 
 ::: {.cell}
@@ -1675,7 +1676,7 @@ The largest call type was for Disorderly Conduct, which was also the largest cal
 :::
 
 
-As expected, the largest number of calls werew Priority 2 calls which represent 58.3 percent of all APD calls. Again, this comports with the overall weekly trends. 
+As expected, the largest number of calls werew Priority 2 calls which represent 58.3 percent of all APD calls. Again, this comports with the overall weekly trends.
 
 
 ::: {.cell}
@@ -2487,7 +2488,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
 :::
 
 
-This table shows that overall, we have a median time on the phones of about 2.5 minutes and it takes about double that for a call to start and be dispatched. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are 22.8 percent of APD calls, this could have a measureable impact on service times for DECC staff. 
+This table shows that overall, we have a median time on the phones of about 2.5 minutes and it takes about double that for a call to start and be dispatched. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are 22.8 percent of APD calls, this could have a measureable impact on service times for DECC staff.
 
 ### AFD FIRE Analyses
 
@@ -2501,7 +2502,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 :::
 
 
-It is interesting to note that Thursday was also the busiest day of the week for fire-related calls. Friday followed closely behind, while Sunday and Monday were the lightest days of the week. Sunday had only 12 fire-related calls which is very interesting to note. With football season in full swing, I might have expected more fire-related calls for barbecues and get togethers on Sunday. There could be room to see if there are any correlations between football season and the number of service calls that arrive during the week. For example, if the Commanders play on a day other than Sunday, is there movement in the number of calls for that day? 
+It is interesting to note that Thursday was also the busiest day of the week for fire-related calls. Friday followed closely behind, while Sunday and Monday were the lightest days of the week. Sunday had only 12 fire-related calls which is very interesting to note. With football season in full swing, I might have expected more fire-related calls for barbecues and get togethers on Sunday. There could be room to see if there are any correlations between football season and the number of service calls that arrive during the week. For example, if the Commanders play on a day other than Sunday, is there movement in the number of calls for that day?
 
 
 ::: {.cell}
@@ -2511,7 +2512,7 @@ It is interesting to note that Thursday was also the busiest day of the week for
 :::
 
 
-Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 2000 hour stands out as the hour where the most calls were received for the week. Future reports can determine if this is an anomaly or if there is a trend to more fire-related calls at some point in the evening after most people have returned to their residence for the evening. 
+Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 2000 hour stands out as the hour where the most calls were received for the week. Future reports can determine if this is an anomaly or if there is a trend to more fire-related calls at some point in the evening after most people have returned to their residence for the evening.
 
 
 ::: {.cell}
@@ -2521,7 +2522,7 @@ Fire-related calls are much more spread out through the day as can be seen in th
 :::
 
 
-Like APD calls, most fire-related calls for service came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented 37.1 percent of all fire-related service calls received.
+Like APD calls, most fire-related calls came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented 37.1 percent of all fire-related service calls received.
 
 
 ::: {.cell}
@@ -2531,7 +2532,7 @@ Like APD calls, most fire-related calls for service came in via Phone. However t
 :::
 
 
-The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future. I do note that MUTUAL-CPR is listed as a "fire-related" call. That will be corrected in future reports. 
+The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future. I do note that MUTUAL-CPR is listed as a "fire-related" call. That will be corrected in future reports.
 
 
 ::: {.cell}
@@ -2541,7 +2542,7 @@ The greatest number of fire-related service calls were for Fire Alarms. That is 
 :::
 
 
-It is interesting to note that Priority 3 represents the highest number of calls for service. That would correlate to the Fire Alarm call type being the most used. 
+It is interesting to note that Priority 3 represents the highest number of calls for service. That would correlate to the Fire Alarm call type being the most used.
 
 
 ::: {.cell}
@@ -3353,6 +3354,874 @@ It is interesting to note that Priority 3 represents the highest number of calls
 :::
 
 
-Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 35 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing. 
+Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 35 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing.
 
 ### AFD EMS Analyses
+
+Because AFD calls for service can be split into two distinct disciplines, fire-related calls and medical-related calls, DECC has, historically, separated the two disciplines for analytical purposes. So this section will look at medical-related calls for service for the week.
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Number of calls for service by day of the week.](report_wk35_files/figure-docx/ems-day-of-week-1.png)
+:::
+:::
+
+
+ Medical service calls by day show a remarkable consistency throughout the week. There is only a difference of 9 service calls separating the busiest and slowest days. Unlike APD and fire-related calls for AFD, Monday was the busiest day of the week for medical service calls. Again, it will be interesting to determine if this holds true over time. Thursday was the second busiest day of the week, trailing Monday by one call.
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/ems-hour-of-day-1.png)
+:::
+:::
+
+
+ The bulk of the medical service calls appear in the late morning through early afternoon, in a span from 1000 hours through the maximum ending around 1400 hours. In the late afternoon and through the evening, there are spikes where calls fluctuate. This also should be viewed over a larger time frame to see how those will settle out. When seeing how all of these break down, there will be implications as to not only how many staff are needed, but should operations management prioritize some skills at different times to better fit the needs of the City and staff?
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Number of calls for service by call reception.](report_wk35_files/figure-docx/ems-call-reception-1.png)
+:::
+:::
+
+
+As expected, the vast majority of medical calls arrive via 911 trunk lines. However, 12.3 percent of medical calls arrived without a method by which we recevied the call. We should track this further to see if this is a one-off or if there is some issue that needs to be addressed.
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Number of calls for service by call type.](report_wk35_files/figure-docx/ems-call-type-1.png)
+:::
+:::
+
+
+Breathing issues and BLS Emergency calls were the two most prevalent call types for the week. As we're winding summer down and heading into autumn, we may see an increase in instances of breathing issues until we reach the first hard freeze and pollen is no longer an issues=.
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Number of calls for service by priority level.](report_wk35_files/figure-docx/ems-priority-level-1.png)
+:::
+:::
+
+
+ The majority of medical service calls are P1, which is to be expected. P3 calls were the second most prevalent.
+
+
+::: {.cell}
+::: {.cell-output-display}
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+    <w:pStyle w:val="caption"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="24"/>
+    </w:rPr>
+    <w:t xml:space="preserve">Table </w:t>
+  </w:r>
+  <w:r>
+    <w:fldChar w:fldCharType="begin" w:dirty="true"/>
+  </w:r>
+  <w:r>
+    <w:instrText xml:space="preserve" w:dirty="true"> SEQ Table \* ARABIC </w:instrText>
+  </w:r>
+  <w:r>
+    <w:fldChar w:fldCharType="separate" w:dirty="true"/>
+  </w:r>
+  <w:r>
+    <w:rPr>
+      <w:noProof/>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="24"/>
+    </w:rPr>
+    <w:t xml:space="default">1</w:t>
+  </w:r>
+  <w:r>
+    <w:fldChar w:fldCharType="end" w:dirty="true"/>
+  </w:r>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="24"/>
+    </w:rPr>
+    <w:t xml:space="preserve">: </w:t>
+  </w:r>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="24"/>
+      <w:color w:val="333333"/>
+    </w:rPr>
+    <w:t xml:space="default">Weekly Elapsed Time Summary Table</w:t>
+  </w:r>
+</w:p><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+    <w:pStyle w:val="caption"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+      <w:color w:val="333333"/>
+    </w:rPr>
+    <w:t xml:space="default">Statistical summary of call processing times</w:t>
+  </w:r>
+</w:p><w:tbl xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"><w:tblPr><w:tblCellMar><w:top w:w="0" w:type="dxa"></w:top><w:bottom w:w="0" w:type="dxa"></w:bottom><w:start w:w="60" w:type="dxa"></w:start><w:end w:w="60" w:type="dxa"></w:end></w:tblCellMar><w:tblW w:type="auto" w:w="0"></w:tblW><w:tblLook w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="0" w:noVBand="0"></w:tblLook><w:jc w:val="center"></w:jc></w:tblPr><w:tr><w:trPr><w:cantSplit></w:cantSplit><w:tblHeader></w:tblHeader></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Time Metric</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Min</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Mean</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Median</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Std Dev</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Skew</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:sz="16" w:space="0" w:color="D3D3D3"></w:bottom><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Kurtosis</w:t>
+  </w:r>
+</w:p></w:tc></w:tr><w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Time To Queue</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">45.25</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">46.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">43.58</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">2.23</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">10.33</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Time To Dispatch</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">2.25</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">2.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">2.39</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">6.25</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">46.47</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Phone Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">241.56</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">190.50</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">323.78</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">6.14</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">50.72</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Processing Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">47.51</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">49.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">44.03</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">2.17</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">9.92</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Rollout Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">3.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">63.32</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">58.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">40.42</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">1.50</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">4.88</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Transit Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">2.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">306.73</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">279.50</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">180.03</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">3.60</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">22.94</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="start"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">Total Call Time</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">65.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">3,241.22</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">3,330.00</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">1,887.14</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">0.24</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">-0.52</w:t>
+  </w:r>
+</w:p></w:tc></w:tr></w:tbl>
+```
+
+
+:::
+:::
+
+
+The median time to process medical calls was 49 seconds. Again, this puts us in good form when examening our operational efficiency. We take longer on the phone for medical calls than we do fire-related calls. Again this is to be expected. The triage process should take longer to ensure that we are giving the best service to our community that we can.
+
+## Additional Analyses
+
+Earlier, for this analysis, we created some additional datasets that we can investigate in the course of our analysis. The first two are lists of calls where the elapsed time prior to release to queue or the time spent in dispatch is greater than 60 seconds for *emergency* calls. For the first, there are 67 emergency service calls where the elapsed time from call start to the call entering the queue for dispatch was over 60 seconds. There are also 12 emergency service calls where the elapsed time from entering queue to the first unit assigned was over 60 seconds.

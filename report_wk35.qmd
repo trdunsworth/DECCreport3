@@ -80,7 +80,7 @@ library(survival)
 
 ## Introduction
 
-This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management. 
+This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 ```{r data-load}
 #| echo: false
@@ -148,7 +148,7 @@ inspect_na(df) |>
   )
 ```
 
-From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call. 
+From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
 
 ## Exploratory Analysis
 
@@ -288,7 +288,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
 barReception
 ```
 
-Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time. 
+Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -318,7 +318,7 @@ barProblem <- problem_counts |>
         axis.text.y = element_text(size=10))
 
 barProblem
-```    
+```
 
 This week, the most common problem nature was Disorderly Conduct. For AFD, the most common was Trouble Breathing. Over time, we will reveiw these results with other weeks to observe any emergent trends. This can also be used with our partners to assist them in their planning.
 
@@ -354,7 +354,7 @@ barCallTaker
 
 It is interesting to note that the top "call taker" is CAD2CAD. This may represent an unexpected trend, so we can follow this in future iterations.
 
-#### Call Distribution: Hour by Day of Week
+### Call Distribution: Hour by Day of Week
 
 The following visualization shows the distribution of calls throughout the day (by hour) for each day of the week. This helps identify patterns in call volume across different days and times.
 
@@ -487,11 +487,11 @@ hourly_summary |>
   )
 ```
 
-These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week. 
+These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week.
 
 ### Summary statsitcs and analyses
 
-In this section, we will analyse the continuous variables that represent the elapsed time for various segments of the call process. The variables of interest include: Time_To_Queue, Time_To_Dispatch, Phone_Time, Processing_Time, Rollout_Time, Transit_Time, and Total_Call_Time. They are defined as follows: 
+In this section, we will analyse the continuous variables that represent the elapsed time for various segments of the call process. The variables of interest include: Time_To_Queue, Time_To_Dispatch, Phone_Time, Processing_Time, Rollout_Time, Transit_Time, and Total_Call_Time. They are defined as follows:
 
 * Time_To_Queue
 : The time from the start of the call to the time it is released to queue for dispatch.
@@ -739,6 +739,7 @@ ttq_hist_dens <- ggplot(ttq, aes(x = ttq_sec)) +
 ttq_hist_dens
 
 ```
+
 ```{r elapsed-time-plots}
 #| label: elapsed-time-plots
 #| echo: false
@@ -866,16 +867,16 @@ if (length(plots_list) > 0) {
 
 | Line Type/Color      | Meaning                |
 |---------------------|------------------------|
-| <span style="color:#d62728; font-weight:bold;">Dashed Red</span>    | Median                 |
-| <span style="color:#ff7f0e; font-weight:bold;">Dotted Orange</span> | 90th Percentile (P90)  |
-| <span style="color:#2ca02c; font-weight:bold;">Longdash Green</span> | NENA 0:15 Standard     |
-| <span style="color:#9467bd; font-weight:bold;">Longdash Purple</span> | NFPA 0:20 Standard     |
+| **Dashed Red**    | Median                 |
+| **Dotted Orange** | 90th Percentile (P90)  |
+| **Longdash Green** | NENA 0:15 Standard     |
+| **Longdash Purple** | NFPA 0:20 Standard     |
 
 These show that the processing times for DECC are well within the NENA and NFPA guidelines. This is good operational data to show how well we are performing with repsect ot those guidelines. Over time, we can track these metrics to ensure that we continue to meet or exceed those standards.
 
-## Additional Analyses.
+## Discipline Analyses
 
-As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for futher analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset. 
+As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for futher analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset.
 
 ```{r new-datasets}
 #| label: new-datasets
@@ -889,9 +890,17 @@ df_hp <- df |>
 df_law <- df |> filter(Agency == "POLICE")
 df_fire <- df |> filter(Agency == "FIRE")
 df_ems <- df |> filter(Agency == "EMS")
-df_ttq_delay <- df |> filter(Priority_Number < 2 & Time_To_Queue > 60)
-df_ttd_delay <- df |> filter(Priority_Number < 2 & Time_To_Dispatch > 60)
+df_ttq_delay <- df_hp |> filter(Time_To_Queue > 60)
+df_ttd_delay <- df_hp |> filter(Time_To_Dispatch > 60)
 df_ca <- df |> filter(Problem == "CARDIAC ARREST ALS 2- SUPV")
+
+mental_health <- c("MUTUAL PSYCHOLOGICAL EMERGENCY", "PSYCHIATRIC EMERGENCY ALS 1", "PSYCHIATRIC EMERGENCY VIOLENT", "WELFARE CHECK", "JUMPER FROM WWB", "MENTAL HEALTH CASE", "SUICIDE DELAY", "SUICIDE IN PROG NO INJ", "SUICIDE IN PROG INJ/PILLS", "SUICIDE IN PROG TRAUMA")
+
+# Mental health related calls subset
+# - Filters rows where `Problem` is one of the values in `mental_health`
+# - Uses `%in%` and handles potential NA values safely with `is.na()` check
+# - Creates a new dataset `df_mh` for downstream analysis
+df_mh <- df |> dplyr::filter(!is.na(Problem) & Problem %in% mental_health)
 ```
 
 By defining these datasets, we can now add to our analyses. For example, we can reuse the same information from above to drill down into APD and AFD calls. Starting with APD calls for service, we can examine everything as we did above.
@@ -904,7 +913,7 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 # ggplot2
 barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  scale_fill_viridis(discrete=TRUE, option="G") +
   labs(title="Number of Calls for Service for APD by Day of the Week",
        x="Day of the Week",
        y="Number of Calls") +
@@ -923,15 +932,15 @@ barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_APD
 ```
 
-Since the majority of service calls are for APD, Thursday should be the expected busiest day of the week, which it is by three calls over Monday. Wednesday appears to be the lightest day of the week for APD service calls. With a differnce of only 24 calls from the highest volume to the lowest, the week was remarkably consistent for service calls. 
+Since the majority of service calls are for APD, Thursday should be the expected busiest day of the week, which it is by three calls over Monday. Wednesday appears to be the lightest day of the week for APD service calls. With a differnce of only 24 calls from the highest volume to the lowest, the week was remarkably consistent for service calls.
 
 ```{r apd-hour-of-day}
 #| echo: false
-#| fig-cap: "Number of calls for service by hour of the day." 
+#| fig-cap: "Number of calls for service by hour of the day."
 # ggplot2
 barHour_APD <- df_law |> ggplot(aes(x=Hour, fill=Hour)) +
   geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  scale_fill_viridis(discrete=TRUE, option="G") +
   labs(title="Number of Calls for Service for APD by Hour of the Day",
        x="Hour of the Day",
        y="Number of Calls") +
@@ -940,7 +949,7 @@ barHour_APD <- df_law |> ggplot(aes(x=Hour, fill=Hour)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -950,15 +959,15 @@ barHour_APD <- df_law |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_APD
 ```
 
-The busiest time of the week for APD calls is from 1200 to 1600 hours. That also is in keeping with the results found for the week overall. 
+The busiest time of the week for APD calls is from 1200 to 1600 hours. That also is in keeping with the results found for the week overall.
 
 ```{r apd-call-reception}
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
 # ggplot2
 barReception_APD <- df_law |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
-  geom_bar() + 
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="G") +
   labs(title="Number of Calls for Service for by Call Reception",
        x="Call Reception",
        y="Number of Calls") +
@@ -967,7 +976,7 @@ barReception_APD <- df_law |> ggplot(aes(x=Call_Reception, fill=Call_Reception))
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -990,14 +999,14 @@ problem_counts_APD <- df_law |>
 barProblem_APD <- problem_counts_APD |>
   ggplot(aes(x=reorder(Problem, -n), y=n, fill=Problem)) +
   geom_bar(stat="identity") +
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  scale_fill_viridis(discrete=TRUE, option="G") +
   labs(title="Number of Calls for Service by Call Type",
        x="Call Type",
        y="Number of Calls") +
   geom_text(
     aes(label = n),
-    vjust = -0.5, 
-    size = 3) +
+    vjust = -0.5,
+    size=3) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -1005,9 +1014,9 @@ barProblem_APD <- problem_counts_APD |>
         axis.text.y = element_text(size=10))
 
 barProblem_APD
-``` 
+```
 
-The largest call type was for Disorderly Conduct, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time. 
+The largest call type was for Disorderly Conduct, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time.
 
 ```{r apd-priority-level}
 #| echo: false
@@ -1015,7 +1024,7 @@ The largest call type was for Disorderly Conduct, which was also the largest cal
 # ggplot2
 barPriority_APD <- df_law |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
   geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  scale_fill_viridis(discrete=TRUE, option="G") +
   labs(title="Number of Calls for Service by Priority Level",
        x="Priority Level",
        y="Number of Calls") +
@@ -1024,7 +1033,7 @@ barPriority_APD <- df_law |> ggplot(aes(x=Priority_Number, fill=Priority_Number)
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -1034,7 +1043,7 @@ barPriority_APD <- df_law |> ggplot(aes(x=Priority_Number, fill=Priority_Number)
 barPriority_APD
 ```
 
-As expected, the largest number of calls werew Priority 2 calls which represent `r round((sum(df_law$Priority_Number == "2") / nrow(df_law)) * 100, 1)` percent of all APD calls. Again, this comports with the overall weekly trends. 
+As expected, the largest number of calls werew Priority 2 calls which represent `r round((sum(df_law$Priority_Number == "2") / nrow(df_law)) * 100, 1)` percent of all APD calls. Again, this comports with the overall weekly trends.
 
 ```{r apd-custom-summary}
 #| label: apd-custom-summary
@@ -1045,16 +1054,16 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
 # Create a summary table of elapsed time variables
 tryCatch({
   # Define the columns we want to analyze
-  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_law)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df_law %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -1091,7 +1100,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -1108,12 +1117,12 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
-                    
+
                     # Calculate fourth moment
                     fourth_moment <- mean((clean_vals - mean_val)^4)
                     # Calculate kurtosis (excess kurtosis = kurtosis - 3)
@@ -1121,7 +1130,7 @@ tryCatch({
                     kurt_val
                   })
                 })
-                
+
                 round(result, 2)
               }, error = function(e) {
                 # Final fallback
@@ -1137,7 +1146,7 @@ tryCatch({
       separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-    
+
     # Use gt for better formatting compatibility with Word output
     summary_table %>%
       gt() %>%
@@ -1148,7 +1157,7 @@ tryCatch({
       cols_label(
         Variable = "Time Metric",
         Minimum = "Min",
-        Mean = "Mean", 
+        Mean = "Mean",
         Median = "Median",
         Std_Dev = "Std Dev",
         Skewness = "Skew",
@@ -1175,7 +1184,7 @@ tryCatch({
 })
 ```
 
-This table shows that overall, we have a median time on the phones of about 2.5 minutes and it takes about double that for a call to start and be dispatched. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are `r round((sum(df_law$Priority_Number == "4") / nrow(df_law)) * 100, 1)` percent of APD calls, this could have a measureable impact on service times for DECC staff. 
+This table shows that overall, we have a median time on the phones of about 2.5 minutes and it takes about double that for a call to start and be dispatched. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are `r round((sum(df_law$Priority_Number == "4") / nrow(df_law)) * 100, 1)` percent of APD calls, this could have a measureable impact on service times for DECC staff.
 
 ### AFD FIRE Analyses
 
@@ -1187,7 +1196,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 # ggplot2
 barDOW_AFD <- df_fire |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  scale_fill_viridis(discrete=TRUE, option="F") +
   labs(title="Number of Calls for Service for AFD by Day of the Week",
        x="Day of the Week",
        y="Number of Calls") +
@@ -1196,7 +1205,7 @@ barDOW_AFD <- df_fire |> ggplot(aes(x=DOW, fill=DOW)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -1206,15 +1215,15 @@ barDOW_AFD <- df_fire |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_AFD
 ```
 
-It is interesting to note that Thursday was also the busiest day of the week for fire-related calls. Friday followed closely behind, while Sunday and Monday were the lightest days of the week. Sunday had only 12 fire-related calls which is very interesting to note. With football season in full swing, I might have expected more fire-related calls for barbecues and get togethers on Sunday. There could be room to see if there are any correlations between football season and the number of service calls that arrive during the week. For example, if the Commanders play on a day other than Sunday, is there movement in the number of calls for that day? 
+It is interesting to note that Thursday was also the busiest day of the week for fire-related calls. Friday followed closely behind, while Sunday and Monday were the lightest days of the week. Sunday had only 12 fire-related calls which is very interesting to note. With football season in full swing, I might have expected more fire-related calls for barbecues and get togethers on Sunday. There could be room to see if there are any correlations between football season and the number of service calls that arrive during the week. For example, if the Commanders play on a day other than Sunday, is there movement in the number of calls for that day?
 
 ```{r afd-hour-of-day}
 #| echo: false
-#| fig-cap: "Number of calls for service by hour of the day." 
+#| fig-cap: "Number of calls for service by hour of the day."
 # ggplot2
 barHour_AFD <- df_fire |> ggplot(aes(x=Hour, fill=Hour)) +
   geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  scale_fill_viridis(discrete=TRUE, option="F") +
   labs(title="Number of Calls for Service for AFD by Hour of the Day",
        x="Hour of the Day",
        y="Number of Calls") +
@@ -1223,7 +1232,7 @@ barHour_AFD <- df_fire |> ggplot(aes(x=Hour, fill=Hour)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -1233,15 +1242,15 @@ barHour_AFD <- df_fire |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_AFD
 ```
 
-Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 2000 hour stands out as the hour where the most calls were received for the week. Future reports can determine if this is an anomaly or if there is a trend to more fire-related calls at some point in the evening after most people have returned to their residence for the evening. 
+Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 2000 hour stands out as the hour where the most calls were received for the week. Future reports can determine if this is an anomaly or if there is a trend to more fire-related calls at some point in the evening after most people have returned to their residence for the evening.
 
 ```{r afd-call-reception}
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
 # ggplot2
 barReception_AFD <- df_fire |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
-  geom_bar() + 
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="F") +
   labs(title="Number of Calls for Service for AFD by Call Reception",
        x="Call Reception",
        y="Number of Calls") +
@@ -1250,7 +1259,7 @@ barReception_AFD <- df_fire |> ggplot(aes(x=Call_Reception, fill=Call_Reception)
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -1260,7 +1269,7 @@ barReception_AFD <- df_fire |> ggplot(aes(x=Call_Reception, fill=Call_Reception)
 barReception_AFD
 ```
 
-Like APD calls, most fire-related calls for service came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented `r round((sum(df_fire$Call_Reception == "Phone") / nrow(df_fire)) * 100, 1)` percent of all fire-related service calls received.
+Like APD calls, most fire-related calls came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented `r round((sum(df_fire$Call_Reception == "Phone") / nrow(df_fire)) * 100, 1)` percent of all fire-related service calls received.
 
 ```{r afd-call-type}
 #| echo: false
@@ -1273,14 +1282,14 @@ problem_counts_AFD <- df_fire |>
 barProblem_AFD <- problem_counts_AFD |>
   ggplot(aes(x=reorder(Problem, -n), y=n, fill=Problem)) +
   geom_bar(stat="identity") +
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  scale_fill_viridis(discrete=TRUE, option="F") +
   labs(title="Number of Calls for Service for AFD by Call Type",
        x="Call Type",
        y="Number of Calls") +
   geom_text(
     aes(label = n),
-    vjust = -0.5, 
-    size = 3) +
+    vjust = -0.5,
+    size=3) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -1288,9 +1297,9 @@ barProblem_AFD <- problem_counts_AFD |>
         axis.text.y = element_text(size=10))
 
 barProblem_AFD
-``` 
+```
 
-The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future. I do note that MUTUAL-CPR is listed as a "fire-related" call. That will be corrected in future reports. 
+The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future. I do note that MUTUAL-CPR is listed as a "fire-related" call. That will be corrected in future reports.
 
 ```{r afd-priority-level}
 #| echo: false
@@ -1298,7 +1307,7 @@ The greatest number of fire-related service calls were for Fire Alarms. That is 
 # ggplot2
 barPriority_AFD <- df_fire |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
   geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="E") +
+  scale_fill_viridis(discrete=TRUE, option="F") +
   labs(title="Number of Calls for Service by Priority Level",
        x="Priority Level",
        y="Number of Calls") +
@@ -1307,7 +1316,7 @@ barPriority_AFD <- df_fire |> ggplot(aes(x=Priority_Number, fill=Priority_Number
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -1317,7 +1326,7 @@ barPriority_AFD <- df_fire |> ggplot(aes(x=Priority_Number, fill=Priority_Number
 barPriority_AFD
 ```
 
-It is interesting to note that Priority 3 represents the highest number of calls for service. That would correlate to the Fire Alarm call type being the most used. 
+It is interesting to note that Priority 3 represents the highest number of calls for service. That would correlate to the Fire Alarm call type being the most used.
 
 ```{r afd-custom-summary}
 #| label: afd-custom-summary
@@ -1328,16 +1337,16 @@ It is interesting to note that Priority 3 represents the highest number of calls
 # Create a summary table of elapsed time variables
 tryCatch({
   # Define the columns we want to analyze
-  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_fire)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df_fire %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -1374,7 +1383,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -1391,12 +1400,12 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
-                    
+
                     # Calculate fourth moment
                     fourth_moment <- mean((clean_vals - mean_val)^4)
                     # Calculate kurtosis (excess kurtosis = kurtosis - 3)
@@ -1404,7 +1413,7 @@ tryCatch({
                     kurt_val
                   })
                 })
-                
+
                 round(result, 2)
               }, error = function(e) {
                 # Final fallback
@@ -1420,7 +1429,7 @@ tryCatch({
       separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-    
+
     # Use gt for better formatting compatibility with Word output
     summary_table %>%
       gt() %>%
@@ -1431,7 +1440,7 @@ tryCatch({
       cols_label(
         Variable = "Time Metric",
         Minimum = "Min",
-        Mean = "Mean", 
+        Mean = "Mean",
         Median = "Median",
         Std_Dev = "Std Dev",
         Skewness = "Skew",
@@ -1458,6 +1467,291 @@ tryCatch({
 })
 ```
 
-Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 35 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing. 
+Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 35 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing.
 
 ### AFD EMS Analyses
+
+Because AFD calls for service can be split into two distinct disciplines, fire-related calls and medical-related calls, DECC has, historically, separated the two disciplines for analytical purposes. So this section will look at medical-related calls for service for the week.
+
+```{r ems-day-of-week}
+#| echo: false
+#| fig-cap: "Number of calls for service by day of the week."
+# ggplot2
+barDOW_EMS <- df_ems |> ggplot(aes(x=DOW, fill=DOW)) +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="D") +
+  labs(title="Number of Calls for Service for EMS by Day of the Week",
+       x="Day of the Week",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barDOW_EMS
+```
+
+ Medical service calls by day show a remarkable consistency throughout the week. There is only a difference of 9 service calls separating the busiest and slowest days. Unlike APD and fire-related calls for AFD, Monday was the busiest day of the week for medical service calls. Again, it will be interesting to determine if this holds true over time. Thursday was the second busiest day of the week, trailing Monday by one call.
+
+```{r ems-hour-of-day}
+#| echo: false
+#| fig-cap: "Number of calls for service by hour of the day." 
+# ggplot2
+barHour_EMS <- df_ems |> ggplot(aes(x=Hour, fill=Hour)) +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="D") +
+  labs(title="Number of Calls for Service for EMS by Hour of the Day",
+       x="Hour of the Day",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=8),
+        axis.text.y = element_text(size=10))
+
+barHour_EMS
+```
+
+ The bulk of the medical service calls appear in the late morning through early afternoon, in a span from 1000 hours through the maximum ending around 1400 hours. In the late afternoon and through the evening, there are spikes where calls fluctuate. This also should be viewed over a larger time frame to see how those will settle out. When seeing how all of these break down, there will be implications as to not only how many staff are needed, but should operations management prioritize some skills at different times to better fit the needs of the City and staff?
+
+```{r ems-call-reception}
+#| echo: false
+#| fig-cap: "Number of calls for service by call reception."
+# ggplot2
+barReception_EMS <- df_ems |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="D") +
+  labs(title="Number of Calls for Service for EMS by Call Reception",
+       x="Call Reception",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barReception_EMS
+```
+
+As expected, the vast majority of medical calls arrive via 911 trunk lines. However, `r round((sum(df_ems$Call_Reception == "Phone") / nrow(df_ems)) * 100, 1)` percent of medical calls arrived without a method by which we recevied the call. We should track this further to see if this is a one-off or if there is some issue that needs to be addressed.
+
+```{r ems-call-type}
+#| echo: false
+#| fig-cap: "Number of calls for service by call type."
+# ggplot2
+problem_counts_EMS <- df_ems |>
+  count(Problem, sort = TRUE) |>
+  slice_head(n = 10)
+
+barProblem_EMS <- problem_counts_EMS |>
+  ggplot(aes(x=reorder(Problem, -n), y=n, fill=Problem)) +
+  geom_bar(stat="identity") +
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service for EMS by Call Type",
+       x="Call Type",
+       y="Number of Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5, 
+    size = 3) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barProblem_EMS
+```
+
+Breathing issues and BLS Emergency calls were the two most prevalent call types for the week. As we're winding summer down and heading into autumn, we may see an increase in instances of breathing issues until we reach the first hard freeze and pollen is no longer an issues=.
+
+```{r ems-priority-level}
+#| echo: false
+#| fig-cap: "Number of calls for service by priority level."
+# ggplot2
+barPriority_EMS <- df_ems |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
+  geom_bar() +
+  scale_fill_viridis(discrete=TRUE, option="E") +
+  labs(title="Number of Calls for Service by Priority Level",
+       x="Priority Level",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=3
+  ) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=10),
+        axis.text.y = element_text(size=10))
+
+barPriority_EMS
+```
+
+ The majority of medical service calls are P1, which is to be expected. P3 calls were the second most prevalent.
+
+```{r ems-custom-summary}
+#| label: ems-custom-summary
+#| echo: false
+#| message: false
+#| warning: false
+
+# Create a summary table of elapsed time variables
+tryCatch({
+  # Define the columns we want to analyze
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+                    "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
+
+  # Check which columns actually exist in the data
+  existing_columns <- time_columns[time_columns %in% names(df_ems)]
+
+  if (length(existing_columns) == 0) {
+    cat("No time columns found in the data.\n")
+  } else {
+
+    summary_table <- df_ems %>%
+      # 1. Select only the columns that exist
+      dplyr::select(all_of(existing_columns)) %>%
+      # 2. Summarize across all selected columns, converting difftime to numeric safely
+      summarise(across(everything(),
+        list(
+          Minimum  = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(min(vals, na.rm = TRUE), 2)
+          },
+          Mean     = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(mean(vals, na.rm = TRUE), 2)
+          },
+          Median   = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(median(vals, na.rm = TRUE), 2)
+          },
+          Std_Dev  = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(sd(vals, na.rm = TRUE), 2)
+          },
+          Skewness = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else {
+              tryCatch(round(psych::skew(vals, na.rm = TRUE), 2), error = function(e) NA_real_)
+            }
+          },
+          Kurtosis = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals)) || length(vals[!is.na(vals)]) < 4) {
+              NA_real_
+            } else {
+              tryCatch({
+                # Remove NA values first
+                clean_vals <- vals[!is.na(vals)]
+
+                # Try multiple approaches for kurtosis calculation
+                result <- tryCatch({
+                  # Method 1: Use psych::kurtosis with explicit namespace
+                  psych::kurtosis(clean_vals)
+                }, error = function(e1) {
+                  tryCatch({
+                    # Method 2: Use moments package if available
+                    if (requireNamespace("moments", quietly = TRUE)) {
+                      moments::kurtosis(clean_vals) - 3  # Convert to excess kurtosis
+                    } else {
+                      stop("moments not available")
+                    }
+                  }, error = function(e2) {
+                    # Method 3: Manual calculation
+                    n <- length(clean_vals)
+                    if (n < 4) return(NA_real_)
+
+                    mean_val <- mean(clean_vals)
+                    var_val <- var(clean_vals)
+
+                    if (var_val == 0) return(NA_real_)
+
+                    # Calculate fourth moment
+                    fourth_moment <- mean((clean_vals - mean_val)^4)
+                    # Calculate kurtosis (excess kurtosis = kurtosis - 3)
+                    kurt_val <- (fourth_moment / (var_val^2)) - 3
+                    kurt_val
+                  })
+                })
+
+                round(result, 2)
+              }, error = function(e) {
+                # Final fallback
+                NA_real_
+              })
+            }
+          }
+        ),
+        .names = "{.col}---{.fn}" # Use a unique separator
+      )) %>%
+      # 3. Reshape the data to a long format, then back to a clean wide format
+      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+      separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
+      pivot_wider(names_from = Statistic, values_from = Value) %>%
+      mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
+
+    # Use gt for better formatting compatibility with Word output
+    summary_table %>%
+      gt() %>%
+      tab_header(
+        title = "Weekly Elapsed Time Summary Table",
+        subtitle = "Statistical summary of call processing times"
+      ) %>%
+      cols_label(
+        Variable = "Time Metric",
+        Minimum = "Min",
+        Mean = "Mean",
+        Median = "Median",
+        Std_Dev = "Std Dev",
+        Skewness = "Skew",
+        Kurtosis = "Kurtosis"
+      ) %>%
+      fmt_number(
+        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
+        decimals = 2,
+        use_seps = TRUE
+      ) %>%
+      tab_style(
+        style = cell_text(weight = "bold"),
+        locations = cells_column_labels()
+      ) %>%
+      tab_options(
+        table.font.size = 12,
+        heading.title.font.size = 14,
+        heading.subtitle.font.size = 12
+      )
+  }
+}, error = function(e) {
+  cat("Error creating summary table:", e$message, "\n")
+  cat("Available columns in df:", paste(names(df), collapse = ", "), "\n")
+})
+```
+
+The median time to process medical calls was 49 seconds. Again, this puts us in good form when examening our operational efficiency. We take longer on the phone for medical calls than we do fire-related calls. Again this is to be expected. The triage process should take longer to ensure that we are giving the best service to our community that we can.
+
+## Additional Analyses
+
+Earlier, for this analysis, we created some additional datasets that we can investigate in the course of our analysis. The first two are lists of calls where the elapsed time prior to release to queue or the time spent in dispatch is greater than 60 seconds for *emergency* calls. For the first, there are `r nrow(df_ttq_delay)` emergency service calls where the elapsed time from call start to the call entering the queue for dispatch was over 60 seconds. There are also `r nrow(df_ttd_delay)` emergency service calls where the elapsed time from entering queue to the first unit assigned was over 60 seconds.
