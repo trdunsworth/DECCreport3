@@ -1,5 +1,5 @@
 ---
-title: "Weekly Report - Week 35 (2025-08-25 to 2025-08-31)"
+title: "New Weekly Report"
 author: "Tony Dunsworth, PhD"
 date: "2025-09-04"
 format: 
@@ -81,7 +81,7 @@ library(survival)
 
 ## Introduction
 
-This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
+This is the weekly report for week XX covering the period from Month, 99, 20YY, through Month, 99, 20YY. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 ```{r data-load}
 #| echo: false
@@ -149,7 +149,7 @@ inspect_na(df) |>
   )
 ```
 
-From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
+
 
 ## Exploratory Analysis
 

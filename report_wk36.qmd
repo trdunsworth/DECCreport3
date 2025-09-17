@@ -1,5 +1,5 @@
 ---
-title: "Weekly Report - Week 35 (2025-08-25 to 2025-08-31)"
+title: "Weekly Report: Week 36 (2025-09-01 to 2025-09-07)"
 author: "Tony Dunsworth, PhD"
 date: "2025-09-04"
 format: 
@@ -81,12 +81,12 @@ library(survival)
 
 ## Introduction
 
-This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
+This is the weekly report for week 36 covering the period from September 1 2025, through September 7, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 ```{r data-load}
 #| echo: false
 #| output: false
-df <- read_csv("data\\week35.csv")
+df <- read_csv("data\\week36.csv")
  
 # Use lubridate and across() to efficiently parse all date-time columns
 df <- df |>
@@ -149,7 +149,7 @@ inspect_na(df) |>
   )
 ```
 
-From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
+From this plot, we can see that there are only 8 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, only 7 calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
 
 ## Exploratory Analysis
 
@@ -180,7 +180,7 @@ barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW
 ```
 
-From this chart, we can see that Thursday was the busiest day of the week with 214 service calls, and the slowest day was Sunday with 172 calls for service. We can also create a similar chart for the hour of the day.
+From this chart, we can see that Friday was the busiest day of the week with 213 service calls, and the slowest day was Saturday with 143 calls for service. We can also create a similar chart for the hour of the day.
 
 ```{r hour-of-day}
 #| echo: false
@@ -207,7 +207,7 @@ barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour
 ```
 
-From this chart, we can see that the busiest hour of the day was 1500 hours, with 84 calls for service. 0400 and 0600 were the slowest hours of the day with 27 calls each. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below.
+From this chart, we can see that the busiest hour of the day was 1000 hours, with 83 calls for service. 0300 was the slowest hour of the day with 23 calls. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below. There are interesting declines in call volume across the 1100 and 1400 hours. These could correspond to lunch break and an after lunch lull in activity.
 
 ```{r priority-level}
 #| echo: false
@@ -234,7 +234,7 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
 barPriority
 ```
 
-The majority of calls received were Priority 2 calls. This is followed by Priority 3 and Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are `r round((sum(df$Priority_Number == "2") / nrow(df)) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
+The majority of calls received were Priority 2 calls. This is followed by Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are `r round((sum(df$Priority_Number == "2") / nrow(df)) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
 
 ```{r discipline}
 #| echo: false
@@ -353,7 +353,7 @@ barCallTaker <- ct_counts |>
 barCallTaker
 ```
 
-It is interesting to note that the top "call taker" is CAD2CAD. This may represent an unexpected trend, so we can follow this in future iterations.
+This week, CAD2CAD was the second highest "calltaker" for the week. This follows from last week where it was the most cited calltaker.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -488,7 +488,7 @@ hourly_summary |>
   )
 ```
 
-These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week.
+These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week. This also shows that this week, we did not receive any calls during three different hours of the week. 
 
 ### Summary statsitcs and analyses
 
@@ -654,7 +654,7 @@ tryCatch({
 })
 ```
 
-The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 49 seconds. This puts our operations on good footing to meet the NENA and NFPA guidelines for dispatching emergency calls. The median time for calls to sit in queue is 26 seconds. The overall phone processing time is 96 seconds which is in range for dispatching emergency service calls. Additional analyses can be performed to look more deeply into how well emergency service calls were processed. The difference between the mean and median values for these time intervals indicates that there are some outliers that skewed the data. The skewness and kurtosis values also indicate that the data is not normally distributed and indicate a long right tail with a very sharp peak. These characteristics can be viewed in the histograms below.
+The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 46 seconds. This puts our operations on good footing to meet the NENA and NFPA guidelines for dispatching emergency calls. The median time for calls to sit in queue is 29 seconds. The overall phone processing time is 94 seconds which is in range for dispatching emergency service calls. Additional analyses can be performed to look more deeply into how well emergency service calls were processed. The difference between the mean and median values for these time intervals indicates that there are some outliers that skewed the data. The skewness and kurtosis values also indicate that the data is not normally distributed and indicate a long right tail with a very sharp peak. These characteristics can be viewed in the histograms below.
 
 ```{r ttq-plots}
 #| label: ttq-plots
@@ -933,7 +933,7 @@ barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_APD
 ```
 
-Since the majority of service calls are for APD, Thursday should be the expected busiest day of the week, which it is by three calls over Monday. Wednesday appears to be the lightest day of the week for APD service calls. With a differnce of only 24 calls from the highest volume to the lowest, the week was remarkably consistent for service calls.
+Since the majority of service calls are for APD, Friday should be the expected busiest day of the week. Saturday appears to be the lightest day of the week for APD service calls. With a differnce of only 42 calls from the highest volume to the lowest, the week was remarkably consistent for service calls.
 
 ```{r apd-hour-of-day}
 #| echo: false
@@ -960,7 +960,7 @@ barHour_APD <- df_law |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_APD
 ```
 
-The busiest time of the week for APD calls is from 1200 to 1600 hours. That also is in keeping with the results found for the week overall.
+The busiest time of the week for APD calls is from 0900 to 1700 hours. That also is in keeping with the results found for the week overall.
 
 ```{r apd-call-reception}
 #| echo: false
@@ -1216,7 +1216,7 @@ barDOW_AFD <- df_fire |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_AFD
 ```
 
-It is interesting to note that Thursday was also the busiest day of the week for fire-related calls. Friday followed closely behind, while Sunday and Monday were the lightest days of the week. Sunday had only 12 fire-related calls which is very interesting to note. With football season in full swing, I might have expected more fire-related calls for barbecues and get togethers on Sunday. There could be room to see if there are any correlations between football season and the number of service calls that arrive during the week. For example, if the Commanders play on a day other than Sunday, is there movement in the number of calls for that day?
+It is interesting to note that Tuesday was the busiest day of the week for fire-related calls. Friday was the lightest days of the week with only 16 fire-related calls. 
 
 ```{r afd-hour-of-day}
 #| echo: false

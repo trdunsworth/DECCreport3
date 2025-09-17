@@ -4,7 +4,7 @@
 
 required_packages <- c(
   "tidyverse", "tidymodels", "devtools", "remotes", "ggpubr",
-  "ggrepel", "ggraph", "gt", "gtExtras", "GGally", "rstatix", "car", "survival",
+  "ggrepel", "ggraph", "gt", "gtExtras", "GGally", "rstatix", "car", "survival", "GPfit",
   "janitor", "Hmisc", "psych", "corrr", "ggcorrplot", "ggthemes", "lubridate",
   "ggridges", "multcomp", "emmeans", "RVAideMemoire", "FactoMineR", "DescTools", "nlme", "funModeling", "inspectdf", "dlookr", "viridis", "merTools", "factoextra", "nortest", "MASS",
   "randtests", "summarytools", "report", "knitr", "kableExtra",

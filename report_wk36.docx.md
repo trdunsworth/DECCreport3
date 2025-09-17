@@ -1,5 +1,5 @@
 ---
-title: "New Weekly Report"
+title: "Weekly Report: Week 36 (2025-09-01 to 2025-09-07)"
 author: "Tony Dunsworth, PhD"
 date: "2025-09-04"
 format: 
@@ -42,7 +42,7 @@ This is the weekly report for week 35 covering the period from August 25, 2025, 
 :::
 
 
-For this week, there were a total of 1348 calls for service. And example of the data is shown below:
+For this week, there were a total of 1263 calls for service. And example of the data is shown below:
 
 
 ::: {.cell tbl-cap='A sample of the first 10 rows of incident data.'}
@@ -52,16 +52,16 @@ For this week, there were a total of 1348 calls for service. And example of the 
 # A tibble: 10 × 50
    Master_Incident_Number Response_Date       WeekNo DOW   Day   Hour  Shift
    <chr>                  <dttm>              <fct>  <ord> <fct> <fct> <chr>
- 1 25-071089              2025-08-24 00:07:06 35     SUN   24    0     C    
- 2 25-020296              2025-08-24 00:15:27 35     SUN   24    0     C    
- 3 25-071093              2025-08-24 00:23:30 35     SUN   24    0     C    
- 4 25-071094              2025-08-24 00:27:29 35     SUN   24    0     C    
- 5 25-071095              2025-08-24 00:33:54 35     SUN   24    0     C    
- 6 25-071097              2025-08-24 00:39:50 35     SUN   24    0     C    
- 7 25-071100              2025-08-24 00:57:22 35     SUN   24    0     C    
- 8 25-071101              2025-08-24 00:58:54 35     SUN   24    0     C    
- 9 25-071105              2025-08-24 01:02:40 35     SUN   24    1     C    
-10 25-071106              2025-08-24 01:03:38 35     SUN   24    1     C    
+ 1 25-073342              2025-08-31 01:13:04 36     SUN   31    1     D    
+ 2 25-020863              2025-08-31 01:26:26 36     SUN   31    1     D    
+ 3 25-073345              2025-08-31 01:41:09 36     SUN   31    1     D    
+ 4 25-073346              2025-08-31 01:44:59 36     SUN   31    1     D    
+ 5 25-073347              2025-08-31 01:56:42 36     SUN   31    1     D    
+ 6 25-073348              2025-08-31 01:59:41 36     SUN   31    1     D    
+ 7 25-073350              2025-08-31 02:01:38 36     SUN   31    2     D    
+ 8 25-073351              2025-08-31 02:03:53 36     SUN   31    2     D    
+ 9 25-020864              2025-08-31 02:17:29 36     SUN   31    2     D    
+10 25-020865              2025-08-31 02:27:43 36     SUN   31    2     D    
 # ℹ 43 more variables: Day_Night <chr>, ShiftPart <chr>, Agency <chr>,
 #   Problem <chr>, Priority_Number <ord>, Call_Reception <chr>,
 #   Call_Taker <chr>, Dispatcher <chr>, Incident_Start_Time <dttm>,
@@ -116,7 +116,7 @@ In order to have a good dataset for analysis, some data cleaning was performed. 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Prevalence of missing values. Only columns with missing data are shown.](report_wk35_files/figure-docx/missing-values-1.png)
+![Prevalence of missing values. Only columns with missing data are shown.](report_wk36_files/figure-docx/missing-values-1.png)
 :::
 :::
 
@@ -130,7 +130,7 @@ One of the first analyses is to break down different factor elements to see what
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by day of the week.](report_wk35_files/figure-docx/day-of-week-1.png)
+![Number of calls for service by day of the week.](report_wk36_files/figure-docx/day-of-week-1.png)
 :::
 :::
 
@@ -140,7 +140,7 @@ From this chart, we can see that Thursday was the busiest day of the week with 2
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/hour-of-day-1.png)
+![Number of calls for service by hour of the day.](report_wk36_files/figure-docx/hour-of-day-1.png)
 :::
 :::
 
@@ -150,40 +150,40 @@ From this chart, we can see that the busiest hour of the day was 1500 hours, wit
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by priority level.](report_wk35_files/figure-docx/priority-level-1.png)
+![Number of calls for service by priority level.](report_wk36_files/figure-docx/priority-level-1.png)
 :::
 :::
 
 
-The majority of calls received were Priority 2 calls. This is followed by Priority 3 and Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are 37.9 percent of the total number of calls, while Priority 1 calls are 22.2 percent of the total number of calls.
+The majority of calls received were Priority 2 calls. This is followed by Priority 3 and Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are 40.5 percent of the total number of calls, while Priority 1 calls are 24.1 percent of the total number of calls.
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by discipline.](report_wk35_files/figure-docx/discipline-1.png)
+![Number of calls for service by discipline.](report_wk36_files/figure-docx/discipline-1.png)
 :::
 :::
 
 
-As expected, the majority of calls are for APD. They represent 60.3
+As expected, the majority of calls are for APD. They represent 60
 percent of the total number of calls. This is fairly consistent with previous analyses. We can also examine the way in which we are receiving the calls by looking at the Call_Reception column. That chart is below.
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call reception.](report_wk35_files/figure-docx/call-reception-1.png)
+![Number of calls for service by call reception.](report_wk36_files/figure-docx/call-reception-1.png)
 :::
 :::
 
 
-Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only 2.7 percent of the total number of calls, this may be something to watch over time.
+Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only 4 percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call type.](report_wk35_files/figure-docx/call-type-1.png)
+![Number of calls for service by call type.](report_wk36_files/figure-docx/call-type-1.png)
 :::
 :::
 
@@ -195,7 +195,7 @@ We can also look at the number of calls taken by telecommunicators. Again, like 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by telecommunicator.](report_wk35_files/figure-docx/telecommunicator-1.png)
+![Number of calls for service by telecommunicator.](report_wk36_files/figure-docx/telecommunicator-1.png)
 :::
 :::
 
@@ -209,7 +209,7 @@ The following visualization shows the distribution of calls throughout the day (
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Call Volume by Hour and Day of Week](report_wk35_files/figure-docx/hour-dow-analysis-1.png)
+![Call Volume by Hour and Day of Week](report_wk36_files/figure-docx/hour-dow-analysis-1.png)
 :::
 :::
 
@@ -217,7 +217,7 @@ The following visualization shows the distribution of calls throughout the day (
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Ridge Plot Alternative - Calls per Hour by Day of Week](report_wk35_files/figure-docx/alternative-ridge-plot-1.png)
+![Ridge Plot Alternative - Calls per Hour by Day of Week](report_wk36_files/figure-docx/alternative-ridge-plot-1.png)
 :::
 :::
 
@@ -353,7 +353,7 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">THU</w:t>
+    <w:t xml:space="default">FRI</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -366,7 +366,7 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">214</w:t>
+    <w:t xml:space="default">213</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -379,7 +379,7 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">11</w:t>
+    <w:t xml:space="default">12</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -406,113 +406,60 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">MON</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">200</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">11</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">8.3</w:t>
-  </w:r>
-</w:p></w:tc></w:tr>
-<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="center"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">FRI</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">198</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">14</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">8.2</w:t>
-  </w:r>
-</w:p></w:tc></w:tr>
-<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="center"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
     <w:t xml:space="default">TUE</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">208</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">10</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">8.7</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="center"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">THU</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -565,59 +512,6 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">SAT</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">186</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">11</w:t>
-  </w:r>
-</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="end"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
-    <w:t xml:space="default">7.8</w:t>
-  </w:r>
-</w:p></w:tc></w:tr>
-<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
-  <w:pPr>
-    <w:spacing w:before="0" w:after="60"/>
-    <w:keepNext/>
-    <w:jc w:val="center"/>
-  </w:pPr>
-  <w:r>
-    <w:rPr>
-      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-      <w:sz w:val="20"/>
-    </w:rPr>
     <w:t xml:space="default">WED</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -631,7 +525,7 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">183</w:t>
+    <w:t xml:space="default">182</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -644,7 +538,7 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">16</w:t>
+    <w:t xml:space="default">18</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -684,7 +578,113 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">172</w:t>
+    <w:t xml:space="default">165</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">7</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">6.9</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="center"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">MON</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">157</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">14</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">6.5</w:t>
+  </w:r>
+</w:p></w:tc></w:tr>
+<w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="center"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">SAT</w:t>
+  </w:r>
+</w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
+  <w:pPr>
+    <w:spacing w:before="0" w:after="60"/>
+    <w:keepNext/>
+    <w:jc w:val="end"/>
+  </w:pPr>
+  <w:r>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+      <w:sz w:val="20"/>
+    </w:rPr>
+    <w:t xml:space="default">143</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -710,7 +710,7 @@ The following visualization shows the distribution of calls throughout the day (
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">7.2</w:t>
+    <w:t xml:space="default">6.0</w:t>
   </w:r>
 </w:p></w:tc></w:tr></w:tbl>
 ```
@@ -943,7 +943,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">68.92</w:t>
+    <w:t xml:space="default">61.83</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -956,7 +956,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">49.00</w:t>
+    <w:t xml:space="default">46.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -969,7 +969,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">143.75</w:t>
+    <w:t xml:space="default">66.85</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -982,7 +982,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">22.39</w:t>
+    <w:t xml:space="default">2.51</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -995,7 +995,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">670.53</w:t>
+    <w:t xml:space="default">10.69</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -1035,7 +1035,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,009.79</w:t>
+    <w:t xml:space="default">991.54</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1048,7 +1048,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">26.00</w:t>
+    <w:t xml:space="default">29.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1061,7 +1061,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">11,888.43</w:t>
+    <w:t xml:space="default">5,448.67</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1074,7 +1074,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">32.56</w:t>
+    <w:t xml:space="default">18.89</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1087,7 +1087,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,131.07</w:t>
+    <w:t xml:space="default">464.69</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -1127,7 +1127,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">250.94</w:t>
+    <w:t xml:space="default">227.68</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1140,7 +1140,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">162.00</w:t>
+    <w:t xml:space="default">161.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1153,7 +1153,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">416.93</w:t>
+    <w:t xml:space="default">299.12</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1166,7 +1166,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">7.56</w:t>
+    <w:t xml:space="default">5.40</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1179,7 +1179,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">82.85</w:t>
+    <w:t xml:space="default">49.17</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -1219,7 +1219,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,078.70</w:t>
+    <w:t xml:space="default">1,053.38</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1232,7 +1232,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">96.00</w:t>
+    <w:t xml:space="default">94.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1245,7 +1245,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">11,896.24</w:t>
+    <w:t xml:space="default">5,454.47</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1258,7 +1258,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">32.51</w:t>
+    <w:t xml:space="default">18.83</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1271,7 +1271,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,128.80</w:t>
+    <w:t xml:space="default">462.32</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -1311,7 +1311,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">35.70</w:t>
+    <w:t xml:space="default">35.27</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1337,7 +1337,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">181.69</w:t>
+    <w:t xml:space="default">119.98</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1350,7 +1350,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">33.50</w:t>
+    <w:t xml:space="default">20.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1363,7 +1363,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,178.96</w:t>
+    <w:t xml:space="default">472.15</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -1403,7 +1403,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">406.67</w:t>
+    <w:t xml:space="default">427.29</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1416,7 +1416,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">274.00</w:t>
+    <w:t xml:space="default">262.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1429,7 +1429,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,001.22</w:t>
+    <w:t xml:space="default">2,320.52</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1442,7 +1442,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">12.06</w:t>
+    <w:t xml:space="default">29.50</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1455,7 +1455,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">175.80</w:t>
+    <w:t xml:space="default">927.39</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -1482,7 +1482,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">38.00</w:t>
+    <w:t xml:space="default">41.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1495,7 +1495,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3,818.03</w:t>
+    <w:t xml:space="default">4,018.01</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1508,7 +1508,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2,269.50</w:t>
+    <w:t xml:space="default">2,601.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1521,7 +1521,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">4,838.55</w:t>
+    <w:t xml:space="default">5,012.91</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1534,7 +1534,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">4.01</w:t>
+    <w:t xml:space="default">3.48</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1547,7 +1547,7 @@ In this section, we will analyse the continuous variables that represent the ela
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">26.27</w:t>
+    <w:t xml:space="default">18.09</w:t>
   </w:r>
 </w:p></w:tc></w:tr></w:tbl>
 ```
@@ -1562,7 +1562,7 @@ The values from this table describe operations for the week being analyzed. In t
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](report_wk35_files/figure-docx/ttq-plots-1.png)
+![](report_wk36_files/figure-docx/ttq-plots-1.png)
 :::
 :::
 
@@ -1570,27 +1570,27 @@ The values from this table describe operations for the week being analyzed. In t
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](report_wk35_files/figure-docx/elapsed-time-plots-1.png)
+![](report_wk36_files/figure-docx/elapsed-time-plots-1.png)
 :::
 
 ::: {.cell-output-display}
-![](report_wk35_files/figure-docx/elapsed-time-plots-2.png)
+![](report_wk36_files/figure-docx/elapsed-time-plots-2.png)
 :::
 
 ::: {.cell-output-display}
-![](report_wk35_files/figure-docx/elapsed-time-plots-3.png)
+![](report_wk36_files/figure-docx/elapsed-time-plots-3.png)
 :::
 
 ::: {.cell-output-display}
-![](report_wk35_files/figure-docx/elapsed-time-plots-4.png)
+![](report_wk36_files/figure-docx/elapsed-time-plots-4.png)
 :::
 
 ::: {.cell-output-display}
-![](report_wk35_files/figure-docx/elapsed-time-plots-5.png)
+![](report_wk36_files/figure-docx/elapsed-time-plots-5.png)
 :::
 
 ::: {.cell-output-display}
-![](report_wk35_files/figure-docx/elapsed-time-plots-6.png)
+![](report_wk36_files/figure-docx/elapsed-time-plots-6.png)
 :::
 :::
 
@@ -1598,7 +1598,7 @@ The values from this table describe operations for the week being analyzed. In t
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](report_wk35_files/figure-docx/elapsed-time-grid-1.png)
+![](report_wk36_files/figure-docx/elapsed-time-grid-1.png)
 :::
 :::
 
@@ -1631,7 +1631,7 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by day of the week.](report_wk35_files/figure-docx/apd-day-of-week-1.png)
+![Number of calls for service by day of the week.](report_wk36_files/figure-docx/apd-day-of-week-1.png)
 :::
 :::
 
@@ -1641,7 +1641,7 @@ Since the majority of service calls are for APD, Thursday should be the expected
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/apd-hour-of-day-1.png)
+![Number of calls for service by hour of the day.](report_wk36_files/figure-docx/apd-hour-of-day-1.png)
 :::
 :::
 
@@ -1651,7 +1651,7 @@ The busiest time of the week for APD calls is from 1200 to 1600 hours. That also
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call reception.](report_wk35_files/figure-docx/apd-call-reception-1.png)
+![Number of calls for service by call reception.](report_wk36_files/figure-docx/apd-call-reception-1.png)
 :::
 :::
 
@@ -1661,7 +1661,7 @@ As can be seen, the majority of calls came through telephone. This comports to t
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call type.](report_wk35_files/figure-docx/apd-call-type-1.png)
+![Number of calls for service by call type.](report_wk36_files/figure-docx/apd-call-type-1.png)
 :::
 :::
 
@@ -1671,12 +1671,12 @@ The largest call type was for Disorderly Conduct, which was also the largest cal
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by priority level.](report_wk35_files/figure-docx/apd-priority-level-1.png)
+![Number of calls for service by priority level.](report_wk36_files/figure-docx/apd-priority-level-1.png)
 :::
 :::
 
 
-As expected, the largest number of calls werew Priority 2 calls which represent 58.3 percent of all APD calls. Again, this comports with the overall weekly trends.
+As expected, the largest number of calls werew Priority 2 calls which represent 63.7 percent of all APD calls. Again, this comports with the overall weekly trends.
 
 
 ::: {.cell}
@@ -1874,7 +1874,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">85.47</w:t>
+    <w:t xml:space="default">76.10</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1887,7 +1887,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">56.00</w:t>
+    <w:t xml:space="default">55.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1900,7 +1900,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">179.51</w:t>
+    <w:t xml:space="default">76.73</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1913,7 +1913,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">18.78</w:t>
+    <w:t xml:space="default">2.25</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1926,7 +1926,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">449.65</w:t>
+    <w:t xml:space="default">8.06</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -1966,7 +1966,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,672.56</w:t>
+    <w:t xml:space="default">1,650.35</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1979,7 +1979,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">204.00</w:t>
+    <w:t xml:space="default">199.50</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -1992,7 +1992,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">15,275.71</w:t>
+    <w:t xml:space="default">6,957.45</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2005,7 +2005,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">25.32</w:t>
+    <w:t xml:space="default">14.84</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2018,7 +2018,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">683.07</w:t>
+    <w:t xml:space="default">284.75</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -2058,7 +2058,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">266.03</w:t>
+    <w:t xml:space="default">222.22</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2071,7 +2071,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">156.00</w:t>
+    <w:t xml:space="default">151.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2084,7 +2084,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">466.74</w:t>
+    <w:t xml:space="default">303.77</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2097,7 +2097,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">7.36</w:t>
+    <w:t xml:space="default">6.17</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2110,7 +2110,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">75.59</w:t>
+    <w:t xml:space="default">63.02</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -2150,7 +2150,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,758.04</w:t>
+    <w:t xml:space="default">1,726.45</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2163,7 +2163,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">319.00</w:t>
+    <w:t xml:space="default">290.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2176,7 +2176,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">15,283.91</w:t>
+    <w:t xml:space="default">6,961.53</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2189,7 +2189,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">25.29</w:t>
+    <w:t xml:space="default">14.80</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2202,7 +2202,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">681.92</w:t>
+    <w:t xml:space="default">283.71</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -2242,7 +2242,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">16.57</w:t>
+    <w:t xml:space="default">15.84</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2268,7 +2268,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">231.56</w:t>
+    <w:t xml:space="default">150.31</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2281,7 +2281,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">27.41</w:t>
+    <w:t xml:space="default">17.47</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2294,7 +2294,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">759.08</w:t>
+    <w:t xml:space="default">330.76</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -2334,7 +2334,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">470.43</w:t>
+    <w:t xml:space="default">508.30</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2347,7 +2347,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">255.00</w:t>
+    <w:t xml:space="default">234.50</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2360,7 +2360,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,281.98</w:t>
+    <w:t xml:space="default">3,000.07</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2373,7 +2373,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">9.44</w:t>
+    <w:t xml:space="default">22.84</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2386,7 +2386,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">106.35</w:t>
+    <w:t xml:space="default">554.38</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -2413,7 +2413,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">38.00</w:t>
+    <w:t xml:space="default">50.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2426,7 +2426,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">4,595.37</w:t>
+    <w:t xml:space="default">4,798.47</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2439,7 +2439,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2,328.00</w:t>
+    <w:t xml:space="default">2,598.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2452,7 +2452,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">5,905.42</w:t>
+    <w:t xml:space="default">6,120.03</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2465,7 +2465,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3.29</w:t>
+    <w:t xml:space="default">2.83</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2478,7 +2478,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">17.03</w:t>
+    <w:t xml:space="default">11.26</w:t>
   </w:r>
 </w:p></w:tc></w:tr></w:tbl>
 ```
@@ -2488,7 +2488,7 @@ As expected, the largest number of calls werew Priority 2 calls which represent 
 :::
 
 
-This table shows that overall, we have a median time on the phones of about 2.5 minutes and it takes about double that for a call to start and be dispatched. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are 22.8 percent of APD calls, this could have a measureable impact on service times for DECC staff.
+This table shows that overall, we have a median time on the phones of about 2.5 minutes and it takes about double that for a call to start and be dispatched. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are 20.8 percent of APD calls, this could have a measureable impact on service times for DECC staff.
 
 ### AFD FIRE Analyses
 
@@ -2497,7 +2497,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by day of the week.](report_wk35_files/figure-docx/afd-day-of-week-1.png)
+![Number of calls for service by day of the week.](report_wk36_files/figure-docx/afd-day-of-week-1.png)
 :::
 :::
 
@@ -2507,7 +2507,7 @@ It is interesting to note that Thursday was also the busiest day of the week for
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/afd-hour-of-day-1.png)
+![Number of calls for service by hour of the day.](report_wk36_files/figure-docx/afd-hour-of-day-1.png)
 :::
 :::
 
@@ -2517,17 +2517,17 @@ Fire-related calls are much more spread out through the day as can be seen in th
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call reception.](report_wk35_files/figure-docx/afd-call-reception-1.png)
+![Number of calls for service by call reception.](report_wk36_files/figure-docx/afd-call-reception-1.png)
 :::
 :::
 
 
-Like APD calls, most fire-related calls came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented 37.1 percent of all fire-related service calls received.
+Like APD calls, most fire-related calls came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented 32.2 percent of all fire-related service calls received.
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call type.](report_wk35_files/figure-docx/afd-call-type-1.png)
+![Number of calls for service by call type.](report_wk36_files/figure-docx/afd-call-type-1.png)
 :::
 :::
 
@@ -2537,7 +2537,7 @@ The greatest number of fire-related service calls were for Fire Alarms. That is 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by priority level.](report_wk35_files/figure-docx/afd-priority-level-1.png)
+![Number of calls for service by priority level.](report_wk36_files/figure-docx/afd-priority-level-1.png)
 :::
 :::
 
@@ -2740,7 +2740,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">40.74</w:t>
+    <w:t xml:space="default">33.39</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2753,7 +2753,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">32.50</w:t>
+    <w:t xml:space="default">28.50</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2766,7 +2766,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">49.19</w:t>
+    <w:t xml:space="default">38.13</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2779,7 +2779,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.50</w:t>
+    <w:t xml:space="default">1.70</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2792,7 +2792,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">8.67</w:t>
+    <w:t xml:space="default">3.69</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -2832,7 +2832,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3.33</w:t>
+    <w:t xml:space="default">1.89</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2858,7 +2858,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">20.38</w:t>
+    <w:t xml:space="default">3.88</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2871,7 +2871,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">12.88</w:t>
+    <w:t xml:space="default">9.46</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2884,7 +2884,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">168.69</w:t>
+    <w:t xml:space="default">100.44</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -2924,7 +2924,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">183.16</w:t>
+    <w:t xml:space="default">195.10</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2937,7 +2937,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">130.00</w:t>
+    <w:t xml:space="default">135.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2950,7 +2950,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">250.34</w:t>
+    <w:t xml:space="default">281.01</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2963,7 +2963,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">4.79</w:t>
+    <w:t xml:space="default">5.18</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -2976,7 +2976,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">30.54</w:t>
+    <w:t xml:space="default">35.14</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -3016,7 +3016,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">44.07</w:t>
+    <w:t xml:space="default">35.29</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3029,7 +3029,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">35.00</w:t>
+    <w:t xml:space="default">31.50</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3042,7 +3042,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">55.70</w:t>
+    <w:t xml:space="default">38.59</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3055,7 +3055,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.96</w:t>
+    <w:t xml:space="default">1.62</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3068,7 +3068,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">12.11</w:t>
+    <w:t xml:space="default">3.42</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -3108,7 +3108,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">65.01</w:t>
+    <w:t xml:space="default">68.16</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3121,7 +3121,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">65.00</w:t>
+    <w:t xml:space="default">63.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3134,7 +3134,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">29.30</w:t>
+    <w:t xml:space="default">34.21</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3147,7 +3147,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-0.06</w:t>
+    <w:t xml:space="default">0.62</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3160,7 +3160,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-0.20</w:t>
+    <w:t xml:space="default">1.03</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -3200,7 +3200,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">322.63</w:t>
+    <w:t xml:space="default">350.47</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3213,7 +3213,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">288.00</w:t>
+    <w:t xml:space="default">289.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3226,7 +3226,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">182.97</w:t>
+    <w:t xml:space="default">268.57</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3239,7 +3239,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.16</w:t>
+    <w:t xml:space="default">3.49</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3252,7 +3252,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">7.59</w:t>
+    <w:t xml:space="default">18.27</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -3279,7 +3279,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">74.00</w:t>
+    <w:t xml:space="default">83.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3292,7 +3292,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,424.45</w:t>
+    <w:t xml:space="default">1,345.20</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3305,7 +3305,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,061.50</w:t>
+    <w:t xml:space="default">1,046.50</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3318,7 +3318,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,344.66</w:t>
+    <w:t xml:space="default">1,143.05</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3331,7 +3331,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.63</w:t>
+    <w:t xml:space="default">1.99</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3344,7 +3344,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">8.80</w:t>
+    <w:t xml:space="default">4.96</w:t>
   </w:r>
 </w:p></w:tc></w:tr></w:tbl>
 ```
@@ -3363,7 +3363,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by day of the week.](report_wk35_files/figure-docx/ems-day-of-week-1.png)
+![Number of calls for service by day of the week.](report_wk36_files/figure-docx/ems-day-of-week-1.png)
 :::
 :::
 
@@ -3373,7 +3373,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/ems-hour-of-day-1.png)
+![Number of calls for service by hour of the day.](report_wk36_files/figure-docx/ems-hour-of-day-1.png)
 :::
 :::
 
@@ -3383,17 +3383,17 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call reception.](report_wk35_files/figure-docx/ems-call-reception-1.png)
+![Number of calls for service by call reception.](report_wk36_files/figure-docx/ems-call-reception-1.png)
 :::
 :::
 
 
-As expected, the vast majority of medical calls arrive via 911 trunk lines. However, 12.3 percent of medical calls arrived without a method by which we recevied the call. We should track this further to see if this is a one-off or if there is some issue that needs to be addressed.
+As expected, the vast majority of medical calls arrive via 911 trunk lines. However, 10.2 percent of medical calls arrived without a method by which we recevied the call. We should track this further to see if this is a one-off or if there is some issue that needs to be addressed.
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call type.](report_wk35_files/figure-docx/ems-call-type-1.png)
+![Number of calls for service by call type.](report_wk36_files/figure-docx/ems-call-type-1.png)
 :::
 :::
 
@@ -3403,7 +3403,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by priority level.](report_wk35_files/figure-docx/ems-priority-level-1.png)
+![Number of calls for service by priority level.](report_wk36_files/figure-docx/ems-priority-level-1.png)
 :::
 :::
 
@@ -3606,7 +3606,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">45.25</w:t>
+    <w:t xml:space="default">43.44</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3619,7 +3619,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">46.00</w:t>
+    <w:t xml:space="default">41.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3632,7 +3632,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">43.58</w:t>
+    <w:t xml:space="default">40.09</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3645,7 +3645,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.23</w:t>
+    <w:t xml:space="default">1.18</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3658,7 +3658,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">10.33</w:t>
+    <w:t xml:space="default">2.11</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -3698,7 +3698,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.25</w:t>
+    <w:t xml:space="default">3.02</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3724,7 +3724,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.39</w:t>
+    <w:t xml:space="default">14.89</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3737,7 +3737,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">6.25</w:t>
+    <w:t xml:space="default">17.10</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3750,7 +3750,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">46.47</w:t>
+    <w:t xml:space="default">305.69</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -3790,7 +3790,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">241.56</w:t>
+    <w:t xml:space="default">253.30</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3803,7 +3803,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">190.50</w:t>
+    <w:t xml:space="default">194.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3816,7 +3816,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">323.78</w:t>
+    <w:t xml:space="default">292.89</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3829,7 +3829,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">6.14</w:t>
+    <w:t xml:space="default">3.38</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3842,7 +3842,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">50.72</w:t>
+    <w:t xml:space="default">15.00</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -3882,7 +3882,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">47.51</w:t>
+    <w:t xml:space="default">46.46</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3895,7 +3895,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">49.00</w:t>
+    <w:t xml:space="default">44.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3908,7 +3908,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">44.03</w:t>
+    <w:t xml:space="default">42.89</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3921,7 +3921,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.17</w:t>
+    <w:t xml:space="default">1.60</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3934,7 +3934,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">9.92</w:t>
+    <w:t xml:space="default">5.28</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -3961,7 +3961,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3.00</w:t>
+    <w:t xml:space="default">4.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3974,7 +3974,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">63.32</w:t>
+    <w:t xml:space="default">61.91</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -3987,7 +3987,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">58.00</w:t>
+    <w:t xml:space="default">59.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4000,7 +4000,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">40.42</w:t>
+    <w:t xml:space="default">31.07</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4013,7 +4013,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1.50</w:t>
+    <w:t xml:space="default">0.23</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4026,7 +4026,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">4.88</w:t>
+    <w:t xml:space="default">-0.59</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -4053,7 +4053,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.00</w:t>
+    <w:t xml:space="default">70.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4066,7 +4066,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">306.73</w:t>
+    <w:t xml:space="default">292.59</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4079,7 +4079,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">279.50</w:t>
+    <w:t xml:space="default">265.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4092,7 +4092,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">180.03</w:t>
+    <w:t xml:space="default">183.84</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4105,7 +4105,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3.60</w:t>
+    <w:t xml:space="default">6.43</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4118,7 +4118,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">22.94</w:t>
+    <w:t xml:space="default">72.75</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -4145,7 +4145,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">65.00</w:t>
+    <w:t xml:space="default">41.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4158,7 +4158,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3,241.22</w:t>
+    <w:t xml:space="default">3,493.03</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4171,7 +4171,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3,330.00</w:t>
+    <w:t xml:space="default">3,616.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4184,7 +4184,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,887.14</w:t>
+    <w:t xml:space="default">2,076.47</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4197,7 +4197,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.24</w:t>
+    <w:t xml:space="default">0.28</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4210,7 +4210,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-0.52</w:t>
+    <w:t xml:space="default">-0.16</w:t>
   </w:r>
 </w:p></w:tc></w:tr></w:tbl>
 ```
@@ -4224,7 +4224,7 @@ The median time to process medical calls was 49 seconds. Again, this puts us in 
 
 ## Additional Analyses
 
-Earlier, for this analysis, we created some additional datasets that we can investigate in the course of our analysis. The first two are lists of calls where the elapsed time prior to release to queue or the time spent in dispatch is greater than 60 seconds for *emergency* calls. For the first, there are 67 emergency service calls where the elapsed time from call start to the call entering the queue for dispatch was over 60 seconds. There are also 12 emergency service calls where the elapsed time from entering queue to the first unit assigned was over 60 seconds.
+Earlier, for this analysis, we created some additional datasets that we can investigate in the course of our analysis. The first two are lists of calls where the elapsed time prior to release to queue or the time spent in dispatch is greater than 60 seconds for *emergency* calls. For the first, there are 74 emergency service calls where the elapsed time from call start to the call entering the queue for dispatch was over 60 seconds. There are also 4 emergency service calls where the elapsed time from entering queue to the first unit assigned was over 60 seconds.
 
 ### Possible Service Delays
 
@@ -4237,30 +4237,30 @@ We can look at the datasets and see if there are telecommunicators who may exper
 
 Table: Frequency of Call Taker in Delayed TTQ Calls (Descending)
 
-|Call Taker          | Count|
-|:-------------------|-----:|
-|CRUZ, STEPHANIE     |     9|
-|PERALTA, ANNETTE    |     8|
-|JACKSON, MALIKA     |     6|
-|MESARIS, MATTHEW    |     5|
-|WILLIAMS, DARNELL   |     5|
-|BRYANT, THEO        |     4|
-|DEWBERRY, RE'KEYA   |     3|
-|MACK, BRIANA        |     3|
-|PEREZ, CARLOS       |     3|
-|ANDERSON, MARILYN   |     2|
-|GARCIA, VILMA       |     2|
-|GOODWIN, SHEENA     |     2|
-|HARDING, AUTUMN     |     2|
-|LEWIS, LESLIE       |     2|
-|MARTINEZ, ESTHER    |     2|
-|MCLEOD, DOUGLAS     |     2|
-|VALENTIN, EMERITA   |     2|
-|BELLAMY, LATITIA    |     1|
-|BONSU, VALERIE      |     1|
-|FLOURNOY, ERICKA    |     1|
-|PRIESTLY, SHAVAUGHN |     1|
-|WALKER, JUANITA     |     1|
+|Call Taker        | Count|
+|:-----------------|-----:|
+|JACKSON, MALIKA   |     7|
+|WILLIAMS, DARNELL |     7|
+|CRUZ, STEPHANIE   |     6|
+|BELLAMY, LATITIA  |     4|
+|BONSU, VALERIE    |     4|
+|BRYANT, THEO      |     4|
+|GARCIA, VILMA     |     4|
+|GOODWIN, SHEENA   |     4|
+|MACK, BRIANA      |     4|
+|MCLEOD, DOUGLAS   |     4|
+|FOSTER, KANESHA   |     3|
+|LEWIS, LESLIE     |     3|
+|PERALTA, ANNETTE  |     3|
+|PEREZ, CARLOS     |     3|
+|WALKER, JUANITA   |     3|
+|DEWBERRY, RE'KEYA |     2|
+|GATTO, GIANNA     |     2|
+|GRAVES, CHRISTINA |     2|
+|PICKERAL, LAUREN  |     2|
+|DOGAN, KYLAH      |     1|
+|FLOURNOY, ERICKA  |     1|
+|SMITH, TERESA     |     1|
 
 
 :::
@@ -4276,14 +4276,12 @@ From this, since there are a small number of telecommunicators who have more tha
 
 Table: Frequency of Dispatcher in Delayed TTD Calls (Descending)
 
-|Dispatcher        | Count|
-|:-----------------|-----:|
-|GATTO, GIANNA     |     4|
-|BRYANT, THEO      |     3|
-|FLOURNOY, ERICKA  |     2|
-|DEWBERRY, RE'KEYA |     1|
-|HARDING, AUTUMN   |     1|
-|MACK, BRIANA      |     1|
+|Dispatcher     | Count|
+|:--------------|-----:|
+|BONSU, VALERIE |     1|
+|LEWIS, LESLIE  |     1|
+|WALKER, KAREN  |     1|
+|WATSON, JOANNE |     1|
 
 
 :::
@@ -4301,7 +4299,7 @@ In this section, we will focus on the calls that are deemed high-priority or cri
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Top High-Priority Call Types](report_wk35_files/figure-docx/hp-call-types-1.png)
+![Top High-Priority Call Types](report_wk36_files/figure-docx/hp-call-types-1.png)
 :::
 :::
 
@@ -4313,7 +4311,7 @@ Almost all of the problem types in this graph belong to AFD and are medical call
 
 ::: {.cell}
 ::: {.cell-output-display}
-![High-Priority Call Response Times](report_wk35_files/figure-docx/hp-response-times-1.png)
+![High-Priority Call Response Times](report_wk36_files/figure-docx/hp-response-times-1.png)
 :::
 :::
 
@@ -4327,7 +4325,7 @@ Finally, we will look into the specific subset of calls that are related to card
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Cardiac Arrest Call Volume by Day and Hour](report_wk35_files/figure-docx/ca-call-volume-1.png)
+![Cardiac Arrest Call Volume by Day and Hour](report_wk36_files/figure-docx/ca-call-volume-1.png)
 :::
 :::
 
@@ -4517,7 +4515,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">21.00</w:t>
+    <w:t xml:space="default">37.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4530,7 +4528,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">40.25</w:t>
+    <w:t xml:space="default">61.40</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4543,7 +4541,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">40.00</w:t>
+    <w:t xml:space="default">41.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4556,7 +4554,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">20.60</w:t>
+    <w:t xml:space="default">48.45</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4569,7 +4567,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.01</w:t>
+    <w:t xml:space="default">1.07</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4582,7 +4580,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-1.96</w:t>
+    <w:t xml:space="default">0.24</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -4622,7 +4620,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.50</w:t>
+    <w:t xml:space="default">2.60</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4635,7 +4633,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.50</w:t>
+    <w:t xml:space="default">2.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4648,7 +4646,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.58</w:t>
+    <w:t xml:space="default">0.89</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4661,7 +4659,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.00</w:t>
+    <w:t xml:space="default">0.60</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4674,7 +4672,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-2.00</w:t>
+    <w:t xml:space="default">-0.92</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -4701,7 +4699,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">162.00</w:t>
+    <w:t xml:space="default">50.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4714,7 +4712,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">457.00</w:t>
+    <w:t xml:space="default">392.20</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4727,7 +4725,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">531.00</w:t>
+    <w:t xml:space="default">408.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4740,7 +4738,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">199.66</w:t>
+    <w:t xml:space="default">304.09</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4753,7 +4751,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-0.68</w:t>
+    <w:t xml:space="default">0.11</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4766,7 +4764,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-0.73</w:t>
+    <w:t xml:space="default">-1.37</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -4793,7 +4791,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">24.00</w:t>
+    <w:t xml:space="default">39.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4806,7 +4804,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">42.75</w:t>
+    <w:t xml:space="default">64.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4819,7 +4817,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">42.50</w:t>
+    <w:t xml:space="default">44.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4832,7 +4830,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">20.55</w:t>
+    <w:t xml:space="default">48.15</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4845,7 +4843,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.00</w:t>
+    <w:t xml:space="default">1.06</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4858,7 +4856,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-1.98</w:t>
+    <w:t xml:space="default">0.23</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -4885,7 +4883,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">11.00</w:t>
+    <w:t xml:space="default">21.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4898,7 +4896,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">46.50</w:t>
+    <w:t xml:space="default">54.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4911,7 +4909,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">43.00</w:t>
+    <w:t xml:space="default">60.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4924,7 +4922,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">34.36</w:t>
+    <w:t xml:space="default">19.38</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4937,7 +4935,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.17</w:t>
+    <w:t xml:space="default">-0.81</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4950,7 +4948,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-1.41</w:t>
+    <w:t xml:space="default">-0.13</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -4977,7 +4975,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">191.00</w:t>
+    <w:t xml:space="default">80.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -4990,7 +4988,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">409.50</w:t>
+    <w:t xml:space="default">197.80</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5003,7 +5001,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">286.50</w:t>
+    <w:t xml:space="default">197.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5016,7 +5014,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">317.88</w:t>
+    <w:t xml:space="default">108.42</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5029,7 +5027,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.64</w:t>
+    <w:t xml:space="default">0.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5042,7 +5040,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-0.82</w:t>
+    <w:t xml:space="default">-1.71</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -5069,7 +5067,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,263.00</w:t>
+    <w:t xml:space="default">1,251.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5082,7 +5080,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">4,473.50</w:t>
+    <w:t xml:space="default">3,670.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5095,7 +5093,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3,582.50</w:t>
+    <w:t xml:space="default">4,233.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5108,7 +5106,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3,583.05</w:t>
+    <w:t xml:space="default">1,627.71</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5121,7 +5119,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.46</w:t>
+    <w:t xml:space="default">-0.45</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5134,7 +5132,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">-1.01</w:t>
+    <w:t xml:space="default">-1.14</w:t>
   </w:r>
 </w:p></w:tc></w:tr></w:tbl>
 ```
@@ -5155,7 +5153,7 @@ With the advent of Marcus' Law in Virginia, there has been an emphasis on how me
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by day of the week.](report_wk35_files/figure-docx/mh-day-of-week-1.png)
+![Number of calls for service by day of the week.](report_wk36_files/figure-docx/mh-day-of-week-1.png)
 :::
 :::
 
@@ -5165,7 +5163,7 @@ The number of mental health related calls appears to spike on the weekends with 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by hour of the day.](report_wk35_files/figure-docx/mh-hour-of-day-1.png)
+![Number of calls for service by hour of the day.](report_wk36_files/figure-docx/mh-hour-of-day-1.png)
 :::
 :::
 
@@ -5175,7 +5173,7 @@ Most of these calls arrived, for this past week, in the late afternoon and eveni
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call reception.](report_wk35_files/figure-docx/mh-call-reception-1.png)
+![Number of calls for service by call reception.](report_wk36_files/figure-docx/mh-call-reception-1.png)
 :::
 :::
 
@@ -5185,22 +5183,22 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by call type.](report_wk35_files/figure-docx/mh-call-type-1.png)
+![Number of calls for service by call type.](report_wk36_files/figure-docx/mh-call-type-1.png)
 :::
 :::
 
 
-
+The most used call type was Mental Health Case which is expected. 
 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![Number of calls for service by priority level.](report_wk35_files/figure-docx/mh-priority-level-1.png)
+![Number of calls for service by priority level.](report_wk36_files/figure-docx/mh-priority-level-1.png)
 :::
 :::
 
 
-
+Since Mental Health Case was the most used call type and is a P2 call, Priority 2 is the most used priority. The question, in the future, will be does these calls need to changed to a higher priority?
 
 
 ::: {.cell}
@@ -5398,7 +5396,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">109.97</w:t>
+    <w:t xml:space="default">101.63</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5411,7 +5409,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">87.50</w:t>
+    <w:t xml:space="default">81.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5424,7 +5422,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">106.24</w:t>
+    <w:t xml:space="default">92.78</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5437,7 +5435,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1.59</w:t>
+    <w:t xml:space="default">1.12</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5450,7 +5448,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3.04</w:t>
+    <w:t xml:space="default">0.91</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -5490,7 +5488,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">603.82</w:t>
+    <w:t xml:space="default">1,687.53</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5503,7 +5501,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">224.50</w:t>
+    <w:t xml:space="default">310.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5516,7 +5514,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,021.17</w:t>
+    <w:t xml:space="default">2,878.47</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5529,7 +5527,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.45</w:t>
+    <w:t xml:space="default">2.10</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5542,7 +5540,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">6.17</w:t>
+    <w:t xml:space="default">4.80</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -5582,7 +5580,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">525.61</w:t>
+    <w:t xml:space="default">342.95</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5595,7 +5593,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">310.00</w:t>
+    <w:t xml:space="default">256.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5608,7 +5606,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">746.16</w:t>
+    <w:t xml:space="default">370.07</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5621,7 +5619,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3.45</w:t>
+    <w:t xml:space="default">2.39</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5634,7 +5632,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">14.69</w:t>
+    <w:t xml:space="default">6.86</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -5661,7 +5659,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.00</w:t>
+    <w:t xml:space="default">52.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5674,7 +5672,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">713.79</w:t>
+    <w:t xml:space="default">1,789.16</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5687,7 +5685,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">326.50</w:t>
+    <w:t xml:space="default">557.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5700,7 +5698,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1,080.38</w:t>
+    <w:t xml:space="default">2,906.64</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5713,7 +5711,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.42</w:t>
+    <w:t xml:space="default">2.12</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5726,7 +5724,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">5.98</w:t>
+    <w:t xml:space="default">4.92</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -5766,7 +5764,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">9.16</w:t>
+    <w:t xml:space="default">9.37</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5792,7 +5790,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">15.66</w:t>
+    <w:t xml:space="default">15.10</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5805,7 +5803,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.37</w:t>
+    <w:t xml:space="default">2.10</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5818,7 +5816,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">5.26</w:t>
+    <w:t xml:space="default">3.78</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -5845,7 +5843,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">0.00</w:t>
+    <w:t xml:space="default">129.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5858,7 +5856,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">375.65</w:t>
+    <w:t xml:space="default">453.67</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5871,7 +5869,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">306.50</w:t>
+    <w:t xml:space="default">444.50</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5884,7 +5882,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">287.53</w:t>
+    <w:t xml:space="default">224.59</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5897,7 +5895,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">1.51</w:t>
+    <w:t xml:space="default">0.65</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5910,7 +5908,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.95</w:t>
+    <w:t xml:space="default">0.13</w:t>
   </w:r>
 </w:p></w:tc></w:tr>
 <w:tr><w:trPr><w:cantSplit></w:cantSplit></w:trPr><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
@@ -5937,7 +5935,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">487.00</w:t>
+    <w:t xml:space="default">715.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5950,7 +5948,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">7,458.71</w:t>
+    <w:t xml:space="default">8,134.68</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5963,7 +5961,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">3,305.50</w:t>
+    <w:t xml:space="default">5,498.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5976,7 +5974,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">10,970.49</w:t>
+    <w:t xml:space="default">8,032.00</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -5989,7 +5987,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">2.91</w:t>
+    <w:t xml:space="default">1.10</w:t>
   </w:r>
 </w:p></w:tc><w:tc><w:tcPr><w:tcBorders><w:top w:val="single" w:space="0" w:color="D3D3D3"></w:top><w:bottom w:val="single" w:space="0" w:color="D3D3D3"></w:bottom><w:start w:val="single" w:space="0" w:color="D3D3D3"></w:start><w:end w:val="single" w:space="0" w:color="D3D3D3"></w:end></w:tcBorders></w:tcPr><w:p>
   <w:pPr>
@@ -6002,7 +6000,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
       <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
       <w:sz w:val="20"/>
     </w:rPr>
-    <w:t xml:space="default">10.01</w:t>
+    <w:t xml:space="default">0.27</w:t>
   </w:r>
 </w:p></w:tc></w:tr></w:tbl>
 ```
@@ -6011,6 +6009,8 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
 :::
 :::
 
+
+Processing times for these calls are longer, somewhere around 5.5 minutes. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them. 
 
 ## Conclusion
 
