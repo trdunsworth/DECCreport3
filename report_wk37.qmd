@@ -180,7 +180,7 @@ barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW
 ```
 
-From this chart, we can see that Thursday was the busiest day of the week with 214 service calls, and the slowest day was Sunday with 172 calls for service. We can also create a similar chart for the hour of the day.
+From this chart, we can see that Wednesday was the busiest day of the week with 217 service calls, and the slowest day was Saturday with 172 calls for service. Over the last three weeks of this report structure, we've seen different days of the week for the busiest and slowest days. A larger sample size will be needed to determine if there are any underlying patterns.
 
 ```{r hour-of-day}
 #| echo: false
@@ -207,7 +207,7 @@ barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour
 ```
 
-From this chart, we can see that the busiest hour of the day was 1500 hours, with 84 calls for service. 0400 and 0600 were the slowest hours of the day with 27 calls each. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below.
+This week, the busiest hour of the day was 0900 hours, with 83 calls for service. 0400 was the slowest hour of the day with 16 calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.
 
 ```{r priority-level}
 #| echo: false
@@ -234,7 +234,9 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
 barPriority
 ```
 
-The majority of calls received were Priority 2 calls. This is followed by Priority 3 and Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are `r round((sum(df$Priority_Number == "2") / nrow(df)) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
+The majority of calls received were Priority 2 calls. This is followed by Priority 1 calls. Priority 2 calls are `r round((sum(df$Priority_Number == "2") / nrow(df)) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
+
+This appears to be consistent through the new reports.
 
 ```{r discipline}
 #| echo: false
@@ -289,7 +291,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
 barReception
 ```
 
-Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
+Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were `r sum(df$Call_Reception == "NOT CAPTURED")` calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -321,7 +323,7 @@ barProblem <- problem_counts |>
 barProblem
 ```
 
-This week, the most common problem nature was Disorderly Conduct. For AFD, the most common was Trouble Breathing. Over time, we will reveiw these results with other weeks to observe any emergent trends. This can also be used with our partners to assist them in their planning.
+This week, the most common problem nature was Disorderly Conduct. For AFD, the most common were Trouble Breathing and BLS Emergency. The overall trend is that Disorderly Conduct and Trouble Breathing appear in the top 2 weekly over the three weeks of this report. These trends should be brought to the attention of our partners.
 
 We can also look at the number of calls taken by telecommunicators. Again, like the problem types, we will limit the chart to the top 10 telecommunicators to ensure visual clarity and legibility of the information.
 
@@ -353,7 +355,7 @@ barCallTaker <- ct_counts |>
 barCallTaker
 ```
 
-It is interesting to note that the top "call taker" is CAD2CAD. This may represent an unexpected trend, so we can follow this in future iterations.
+It is interesting to note that the top "call taker" is CAD2CAD again this week and with a large margin between that volume and the busiest calltaker.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -412,14 +414,16 @@ tryCatch({
   if (requireNamespace("ggridges", quietly = TRUE)) {
     library(ggridges)
     
-    # Create ridge plot
-    ridge_plot <- ggplot(hourly_dow_summary, aes(x = Hour_numeric, y = DOW, height = call_count)) +
-      ggridges::geom_ridgeline(aes(fill = DOW), 
-                               alpha = 0.7, 
-                               scale = 0.9) +
+    # Create ridge plot using the raw data for a density estimate
+    ridge_plot <- ggplot(df, aes(x = as.numeric(as.character(Hour)), y = DOW, fill = DOW)) +
+      ggridges::geom_density_ridges(
+        alpha = 0.7, 
+        scale = 1.2, # Adjust scale for better separation
+        rel_min_height = 0.01 # Removes trailing tails
+      ) +
       scale_x_continuous(name = "Hour of Day",
                          breaks = seq(0, 23, 4),
-                         labels = seq(0, 23, 4)) +
+                         labels = sprintf("%02d:00", seq(0, 23, 4))) +
       scale_y_discrete(name = "Day of Week", limits = rev) +
       scale_fill_brewer(name = "Day", palette = "Set3") +
       labs(title = "Ridge Plot: Call Volume Distribution by Hour and Day of Week",
@@ -488,7 +492,7 @@ hourly_summary |>
   )
 ```
 
-These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week.
+These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week. Additionally, we had a large concentration of service calls during the 0800 and 0900 hours on Wednesday. We should review that time period to see if there were any significant events that impacted our call volumes. 
 
 ### Summary statsitcs and analyses
 
@@ -654,7 +658,7 @@ tryCatch({
 })
 ```
 
-The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 49 seconds. This puts our operations on good footing to meet the NENA and NFPA guidelines for dispatching emergency calls. The median time for calls to sit in queue is 26 seconds. The overall phone processing time is 96 seconds which is in range for dispatching emergency service calls. Additional analyses can be performed to look more deeply into how well emergency service calls were processed. The difference between the mean and median values for these time intervals indicates that there are some outliers that skewed the data. The skewness and kurtosis values also indicate that the data is not normally distributed and indicate a long right tail with a very sharp peak. These characteristics can be viewed in the histograms below.
+The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 45 seconds. This is still in line with what has been seen in the last two weeks. The median time in queue was 15 seconds. These are comparable numbers with the prior weeks.  
 
 ```{r ttq-plots}
 #| label: ttq-plots
@@ -933,7 +937,7 @@ barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_APD
 ```
 
-Since the majority of service calls are for APD, Thursday should be the expected busiest day of the week, which it is by three calls over Monday. Wednesday appears to be the lightest day of the week for APD service calls. With a differnce of only 24 calls from the highest volume to the lowest, the week was remarkably consistent for service calls.
+This week, Tuesdays were the busiest day of the week for APD service calls. Saturday, being the lightest day of the week overall, was the lightest day for the APD as well. 
 
 ```{r apd-hour-of-day}
 #| echo: false
@@ -960,7 +964,7 @@ barHour_APD <- df_law |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_APD
 ```
 
-The busiest time of the week for APD calls is from 1200 to 1600 hours. That also is in keeping with the results found for the week overall.
+The busiest time of the week for APD calls is from 1400 to 1700 hours. 0900 was also very busy in relation to surrounding hours for the APD. This is showing that the late afternoon/evening rush hour time period may need additional support in the future.
 
 ```{r apd-call-reception}
 #| echo: false
@@ -1216,7 +1220,7 @@ barDOW_AFD <- df_fire |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_AFD
 ```
 
-It is interesting to note that Thursday was also the busiest day of the week for fire-related calls. Friday followed closely behind, while Sunday and Monday were the lightest days of the week. Sunday had only 12 fire-related calls which is very interesting to note. With football season in full swing, I might have expected more fire-related calls for barbecues and get togethers on Sunday. There could be room to see if there are any correlations between football season and the number of service calls that arrive during the week. For example, if the Commanders play on a day other than Sunday, is there movement in the number of calls for that day?
+This week, the busiest day for fire-related calls was Wednesday with Thursday and Friday both showing similar numbers. Monday was the lightest day for fire-related calls.
 
 ```{r afd-hour-of-day}
 #| echo: false
@@ -1243,7 +1247,7 @@ barHour_AFD <- df_fire |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_AFD
 ```
 
-Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 2000 hour stands out as the hour where the most calls were received for the week. Future reports can determine if this is an anomaly or if there is a trend to more fire-related calls at some point in the evening after most people have returned to their residence for the evening.
+Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 1100 and 1800 hours stand out as the hour where the most calls were received for the week. There hasn't been an overall trend identified in the three weeks of this report. However, we will continue to observe the patterns to see if any trends emerge in fire related calls.
 
 ```{r afd-call-reception}
 #| echo: false
@@ -1300,7 +1304,7 @@ barProblem_AFD <- problem_counts_AFD |>
 barProblem_AFD
 ```
 
-The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future. I do note that MUTUAL-CPR is listed as a "fire-related" call. That will be corrected in future reports.
+The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future.
 
 ```{r afd-priority-level}
 #| echo: false
@@ -1327,7 +1331,7 @@ barPriority_AFD <- df_fire |> ggplot(aes(x=Priority_Number, fill=Priority_Number
 barPriority_AFD
 ```
 
-It is interesting to note that Priority 3 represents the highest number of calls for service. That would correlate to the Fire Alarm call type being the most used.
+This week there were an equal number of priority 1 and 3 fire-related service calls for AFD.
 
 ```{r afd-custom-summary}
 #| label: afd-custom-summary
@@ -1468,7 +1472,7 @@ tryCatch({
 })
 ```
 
-Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 35 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing.
+Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 32 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing.
 
 ### AFD EMS Analyses
 

@@ -34,7 +34,7 @@ format:
 
 ## Introduction
 
-This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
+This is the weekly report for week 37 covering the period from September 08 through September 14, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 
 ::: {.cell}
@@ -121,7 +121,7 @@ In order to have a good dataset for analysis, some data cleaning was performed. 
 :::
 
 
-From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
+From this plot, we can see that there are only 8 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 10% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
 
 ## Exploratory Analysis
 
@@ -135,7 +135,7 @@ One of the first analyses is to break down different factor elements to see what
 :::
 
 
-From this chart, we can see that Thursday was the busiest day of the week with 214 service calls, and the slowest day was Sunday with 172 calls for service. We can also create a similar chart for the hour of the day.
+From this chart, we can see that Wednesday was the busiest day of the week with 217 service calls, and the slowest day was Saturday with 172 calls for service. Over the last three weeks of this report structure, we've seen different days of the week for the busiest and slowest days. A larger sample size will be needed to determine if there are any underlying patterns.
 
 
 ::: {.cell}
@@ -145,7 +145,7 @@ From this chart, we can see that Thursday was the busiest day of the week with 2
 :::
 
 
-From this chart, we can see that the busiest hour of the day was 1500 hours, with 84 calls for service. 0400 and 0600 were the slowest hours of the day with 27 calls each. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below.
+This week, the busiest hour of the day was 0900 hours, with 83 calls for service. 0400 was the slowest hour of the day with 16 calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.
 
 
 ::: {.cell}
@@ -155,7 +155,9 @@ From this chart, we can see that the busiest hour of the day was 1500 hours, wit
 :::
 
 
-The majority of calls received were Priority 2 calls. This is followed by Priority 3 and Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are 38.2 percent of the total number of calls, while Priority 1 calls are 24.5 percent of the total number of calls.
+The majority of calls received were Priority 2 calls. This is followed by Priority 1 calls. Priority 2 calls are 38.2 percent of the total number of calls, while Priority 1 calls are 24.5 percent of the total number of calls.
+
+This appears to be consistent through the new reports.
 
 
 ::: {.cell}
@@ -176,7 +178,7 @@ percent of the total number of calls. This is fairly consistent with previous an
 :::
 
 
-Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 37 calls where we did not indicated how the service call was received. Since this is only 3 percent of the total number of calls, this may be something to watch over time.
+Most of the calls arrived by phone with the next largest method coming in as E-911 calls. There were 38 calls where we did not indicated how the service call was received. Since this is only 3 percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -188,7 +190,7 @@ The following is a chart of the top 10 call types. The data is limited to ensure
 :::
 
 
-This week, the most common problem nature was Disorderly Conduct. For AFD, the most common was Trouble Breathing. Over time, we will reveiw these results with other weeks to observe any emergent trends. This can also be used with our partners to assist them in their planning.
+This week, the most common problem nature was Disorderly Conduct. For AFD, the most common were Trouble Breathing and BLS Emergency. The overall trend is that Disorderly Conduct and Trouble Breathing appear in the top 2 weekly over the three weeks of this report. These trends should be brought to the attention of our partners.
 
 We can also look at the number of calls taken by telecommunicators. Again, like the problem types, we will limit the chart to the top 10 telecommunicators to ensure visual clarity and legibility of the information.
 
@@ -200,7 +202,7 @@ We can also look at the number of calls taken by telecommunicators. Again, like 
 :::
 
 
-It is interesting to note that the top "call taker" is CAD2CAD. This may represent an unexpected trend, so we can follow this in future iterations.
+It is interesting to note that the top "call taker" is CAD2CAD again this week and with a large margin between that volume and the busiest calltaker.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -720,7 +722,7 @@ The following visualization shows the distribution of calls throughout the day (
 :::
 
 
-These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week.
+These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week. Additionally, we had a large concentration of service calls during the 0800 and 0900 hours on Wednesday. We should review that time period to see if there were any significant events that impacted our call volumes. 
 
 ### Summary statsitcs and analyses
 
