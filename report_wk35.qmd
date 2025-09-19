@@ -1,7 +1,7 @@
 ---
-title: "Weekly Report - Week 35 (2025-08-25 to 2025-08-31)"
+title: "Weekly Report - Week 35 (25 Aug through 31 Aug)"
 author: "Tony Dunsworth, PhD"
-date: "2025-09-04"
+date: "2025-09-18"
 format: 
   docx:
     toc: true

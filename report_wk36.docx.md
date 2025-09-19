@@ -34,7 +34,7 @@ format:
 
 ## Introduction
 
-This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
+This is the weekly report for week 36 covering the period from September 1, 2025, through September 7, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 
 ::: {.cell}
@@ -121,7 +121,7 @@ In order to have a good dataset for analysis, some data cleaning was performed. 
 :::
 
 
-From this plot, we can see that there are only 9 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, nearly 7% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
+From this plot, we can see that there are only 8 values with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, only 7 calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
 
 ## Exploratory Analysis
 
@@ -135,7 +135,7 @@ One of the first analyses is to break down different factor elements to see what
 :::
 
 
-From this chart, we can see that Thursday was the busiest day of the week with 214 service calls, and the slowest day was Sunday with 172 calls for service. We can also create a similar chart for the hour of the day.
+From this chart, we can see that Friday was the busiest day of the week with 213 service calls, and the slowest day was Saturday with 143 calls for service. We can also create a similar chart for the hour of the day.
 
 
 ::: {.cell}
@@ -145,7 +145,7 @@ From this chart, we can see that Thursday was the busiest day of the week with 2
 :::
 
 
-From this chart, we can see that the busiest hour of the day was 1500 hours, with 84 calls for service. 0400 and 0600 were the slowest hours of the day with 27 calls each. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below.
+From this chart, we can see that the busiest hour of the day was 1000 hours, with 83 calls for service. 0300 was the slowest hour of the day with 23 calls. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below. There are interesting declines in call volume across the 1100 and 1400 hours. These could correspond to lunch break and an after lunch lull in activity.
 
 
 ::: {.cell}
@@ -155,7 +155,7 @@ From this chart, we can see that the busiest hour of the day was 1500 hours, wit
 :::
 
 
-The majority of calls received were Priority 2 calls. This is followed by Priority 3 and Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are 40.5 percent of the total number of calls, while Priority 1 calls are 24.1 percent of the total number of calls.
+The majority of calls received were Priority 2 calls. This is followed by Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are 40.5 percent of the total number of calls, while Priority 1 calls are 24.1 percent of the total number of calls.
 
 
 ::: {.cell}
@@ -200,7 +200,7 @@ We can also look at the number of calls taken by telecommunicators. Again, like 
 :::
 
 
-It is interesting to note that the top "call taker" is CAD2CAD. This may represent an unexpected trend, so we can follow this in future iterations.
+This week, CAD2CAD was the second highest "calltaker" for the week. This follows from last week where it was the most cited calltaker.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -720,7 +720,7 @@ The following visualization shows the distribution of calls throughout the day (
 :::
 
 
-These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week.
+These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week. This also shows that this week, we did not receive any calls during three different hours of the week. 
 
 ### Summary statsitcs and analyses
 
@@ -1557,7 +1557,7 @@ In this section, we will analyse the continuous variables that represent the ela
 :::
 
 
-The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 49 seconds. This puts our operations on good footing to meet the NENA and NFPA guidelines for dispatching emergency calls. The median time for calls to sit in queue is 26 seconds. The overall phone processing time is 96 seconds which is in range for dispatching emergency service calls. Additional analyses can be performed to look more deeply into how well emergency service calls were processed. The difference between the mean and median values for these time intervals indicates that there are some outliers that skewed the data. The skewness and kurtosis values also indicate that the data is not normally distributed and indicate a long right tail with a very sharp peak. These characteristics can be viewed in the histograms below.
+The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 46 seconds. This puts our operations on good footing to meet the NENA and NFPA guidelines for dispatching emergency calls. The median time for calls to sit in queue is 29 seconds. The overall phone processing time is 94 seconds which is in range for dispatching emergency service calls. Additional analyses can be performed to look more deeply into how well emergency service calls were processed. The difference between the mean and median values for these time intervals indicates that there are some outliers that skewed the data. The skewness and kurtosis values also indicate that the data is not normally distributed and indicate a long right tail with a very sharp peak. These characteristics can be viewed in the histograms below.
 
 
 ::: {.cell}
@@ -1636,7 +1636,7 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 :::
 
 
-Since the majority of service calls are for APD, Thursday should be the expected busiest day of the week, which it is by three calls over Monday. Wednesday appears to be the lightest day of the week for APD service calls. With a differnce of only 24 calls from the highest volume to the lowest, the week was remarkably consistent for service calls.
+Since the majority of service calls are for APD, Friday should be the expected busiest day of the week. Saturday appears to be the lightest day of the week for APD service calls. With a differnce of only 42 calls from the highest volume to the lowest, the week was remarkably consistent for service calls.
 
 
 ::: {.cell}
@@ -1646,7 +1646,7 @@ Since the majority of service calls are for APD, Thursday should be the expected
 :::
 
 
-The busiest time of the week for APD calls is from 1200 to 1600 hours. That also is in keeping with the results found for the week overall.
+The busiest time of the week for APD calls is from 0900 to 1700 hours. That also is in keeping with the results found for the week overall.
 
 
 ::: {.cell}
@@ -2502,7 +2502,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 :::
 
 
-It is interesting to note that Thursday was also the busiest day of the week for fire-related calls. Friday followed closely behind, while Sunday and Monday were the lightest days of the week. Sunday had only 12 fire-related calls which is very interesting to note. With football season in full swing, I might have expected more fire-related calls for barbecues and get togethers on Sunday. There could be room to see if there are any correlations between football season and the number of service calls that arrive during the week. For example, if the Commanders play on a day other than Sunday, is there movement in the number of calls for that day?
+It is interesting to note that Tuesday was the busiest day of the week for fire-related calls. Friday was the lightest days of the week with only 16 fire-related calls. 
 
 
 ::: {.cell}
@@ -2512,7 +2512,7 @@ It is interesting to note that Thursday was also the busiest day of the week for
 :::
 
 
-Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 2000 hour stands out as the hour where the most calls were received for the week. Future reports can determine if this is an anomaly or if there is a trend to more fire-related calls at some point in the evening after most people have returned to their residence for the evening.
+Fire-related calls for the week were much more varied than those for the APD. The period from 1600 through 1800 hours was the busiest period with the 1800 hour being the busiest for the week. The *"spiky"* nature of the bar graph is interesting to note. As with last week, more data will yield better information how fire-related calls are distributed through the day.
 
 
 ::: {.cell}
@@ -2522,7 +2522,7 @@ Fire-related calls are much more spread out through the day as can be seen in th
 :::
 
 
-Like APD calls, most fire-related calls came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented 32.2 percent of all fire-related service calls received.
+In this week, we had the same number of service calls arrive via 9-1-1 trunk lines as there were calls that arrived by Phone, not necessarily from a 9-1-1 trunk line. Both of these methods counted 49 calls as the arrival source material.
 
 
 ::: {.cell}
@@ -2532,7 +2532,7 @@ Like APD calls, most fire-related calls came in via Phone. However the numbers f
 :::
 
 
-The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future. I do note that MUTUAL-CPR is listed as a "fire-related" call. That will be corrected in future reports.
+The greatest number of fire-related service calls were for Fire Alarms. This is now a repeated trend over the last two weeks. MVCs involving automobiles came after that. 
 
 
 ::: {.cell}
@@ -2542,7 +2542,7 @@ The greatest number of fire-related service calls were for Fire Alarms. That is 
 :::
 
 
-It is interesting to note that Priority 3 represents the highest number of calls for service. That would correlate to the Fire Alarm call type being the most used.
+This week, the largest call prirority was Priority 1 followed closely by Priority 3. When considering the volume of Fire Alarm calls, this meets expectations.
 
 
 ::: {.cell}
@@ -3354,7 +3354,7 @@ It is interesting to note that Priority 3 represents the highest number of calls
 :::
 
 
-Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 35 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing.
+Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 31.5 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2.25 minutes. The mean time was just over 3 minutes which is still amazing.
 
 ### AFD EMS Analyses
 
@@ -3368,7 +3368,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 :::
 
 
- Medical service calls by day show a remarkable consistency throughout the week. There is only a difference of 9 service calls separating the busiest and slowest days. Unlike APD and fire-related calls for AFD, Monday was the busiest day of the week for medical service calls. Again, it will be interesting to determine if this holds true over time. Thursday was the second busiest day of the week, trailing Monday by one call.
+ Medical service calls by day still shows some consistency throughout the week. This week, Friday was the busiest day of the week for service calls. Thursday was the second busiest day of the week.
 
 
 ::: {.cell}
@@ -3378,7 +3378,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 :::
 
 
- The bulk of the medical service calls appear in the late morning through early afternoon, in a span from 1000 hours through the maximum ending around 1400 hours. In the late afternoon and through the evening, there are spikes where calls fluctuate. This also should be viewed over a larger time frame to see how those will settle out. When seeing how all of these break down, there will be implications as to not only how many staff are needed, but should operations management prioritize some skills at different times to better fit the needs of the City and staff?
+The bulk of the medical service calls appear in the late morning through the afternoon, in a span from 1000 hours through the maximum ending around 1600 hours. In the late afternoon and through the evening, there are spikes where calls fluctuate.
 
 
 ::: {.cell}
@@ -3388,7 +3388,7 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 :::
 
 
-As expected, the vast majority of medical calls arrive via 911 trunk lines. However, 10.2 percent of medical calls arrived without a method by which we recevied the call. We should track this further to see if this is a one-off or if there is some issue that needs to be addressed.
+As expected, the vast majority of medical calls arrive via 911 trunk lines. However, 10.2 percent of medical calls arrived without a method by which we recevied the call.
 
 
 ::: {.cell}
@@ -3398,7 +3398,7 @@ As expected, the vast majority of medical calls arrive via 911 trunk lines. Howe
 :::
 
 
-Breathing issues and BLS Emergency calls were the two most prevalent call types for the week. As we're winding summer down and heading into autumn, we may see an increase in instances of breathing issues until we reach the first hard freeze and pollen is no longer an issues=.
+Breathing issues and BLS Emergency calls were the two most prevalent call types for the week. As we're winding summer down and heading into autumn, we may see an increase in instances of breathing issues until we reach the first hard freeze and pollen is no longer an issue.
 
 
 ::: {.cell}
@@ -4220,7 +4220,7 @@ Breathing issues and BLS Emergency calls were the two most prevalent call types 
 :::
 
 
-The median time to process medical calls was 49 seconds. Again, this puts us in good form when examening our operational efficiency. We take longer on the phone for medical calls than we do fire-related calls. Again this is to be expected. The triage process should take longer to ensure that we are giving the best service to our community that we can.
+The median time to process medical calls was 44 seconds. Again, this puts us in good form when examening our operational efficiency. We take longer on the phone for medical calls than we do fire-related calls. Again this is to be expected. The triage process should take longer to ensure that we are giving the best service to our community that we can.
 
 ## Additional Analyses
 
@@ -4267,7 +4267,7 @@ Table: Frequency of Call Taker in Delayed TTQ Calls (Descending)
 :::
 
 
-From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. This, however, could be something that is included in the report template in order to monitor. Should a telecommunicator appear multiple times in this table over a period of time, additional training or mentoring may be called for.
+From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. The number of calls an telecommunicators were both down from last week.
 
 
 ::: {.cell}
@@ -4288,7 +4288,7 @@ Table: Frequency of Dispatcher in Delayed TTD Calls (Descending)
 :::
 
 
-This list is fairly short and could simply be monitored in future should the need arise. 
+This list is fairly short and could simply be monitored in future should the need arise. The same can be said for this list. As can be seen, nobody appeared in this list more than once.
 
 ## High-Priority and Critical Calls
 
@@ -4330,7 +4330,7 @@ Finally, we will look into the specific subset of calls that are related to card
 :::
 
 
-As we can see, with a very limited number of cardiac arrest calls for the week, the standout day was Friday with 2 calls. There were only two other days with 1 call each. 
+As we can see, with a very limited number of cardiac arrest calls for the week, the standout day was Sunday with 2 calls. There were only three other days with 1 call each. 
 
 
 ::: {.cell}
@@ -5144,7 +5144,7 @@ Cardiac Arrest Call Response Times
 :::
 
 
-However, we can see that the median time to process a cardiac arrest and get the units rolling is about 42.5 seconds. The median time that we are on the phone is significantly longer, around 8.5 minutes. That is to be expected since the calltaker is likely giving T-CPR instructions while the units are en route.
+However, we can see that the median time to process a cardiac arrest and get the units rolling is about 44 seconds. This was 1.5 second longer than the previous week. The median time that we are on the phone is significantly longer, just under 7 minutes. That is to be expected since the calltaker is likely giving T-CPR instructions while the units are en route.
 
 ### Mental Health Analyses
 
@@ -5158,7 +5158,7 @@ With the advent of Marcus' Law in Virginia, there has been an emphasis on how me
 :::
 
 
-The number of mental health related calls appears to spike on the weekends with Sunday being the busiest. Friday and Saturday are trailing by only 1 call each. If this trend repeats over the course of several weeks, this could be useful insight that could be shared with DCHS and APD to ensure that we have resources properly staffed to address the community's needs.
+This week, there was a consistent number of mental health related calls throughout the week, with Tuesday having the most calls in a day at 4.
 
 
 ::: {.cell}
@@ -5168,7 +5168,7 @@ The number of mental health related calls appears to spike on the weekends with 
 :::
 
 
-Most of these calls arrived, for this past week, in the late afternoon and evenings. Midnight also appears to be a secondary volume spike. Again, should this data prove to be part of a trend, then we should adjust the availability of repsonders to address the community's needs.
+Most of these calls arrived, for this past week, in the late morning and continued throughout the remainder of the day. Again, should this data prove to be part of a trend, then we should adjust the availability of repsonders to address the community's needs.
 
 
 ::: {.cell}
@@ -5188,7 +5188,7 @@ As expected, most of the calls arrived by either phone, trunk line not defined, 
 :::
 
 
-The most used call type was Mental Health Case which is expected. 
+The most used call type was Mental Health Case which is expected. This has continued from the week prior. The good news is that suicide calls appear very rare in the city.
 
 
 ::: {.cell}
@@ -6010,7 +6010,7 @@ Since Mental Health Case was the most used call type and is a P2 call, Priority 
 :::
 
 
-Processing times for these calls are longer, somewhere around 5.5 minutes. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them. 
+Processing times for these calls are longer, somewhere around 10 minutes. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them. 
 
 ## Conclusion
 

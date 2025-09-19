@@ -1,7 +1,7 @@
 ---
-title: "Weekly Report: Week 36 (2025-09-01 to 2025-09-07)"
+title: "Weekly Report: Week 36 (01 Sep through 08 Sep)"
 author: "Tony Dunsworth, PhD"
-date: "2025-09-04"
+date: "2025-09-18"
 format: 
   docx:
     toc: true
@@ -81,7 +81,7 @@ library(survival)
 
 ## Introduction
 
-This is the weekly report for week 36 covering the period from September 1 2025, through September 7, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
+This is the weekly report for week 36 covering the period from September 1, 2025, through September 7, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 ```{r data-load}
 #| echo: false
@@ -142,7 +142,7 @@ inspect_na(df) |>
   show_plot(
     col_palette = 4 # Mako palette from viridis
   ) +
-  ggthemes::theme_fivethirtyeight(base_size = 10) +
+  theme_fivethirtyeight(base_size = 10) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, size = 8), # Rotate x-axis labels
     axis.text.y = element_text(size = 9) # Fine-tune y-axis label size
@@ -1243,7 +1243,7 @@ barHour_AFD <- df_fire |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_AFD
 ```
 
-Fire-related calls are much more spread out through the day as can be seen in the graph above. However, the 2000 hour stands out as the hour where the most calls were received for the week. Future reports can determine if this is an anomaly or if there is a trend to more fire-related calls at some point in the evening after most people have returned to their residence for the evening.
+Fire-related calls for the week were much more varied than those for the APD. The period from 1600 through 1800 hours was the busiest period with the 1800 hour being the busiest for the week. The *"spiky"* nature of the bar graph is interesting to note. As with last week, more data will yield better information how fire-related calls are distributed through the day.
 
 ```{r afd-call-reception}
 #| echo: false
@@ -1270,7 +1270,7 @@ barReception_AFD <- df_fire |> ggplot(aes(x=Call_Reception, fill=Call_Reception)
 barReception_AFD
 ```
 
-Like APD calls, most fire-related calls came in via Phone. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented `r round((sum(df_fire$Call_Reception == "Phone") / nrow(df_fire)) * 100, 1)` percent of all fire-related service calls received.
+In this week, we had the same number of service calls arrive via 9-1-1 trunk lines as there were calls that arrived by Phone, not necessarily from a 9-1-1 trunk line. Both of these methods counted 49 calls as the arrival source material.
 
 ```{r afd-call-type}
 #| echo: false
@@ -1300,7 +1300,7 @@ barProblem_AFD <- problem_counts_AFD |>
 barProblem_AFD
 ```
 
-The greatest number of fire-related service calls were for Fire Alarms. That is an interesting observation and should be watched through the future. I do note that MUTUAL-CPR is listed as a "fire-related" call. That will be corrected in future reports.
+The greatest number of fire-related service calls were for Fire Alarms. This is now a repeated trend over the last two weeks. MVCs involving automobiles came after that. 
 
 ```{r afd-priority-level}
 #| echo: false
@@ -1327,7 +1327,7 @@ barPriority_AFD <- df_fire |> ggplot(aes(x=Priority_Number, fill=Priority_Number
 barPriority_AFD
 ```
 
-It is interesting to note that Priority 3 represents the highest number of calls for service. That would correlate to the Fire Alarm call type being the most used.
+This week, the largest call prirority was Priority 1 followed closely by Priority 3. When considering the volume of Fire Alarm calls, this meets expectations.
 
 ```{r afd-custom-summary}
 #| label: afd-custom-summary
@@ -1468,7 +1468,7 @@ tryCatch({
 })
 ```
 
-Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 35 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2 minutes. The mean time was just over 3 minutes which is still amazing.
+Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only 31.5 seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was just over 2.25 minutes. The mean time was just over 3 minutes which is still amazing.
 
 ### AFD EMS Analyses
 
@@ -1499,7 +1499,7 @@ barDOW_EMS <- df_ems |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_EMS
 ```
 
- Medical service calls by day show a remarkable consistency throughout the week. There is only a difference of 9 service calls separating the busiest and slowest days. Unlike APD and fire-related calls for AFD, Monday was the busiest day of the week for medical service calls. Again, it will be interesting to determine if this holds true over time. Thursday was the second busiest day of the week, trailing Monday by one call.
+ Medical service calls by day still shows some consistency throughout the week. This week, Friday was the busiest day of the week for service calls. Thursday was the second busiest day of the week.
 
 ```{r ems-hour-of-day}
 #| echo: false
@@ -1526,7 +1526,7 @@ barHour_EMS <- df_ems |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_EMS
 ```
 
- The bulk of the medical service calls appear in the late morning through early afternoon, in a span from 1000 hours through the maximum ending around 1400 hours. In the late afternoon and through the evening, there are spikes where calls fluctuate. This also should be viewed over a larger time frame to see how those will settle out. When seeing how all of these break down, there will be implications as to not only how many staff are needed, but should operations management prioritize some skills at different times to better fit the needs of the City and staff?
+The bulk of the medical service calls appear in the late morning through the afternoon, in a span from 1000 hours through the maximum ending around 1600 hours. In the late afternoon and through the evening, there are spikes where calls fluctuate.
 
 ```{r ems-call-reception}
 #| echo: false
@@ -1553,7 +1553,7 @@ barReception_EMS <- df_ems |> ggplot(aes(x=Call_Reception, fill=Call_Reception))
 barReception_EMS
 ```
 
-As expected, the vast majority of medical calls arrive via 911 trunk lines. However, `r round((sum(df_ems$Call_Reception == "Phone") / nrow(df_ems)) * 100, 1)` percent of medical calls arrived without a method by which we recevied the call. We should track this further to see if this is a one-off or if there is some issue that needs to be addressed.
+As expected, the vast majority of medical calls arrive via 911 trunk lines. However, `r round((sum(df_ems$Call_Reception == "Phone") / nrow(df_ems)) * 100, 1)` percent of medical calls arrived without a method by which we recevied the call.
 
 ```{r ems-call-type}
 #| echo: false
@@ -1583,7 +1583,7 @@ barProblem_EMS <- problem_counts_EMS |>
 barProblem_EMS
 ```
 
-Breathing issues and BLS Emergency calls were the two most prevalent call types for the week. As we're winding summer down and heading into autumn, we may see an increase in instances of breathing issues until we reach the first hard freeze and pollen is no longer an issues=.
+Breathing issues and BLS Emergency calls were the two most prevalent call types for the week. As we're winding summer down and heading into autumn, we may see an increase in instances of breathing issues until we reach the first hard freeze and pollen is no longer an issue.
 
 ```{r ems-priority-level}
 #| echo: false
@@ -1751,7 +1751,7 @@ tryCatch({
 })
 ```
 
-The median time to process medical calls was 49 seconds. Again, this puts us in good form when examening our operational efficiency. We take longer on the phone for medical calls than we do fire-related calls. Again this is to be expected. The triage process should take longer to ensure that we are giving the best service to our community that we can.
+The median time to process medical calls was 44 seconds. Again, this puts us in good form when examening our operational efficiency. We take longer on the phone for medical calls than we do fire-related calls. Again this is to be expected. The triage process should take longer to ensure that we are giving the best service to our community that we can.
 
 ## Additional Analyses
 
@@ -1776,7 +1776,7 @@ call_taker_counts <- df_ttq_delay %>%
 kable(call_taker_counts, col.names = c("Call Taker", "Count"), caption = "Frequency of Call Taker in Delayed TTQ Calls (Descending)")
 ```
 
-From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. This, however, could be something that is included in the report template in order to monitor. Should a telecommunicator appear multiple times in this table over a period of time, additional training or mentoring may be called for.
+From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. The number of calls an telecommunicators were both down from last week.
 
 ```{r ttd-delay-table}
 #| echo: false
@@ -1790,7 +1790,7 @@ dispatcher_counts <- df_ttd_delay %>%
 kable(dispatcher_counts, col.names = c("Dispatcher", "Count"), caption = "Frequency of Dispatcher in Delayed TTD Calls (Descending)")
 ```
 
-This list is fairly short and could simply be monitored in future should the need arise. 
+This list is fairly short and could simply be monitored in future should the need arise. The same can be said for this list. As can be seen, nobody appeared in this list more than once.
 
 ## High-Priority and Critical Calls
 
@@ -1879,7 +1879,7 @@ barDOW_CA <- df_ca |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_CA
 ```
 
-As we can see, with a very limited number of cardiac arrest calls for the week, the standout day was Friday with 2 calls. There were only two other days with 1 call each. 
+As we can see, with a very limited number of cardiac arrest calls for the week, the standout day was Sunday with 2 calls. There were only three other days with 1 call each. 
 
 ```{r ca-response-times}
 #| echo: false
@@ -2018,7 +2018,7 @@ tryCatch({
 })
 ```
 
-However, we can see that the median time to process a cardiac arrest and get the units rolling is about 42.5 seconds. The median time that we are on the phone is significantly longer, around 8.5 minutes. That is to be expected since the calltaker is likely giving T-CPR instructions while the units are en route.
+However, we can see that the median time to process a cardiac arrest and get the units rolling is about 44 seconds. This was 1.5 second longer than the previous week. The median time that we are on the phone is significantly longer, just under 7 minutes. That is to be expected since the calltaker is likely giving T-CPR instructions while the units are en route.
 
 ### Mental Health Analyses
 
@@ -2049,7 +2049,7 @@ barDOW_MH <- df_mh |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_MH
 ```
 
-The number of mental health related calls appears to spike on the weekends with Sunday being the busiest. Friday and Saturday are trailing by only 1 call each. If this trend repeats over the course of several weeks, this could be useful insight that could be shared with DCHS and APD to ensure that we have resources properly staffed to address the community's needs.
+This week, there was a consistent number of mental health related calls throughout the week, with Tuesday having the most calls in a day at 4.
 
 ```{r mh-hour-of-day}
 #| echo: false
@@ -2076,7 +2076,7 @@ barHour_MH <- df_mh |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_MH
 ```
 
-Most of these calls arrived, for this past week, in the late afternoon and evenings. Midnight also appears to be a secondary volume spike. Again, should this data prove to be part of a trend, then we should adjust the availability of repsonders to address the community's needs.
+Most of these calls arrived, for this past week, in the late morning and continued throughout the remainder of the day. Again, should this data prove to be part of a trend, then we should adjust the availability of repsonders to address the community's needs.
 
 ```{r mh-call-reception}
 #| echo: false
@@ -2133,7 +2133,7 @@ barProblem_MH <- problem_counts_MH |>
 barProblem_MH
 ```
 
-The most used call type was Mental Health Case which is expected. 
+The most used call type was Mental Health Case which is expected. This has continued from the week prior. The good news is that suicide calls appear very rare in the city.
 
 ```{r mh-priority-level}
 #| echo: false
@@ -2301,7 +2301,7 @@ tryCatch({
 })
 ```
 
-Processing times for these calls are longer, somewhere around 5.5 minutes. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them. 
+Processing times for these calls are longer, somewhere around 10 minutes. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them. 
 
 ## Conclusion
 

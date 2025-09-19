@@ -81,12 +81,12 @@ library(survival)
 
 ## Introduction
 
-This is the weekly report for week XX covering the period from Month, 99, 20YY, through Month, 99, 20YY. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
+This is the weekly report for week XX covering the period from Month, 99, 20YY, through Month, 99, 20YY. The report will include data analyses to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 ```{r data-load}
 #| echo: false
 #| output: false
-df <- read_csv("data\\week35.csv")
+df <- read_csv("data\\week__.csv")
  
 # Use lubridate and across() to efficiently parse all date-time columns
 df <- df |>
@@ -149,7 +149,7 @@ inspect_na(df) |>
   )
 ```
 
-
+The missing data report can be found below: 
 
 ## Exploratory Analysis
 
@@ -180,7 +180,7 @@ barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW
 ```
 
-From this chart, we can see that Thursday was the busiest day of the week with 214 service calls, and the slowest day was Sunday with 172 calls for service. We can also create a similar chart for the hour of the day.
+From this chart, we can see that ___day was the busiest day of the week with nnn service calls, and the slowest day was ___day with nnn calls for service. We can also create a similar chart for the hour of the day.
 
 ```{r hour-of-day}
 #| echo: false
@@ -207,7 +207,7 @@ barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour
 ```
 
-From this chart, we can see that the busiest hour of the day was 1500 hours, with 84 calls for service. 0400 and 0600 were the slowest hours of the day with 27 calls each. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below.
+From this chart, we can see that the busiest hour of the day was nn00 hours, with nn calls for service. nn00 was the slowest hour of the day with nn calls each. The overall pattern appears similar to what we expect with a jump corresponding to the late part of the morning rush hour and falling off later in the evening. Next, we can examine the number of calls by priority level in the chart below.
 
 ```{r priority-level}
 #| echo: false
@@ -234,7 +234,7 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
 barPriority
 ```
 
-The majority of calls received were Priority 2 calls. This is followed by Priority 3 and Priority 1 calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority 2 calls are `r round((sum(df$Priority_Number == "2") / nrow(df)) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
+The majority of calls received were Priority n calls. This is followed by Priority n calls. Next, we can look at the nuber of calls per discipline. The chart below covers that information. Priority n calls are `r round((sum(df$Priority_Number == "2") / nrow(df)) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
 
 ```{r discipline}
 #| echo: false
