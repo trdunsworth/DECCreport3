@@ -1751,7 +1751,7 @@ tryCatch({
 })
 ```
 
-The median time to process medical calls was 44 seconds. Again, this puts us in good form when examening our operational efficiency. We take longer on the phone for medical calls than we do fire-related calls. Again this is to be expected. The triage process should take longer to ensure that we are giving the best service to our community that we can.
+The median time to process medical calls was `r round(median(as.numeric(df_ems$Processing_Time), na.rm = TRUE), 0)` seconds. Again, this puts us in good form when examening our operational efficiency. The median time on phones, `r round(median(as.numeric(df$Phone_Time), na.rm = TRUE), 0)` seconds, is longer than the overall median. That is to be expected with these calls taking longer to triage.
 
 ## Additional Analyses
 
