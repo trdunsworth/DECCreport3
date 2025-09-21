@@ -7,8 +7,8 @@ required_packages <- c(
   "ggrepel", "ggraph", "gt", "gtExtras", "GGally", "rstatix", "car", "survival", "GPfit",
   "janitor", "Hmisc", "psych", "corrr", "ggcorrplot", "ggthemes", "lubridate",
   "ggridges", "multcomp", "emmeans", "RVAideMemoire", "FactoMineR", "DescTools", "nlme", "funModeling", "inspectdf", "dlookr", "viridis", "merTools", "factoextra", "nortest", "MASS",
-  "randtests", "summarytools", "report", "knitr", "kableExtra",
-  "modelbased", "parameters", "performance", "insight", "ggridges"
+  "randtests", "summarytools", "report", "knitr", "kableExtra", "dbus",
+  "modelbased", "parameters", "performance", "insight"
 )
 
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]

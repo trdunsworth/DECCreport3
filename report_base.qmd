@@ -86,7 +86,7 @@ This is the weekly report for week 37 covering the period from September 08 thro
 ```{r data-load}
 #| echo: false
 #| output: false
-df <- read_csv("data\\week37.csv")
+df <- read_csv("data/week37.csv")
  
 # Use lubridate and across() to efficiently parse all date-time columns
 df <- df |>
@@ -184,12 +184,27 @@ dow_counts <- df |>
   count(DOW, sort = TRUE)
 
 max_dow_info <- dow_counts |> filter(n == max(n))
-busiest_day <- max_dow_info |> slice(1) |> pull(DOW)
+busiest_day_abbr <- max_dow_info |> slice(1) |> pull(DOW)
 busiest_day_count <- max_dow_info |> slice(1) |> pull(n)
 
 min_dow_info <- dow_counts |> filter(n == min(n))
-slowest_day <- min_dow_info |> slice(1) |> pull(DOW)
+slowest_day_abbr <- min_dow_info |> slice(1) |> pull(DOW)
 slowest_day_count <- min_dow_info |> slice(1) |> pull(n)
+
+# Create mapping from abbreviations to full day names
+day_names <- c(
+  "SUN" = "Sunday",
+  "MON" = "Monday", 
+  "TUE" = "Tuesday",
+  "WED" = "Wednesday",
+  "THU" = "Thursday",
+  "FRI" = "Friday",
+  "SAT" = "Saturday"
+)
+
+# Convert abbreviations to full day names
+busiest_day <- day_names[busiest_day_abbr]
+slowest_day <- day_names[slowest_day_abbr]
 
 barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
@@ -224,11 +239,11 @@ hour_counts <- df |>
   count(Hour, sort = TRUE)
 
 max_hour_info <- hour_counts |> filter(n == max(n))
-busiest_hour <- max_hour_info |> slice(1) |> pull(Hour)
+busiest_hour <- sprintf("%02d", max_hour_info |> slice(1) |> pull(Hour))
 busiest_hour_count <- max_hour_info |> slice(1) |> pull(n)
 
 min_hour_info <- hour_counts |> filter(n == min(n))
-slowest_hour <- min_hour_info |> slice(1) |> pull(Hour)
+slowest_hour <- sprintf("%02d", min_hour_info |> slice(1) |> pull(Hour))
 slowest_hour_count <- min_hour_info |> slice(1) |> pull(n)
 
 barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
@@ -357,7 +372,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
 barReception
 ```
 
-Most of the calls arrived by `r busiest_cr` with the next largest method coming in as E-911 calls. There were `r sum(df$Call_Reception == "NOT CAPTURED")` calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
+Most of the calls arrived by `r busiest_cr`. 911 trunk line calls were `r round((sum(df$Call_Reception == "E-911) / nrow(df)) * 100, 2)` percent of all calls. There were `r sum(df$Call_Reception == "NOT CAPTURED")` calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -378,7 +393,7 @@ agency_top_problems <- df |>
   group_by(Agency) |>
   slice_max(n, n = 1, with_ties = FALSE) |>
   ungroup() |>
-  select(Agency, Problem, n)
+  dplyr::select(Agency, Problem, n)
 
 # Create named vectors for easy access in inline code
 agency_top_problem_names <- setNames(agency_top_problems$Problem, agency_top_problems$Agency)
@@ -416,11 +431,18 @@ We can also look at the number of calls taken by telecommunicators. Again, like 
 #| echo: false
 #| fig-cap: "Number of calls for service by telecommunicator."
 # ggplot2
-ct_counts <- df |> 
+tc_counts <- df |>
+  count(Call_Taker, sort = TRUE)
+
+max_tc_info <- tc_counts |> filter(n == max(n))
+busiest_tc <- max_tc_info |> slice(1) |> pull(Call_Taker)
+busiest_tc_count <- max_tc_info |> slice(1) |> pull(n)
+
+tc_counts <- df |> 
   count(Call_Taker, sort = TRUE) |>
   slice_head(n = 10)
 
-barCallTaker <- ct_counts |>
+barCallTaker <- tc_counts |>
   ggplot(aes(x=reorder(Call_Taker, -n), y=n, fill=Call_Taker)) +
   geom_bar(stat="identity") +
   scale_fill_viridis(discrete=TRUE, option="E") +
@@ -440,7 +462,7 @@ barCallTaker <- ct_counts |>
 barCallTaker
 ```
 
-It is interesting to note that the top "call taker" is CAD2CAD again this week and with a large margin between that volume and the busiest calltaker.
+It is interesting to note that the top "call taker" is `r busiest_tc` again this week and with a large margin between that volume and the busiest calltaker.
 
 ### Call Distribution: Hour by Day of Week
 

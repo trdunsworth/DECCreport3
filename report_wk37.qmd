@@ -86,7 +86,7 @@ This is the weekly report for week 37 covering the period from September 08 thro
 ```{r data-load}
 #| echo: false
 #| output: false
-df <- read_csv("data\\week37.csv")
+df <- read_csv("data/week37.csv")
  
 # Use lubridate and across() to efficiently parse all date-time columns
 df <- df |>
@@ -184,12 +184,27 @@ dow_counts <- df |>
   count(DOW, sort = TRUE)
 
 max_dow_info <- dow_counts |> filter(n == max(n))
-busiest_day <- max_dow_info |> slice(1) |> pull(DOW)
+busiest_day_abbr <- max_dow_info |> slice(1) |> pull(DOW)
 busiest_day_count <- max_dow_info |> slice(1) |> pull(n)
 
 min_dow_info <- dow_counts |> filter(n == min(n))
-slowest_day <- min_dow_info |> slice(1) |> pull(DOW)
+slowest_day_abbr <- min_dow_info |> slice(1) |> pull(DOW)
 slowest_day_count <- min_dow_info |> slice(1) |> pull(n)
+
+# Create mapping from abbreviations to full day names
+day_names <- c(
+  "SUN" = "Sunday",
+  "MON" = "Monday", 
+  "TUE" = "Tuesday",
+  "WED" = "Wednesday",
+  "THU" = "Thursday",
+  "FRI" = "Friday",
+  "SAT" = "Saturday"
+)
+
+# Convert abbreviations to full day names
+busiest_day <- day_names[busiest_day_abbr]
+slowest_day <- day_names[slowest_day_abbr]
 
 barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
@@ -224,11 +239,11 @@ hour_counts <- df |>
   count(Hour, sort = TRUE)
 
 max_hour_info <- hour_counts |> filter(n == max(n))
-busiest_hour <- max_hour_info |> slice(1) |> pull(Hour)
+busiest_hour <- sprintf("%02d", max_hour_info |> slice(1) |> pull(Hour))
 busiest_hour_count <- max_hour_info |> slice(1) |> pull(n)
 
 min_hour_info <- hour_counts |> filter(n == min(n))
-slowest_hour <- min_hour_info |> slice(1) |> pull(Hour)
+slowest_hour <- sprintf("%02d", min_hour_info |> slice(1) |> pull(Hour))
 slowest_hour_count <- min_hour_info |> slice(1) |> pull(n)
 
 barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
@@ -286,7 +301,7 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
 barPriority
 ```
 
-The majority of calls received were Priority `r busiest_pn` calls. `r busiest_pn` calls are `r round(busiest_pn_count / nrow(df) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
+The majority of calls received were Priority `r busiest_pn` calls. Priority `r busiest_pn` calls are `r round(busiest_pn_count / nrow(df) * 100, 1)` percent of the total number of calls, while Priority 1 calls are `r round((sum(df$Priority_Number == "1") / nrow(df)) * 100, 1)` percent of the total number of calls.
 
 This appears to be consistent through the new reports.
 
@@ -357,7 +372,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
 barReception
 ```
 
-Most of the calls arrived by `r busiest_cr` with the next largest method coming in as E-911 calls. There were `r sum(df$Call_Reception == "NOT CAPTURED")` calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
+Most of the calls arrived by `r busiest_cr`. `r roundd((sum(df$Call_Reception == "#3E-911"There were `r sum(df$Call_Reception == "NOT CAPTURED")` calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -379,7 +394,7 @@ agency_top_problems <- df |>
   group_by(Agency) |>
   slice_head(n = 1) |>
   ungroup() |>
-  select(Agency, Problem, n)
+  dplyr::select(Agency, Problem, n)
 
 # Create named vectors for easy access in inline code (with error handling)
 if(nrow(agency_top_problems) > 0) {

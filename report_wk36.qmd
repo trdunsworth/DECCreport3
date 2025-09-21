@@ -86,7 +86,7 @@ This is the weekly report for week 36 covering the period from September 1, 2025
 ```{r data-load}
 #| echo: false
 #| output: false
-df <- read_csv("data\\week36.csv")
+df <- read_csv("data/week36.csv")
  
 # Use lubridate and across() to efficiently parse all date-time columns
 df <- df |>
