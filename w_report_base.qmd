@@ -131,9 +131,9 @@ This is the weekly report for week `r WEEK_NUMBER` covering the period from `r W
 # Dynamic data file loading with error handling
 # Check for different naming conventions
 possible_files <- c(
-  paste0("data/week", WEEK_NUMBER, ".csv"),
-  paste0("data/Week", WEEK_NUMBER, "_25.csv"),
-  paste0("data/Week", WEEK_NUMBER, ".csv")
+  paste0("data\\week", WEEK_NUMBER, ".csv"),
+  paste0("data\\Week", WEEK_NUMBER, "_25.csv"),
+  paste0("data\\Week", WEEK_NUMBER, ".csv")
 )
 
 # Find the first file that exists
@@ -560,7 +560,7 @@ barCallTaker <- tc_counts |>
 barCallTaker
 ```
 
-It is interesting to note that the top "call taker" is `r busiest_tc` again this week and with a large margin between that volume and the busiest calltaker.
+It is interesting to note that the top "call taker" is `r busiest_tc` again this week with `r busiest_tc_count` calls, and with a large margin between that volume and the busiest calltaker.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -1223,7 +1223,7 @@ barHour_APD <- df_law |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour_APD
 ```
 
-The busiest time of the week for APD calls is from 1400 to 1700 hours. 0900 was also very busy in relation to surrounding hours for the APD. This is showing that the late afternoon/evening rush hour time period may need additional support in the future.
+The busiest time of the week for APD calls is from 0900 to 1200 hours. This is in contrast to the prior three weeks where the mid to late afternoon was the busiest time of the day.
 
 ```{r apd-call-reception}
 #| echo: false

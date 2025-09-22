@@ -1,0 +1,30 @@
+---
+title: "Date Test"
+format: html
+---
+
+```{r}
+library(lubridate)
+
+# Define week number for dynamic title generation
+WEEK_NUMBER <- 38
+
+# Calculate week dates properly for 2025
+# Week 38 should be Sept 15-21, 2025 (Sunday to Saturday)
+if(WEEK_NUMBER == 38) {
+  WEEK_START_DATE <- as.Date("2025-09-15")  # Sunday Sept 15
+  WEEK_END_DATE <- as.Date("2025-09-21")    # Saturday Sept 21
+} else {
+  # For other weeks, use general calculation
+  jan_1_2025 <- as.Date("2025-01-01")
+  first_sunday_2025 <- jan_1_2025 + days(4)  # Jan 5, 2025
+  WEEK_START_DATE <- first_sunday_2025 + weeks(WEEK_NUMBER - 1)
+  WEEK_END_DATE <- WEEK_START_DATE + days(6)
+}
+
+# Format dates for display
+WEEK_START_FORMATTED <- format(WEEK_START_DATE, "%d %b")
+WEEK_END_FORMATTED <- format(WEEK_END_DATE, "%d %b")
+
+cat("Week", WEEK_NUMBER, "dates:", WEEK_START_FORMATTED, "through", WEEK_END_FORMATTED, "\n")
+```

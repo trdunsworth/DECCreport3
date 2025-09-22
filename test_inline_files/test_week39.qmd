@@ -1,0 +1,47 @@
+---
+title: "Week 39 Date Test"
+format: html
+---
+
+```{r}
+library(lubridate)
+
+# Test Week 39 calculation
+WEEK_NUMBER <- 39
+
+# Method 1: Direct calculation knowing Week 38 was Sept 15-21
+cat("Given: Week 38 was Sept 15-21, 2025\n")
+week_38_start <- ymd("2025-09-15")
+week_39_start <- week_38_start + days(7)
+week_39_end <- week_39_start + days(6)
+
+cat("Week 39 start:", as.character(week_39_start), "\n")
+cat("Week 39 end:", as.character(week_39_end), "\n")
+
+# Check what day of week these fall on
+cat("Week 39 start day:", weekdays(week_39_start), "\n")
+cat("Week 39 end day:", weekdays(week_39_end), "\n")
+
+# Format for the report
+week_start_formatted <- format(week_39_start, "%d %b")
+week_end_formatted <- format(week_39_end, "%d %b")
+formatted_dates <- paste(week_start_formatted, "through", week_end_formatted)
+
+cat("\nFORMATTED OUTPUT for Week 39:\n")
+cat("Week start:", week_start_formatted, "\n")
+cat("Week end:", week_end_formatted, "\n") 
+cat("Combined:", formatted_dates, "\n")
+cat("Report title: Weekly Report: Week 39 (", formatted_dates, ")\n", sep="")
+
+# Verify this makes sense with current date
+current_date <- Sys.Date()
+cat("\nCurrent date:", as.character(current_date), "\n")
+cat("Week 39 relationship to current date:\n")
+if (current_date >= week_39_start & current_date <= week_39_end) {
+  cat("  Week 39 INCLUDES the current date\n")
+} else if (current_date < week_39_start) {
+  cat("  Week 39 is", as.numeric(week_39_start - current_date), "days in the future\n")
+} else {
+  cat("  Week 39 was", as.numeric(current_date - week_39_end), "days ago\n")
+}
+```

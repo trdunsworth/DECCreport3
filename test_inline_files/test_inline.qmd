@@ -1,0 +1,49 @@
+---
+title: "Test Inline Code"
+format: html
+---
+
+```{r setup}
+library(tidyverse)
+# Load the data
+WEEK_NUMBER <- 38
+
+# Dynamic data file loading with error handling
+possible_files <- c(
+  paste0("data/week", WEEK_NUMBER, ".csv"),
+  paste0("data/Week", WEEK_NUMBER, "_25.csv"),
+  paste0("data/Week", WEEK_NUMBER, ".csv")
+)
+
+df <- NULL
+for(file_path in possible_files) {
+  if(file.exists(file_path)) {
+    df <- read_csv(file_path, show_col_types = FALSE)
+    cat("Successfully loaded:", file_path, "\n")
+    break
+  }
+}
+
+if(is.null(df)) {
+  stop("No data file found for week ", WEEK_NUMBER, ". Checked: ", paste(possible_files, collapse = ", "))
+}
+```
+
+```{r call-reception-test}
+# Test the call reception calculation
+cr_counts <- df |>
+  count(Call_Reception, sort = TRUE)
+
+max_cr_info <- cr_counts |> filter(n == max(n))
+busiest_cr <- max_cr_info |> slice(1) |> pull(Call_Reception)
+busiest_cr_count <- max_cr_info |> slice(1) |> pull(n)
+
+cat("busiest_cr variable:", busiest_cr, "\n")
+cat("busiest_cr_count:", busiest_cr_count, "\n")
+```
+
+Test of inline code: Most of the calls arrived by `r busiest_cr`. 
+
+911 trunk line calls were `r round((sum(df$Call_Reception == "E-911") / nrow(df)) * 100, 2)` percent of all calls. 
+
+There were `r sum(df$Call_Reception == "NOT CAPTURED")` calls where we did not indicated how the service call was received.

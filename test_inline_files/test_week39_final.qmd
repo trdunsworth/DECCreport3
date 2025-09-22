@@ -1,0 +1,44 @@
+---
+title: "Test Week 39 Calculation"
+format: html
+---
+
+```{r}
+library(lubridate)
+
+# Test the same logic as in w_report_base.qmd but for Week 39
+WEEK_NUMBER <- 39
+
+# Calculate week dates properly for 2025
+# Sunday-first week calculation
+
+# Method 1: Direct date specification for week 38
+if(WEEK_NUMBER == 38) {
+  WEEK_START_DATE <- as.Date("2025-09-14")  # Sunday Sept 14 (CORRECTED)
+  WEEK_END_DATE <- as.Date("2025-09-20")    # Saturday Sept 20 (CORRECTED)
+} else {
+  # For other weeks, we can use a more general calculation
+  # Find the first Sunday of 2025 (which is actually Dec 29, 2024)
+  jan_1_2025 <- as.Date("2025-01-01")
+  # January 1, 2025 was a Wednesday
+  # First Sunday is the Sunday before or on Jan 1
+  first_sunday_2025 <- jan_1_2025 - days(wday(jan_1_2025) - 1)  # Dec 29, 2024
+  
+  # Calculate the start date for the specified week
+  WEEK_START_DATE <- first_sunday_2025 + weeks(WEEK_NUMBER - 1)
+  WEEK_END_DATE <- WEEK_START_DATE + days(6)
+}
+
+# Format dates for display
+WEEK_START_FORMATTED <- format(WEEK_START_DATE, "%d %b")
+WEEK_END_FORMATTED <- format(WEEK_END_DATE, "%d %b")
+
+# Print the calculated dates for verification
+cat("Week", WEEK_NUMBER, "dates:", WEEK_START_FORMATTED, "through", WEEK_END_FORMATTED, "\n")
+cat("Start day:", weekdays(WEEK_START_DATE), "\n")
+cat("End day:", weekdays(WEEK_END_DATE), "\n")
+
+# Show what the dynamic title would be
+DYNAMIC_TITLE <- paste0("Weekly Report: Week ", WEEK_NUMBER, " (", WEEK_START_FORMATTED, " through ", WEEK_END_FORMATTED, ")")
+cat("Dynamic title:", DYNAMIC_TITLE, "\n")
+```
