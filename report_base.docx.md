@@ -152,7 +152,7 @@ percent of the total number of calls. This is fairly consistent with previous an
 :::
 
 
-Most of the calls arrived by Phone with the next largest method coming in as E-911 calls. There were 38 calls where we did not indicated how the service call was received. Since this is only 3 percent of the total number of calls, this may be something to watch over time.
+Most of the calls arrived by Phone. 911 trunk line calls were 34.26 percent of all calls. There were 38 calls where we did not indicated how the service call was received. Since this is only 3 percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -176,7 +176,7 @@ We can also look at the number of calls taken by telecommunicators. Again, like 
 :::
 
 
-It is interesting to note that the top "call taker" is CAD2CAD again this week and with a large margin between that volume and the busiest calltaker.
+It is interesting to note that the top "call taker" is C2C again this week and with a large margin between that volume and the busiest calltaker.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -1588,11 +1588,11 @@ The values from this table describe operations for the week being analyzed. In t
 | **Longdash Green** | NENA 0:15 Standard     |
 | **Longdash Purple** | NFPA 0:20 Standard     |
 
-These show that the processing times for DECC are well within the NENA and NFPA guidelines. This is good operational data to show how well we are performing with repsect ot those guidelines. Over time, we can track these metrics to ensure that we continue to meet or exceed those standards.
+These show that the processing times for DECC are well within the NENA and NFPA guidelines. This is good operational data to show how well we are performing with respect to those guidelines. Over time, we can track these metrics to ensure that we continue to meet or exceed those standards.
 
 ## Discipline Analyses
 
-As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for futher analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset.
+As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for further analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset.
 
 
 ::: {.cell}
@@ -1612,7 +1612,7 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 :::
 
 
-This week, Tuesdays were the busiest day of the week for APD service calls. Saturday, being the lightest day of the week overall, was the lightest day for the APD as well. 
+This week, Wednesday was the busiest day of the week for APD service calls. Saturday, being the lightest day of the week overall, was the lightest day for the APD as well. 
 
 
 ::: {.cell}
@@ -1632,7 +1632,7 @@ The busiest time of the week for APD calls is from 1400 to 1700 hours. 0900 was 
 :::
 
 
-As can be seen, the majority of calls came through telephone. This comports to the call reception results for the week overall.
+As can be seen, the majority of calls came through Phone. This comports to the call reception results for the week overall.
 
 
 ::: {.cell}
@@ -1642,7 +1642,7 @@ As can be seen, the majority of calls came through telephone. This comports to t
 :::
 
 
-The largest call type was for Disorderly Conduct, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time.
+The largest call type was for DISORDERLY CONDUCT, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time.
 
 
 ::: {.cell}
@@ -1652,7 +1652,7 @@ The largest call type was for Disorderly Conduct, which was also the largest cal
 :::
 
 
-As expected, the largest number of calls werew Priority 2 calls which represent 62.1 percent of all APD calls. Again, this comports with the overall weekly trends.
+As expected, the largest number of calls were Priority 2 calls which represent 62.1 percent of all APD calls. Again, this comports with the overall weekly trends.
 
 
 ::: {.cell}

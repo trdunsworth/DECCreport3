@@ -372,7 +372,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
 barReception
 ```
 
-Most of the calls arrived by `r busiest_cr`. 911 trunk line calls were `r round((sum(df$Call_Reception == "E-911) / nrow(df)) * 100, 2)` percent of all calls. There were `r sum(df$Call_Reception == "NOT CAPTURED")` calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
+Most of the calls arrived by `r busiest_cr`. 911 trunk line calls were `r round((sum(df$Call_Reception == "E-911") / nrow(df)) * 100, 2)` percent of all calls. There were `r sum(df$Call_Reception == "NOT CAPTURED")` calls where we did not indicated how the service call was received. Since this is only `r round((sum(df$Call_Reception == "NOT CAPTURED") / nrow(df)) * 100, 1)` percent of the total number of calls, this may be something to watch over time.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -728,6 +728,23 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
     
+    # Extract key metrics for use in text
+    median_time_to_queue <- summary_table |> 
+      filter(Variable == "Time To Queue") |> 
+      pull(Median)
+      
+    median_time_to_dispatch <- summary_table |> 
+      filter(Variable == "Time To Dispatch") |> 
+      pull(Median)
+
+    median_processing_time <- summary_table |>
+      filter(Variable == "Processing_Time") |>
+      pull(Median)
+
+    median_phone_time <- summary_table |>
+      filter(Variable == "Phone_Time") |>
+      pull(Median)
+
     # Use gt for better formatting compatibility with Word output
     summary_table %>%
       gt() %>%
@@ -765,7 +782,7 @@ tryCatch({
 })
 ```
 
-The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 45 seconds. This is still in line with what has been seen in the last two weeks. The median time in queue was 15 seconds. These are comparable numbers with the prior weeks.  
+The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is `r median_time_to_queue` seconds. This is still in line with what has been seen in the last two weeks. The median time in queue was `r median_time_to_dispatch` seconds. These are comparable numbers with the prior weeks.  
 
 ```{r ttq-plots}
 #| label: ttq-plots
@@ -984,11 +1001,11 @@ if (length(plots_list) > 0) {
 | **Longdash Green** | NENA 0:15 Standard     |
 | **Longdash Purple** | NFPA 0:20 Standard     |
 
-These show that the processing times for DECC are well within the NENA and NFPA guidelines. This is good operational data to show how well we are performing with repsect ot those guidelines. Over time, we can track these metrics to ensure that we continue to meet or exceed those standards.
+These show that the processing times for DECC are well within the NENA and NFPA guidelines. This is good operational data to show how well we are performing with respect to those guidelines. Over time, we can track these metrics to ensure that we continue to meet or exceed those standards.
 
 ## Discipline Analyses
 
-As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for futher analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset.
+As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for further analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we'll create and analyze that dataset.
 
 ```{r new-datasets}
 #| label: new-datasets
@@ -1023,6 +1040,32 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
 # ggplot2
+dow_counts_law <- df_law |>
+  count(DOW, sort = TRUE)
+
+max_dow_info_law <- dow_counts |> filter(n == max(n))
+busiest_day_abbr_law <- max_dow_info |> slice(1) |> pull(DOW)
+busiest_day_count_law <- max_dow_info |> slice(1) |> pull(n)
+
+min_dow_info_law <- dow_counts |> filter(n == min(n))
+slowest_day_abbr_law <- min_dow_info |> slice(1) |> pull(DOW)
+slowest_day_count_law <- min_dow_info |> slice(1) |> pull(n)
+
+# Create mapping from abbreviations to full day names
+day_names <- c(
+  "SUN" = "Sunday",
+  "MON" = "Monday", 
+  "TUE" = "Tuesday",
+  "WED" = "Wednesday",
+  "THU" = "Thursday",
+  "FRI" = "Friday",
+  "SAT" = "Saturday"
+)
+
+# Convert abbreviations to full day names
+busiest_day_law <- day_names[busiest_day_abbr_law]
+slowest_day_law <- day_names[slowest_day_abbr_law]
+
 barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
   scale_fill_viridis(discrete=TRUE, option="G") +
@@ -1044,12 +1087,23 @@ barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_APD
 ```
 
-This week, Tuesdays were the busiest day of the week for APD service calls. Saturday, being the lightest day of the week overall, was the lightest day for the APD as well. 
+This week, `r busiest_day_law` was the busiest day of the week for APD service calls. `r slowest_day_law`, being the lightest day of the week overall, was the lightest day for the APD as well. 
 
 ```{r apd-hour-of-day}
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
 # ggplot2
+hour_counts_law <- df_law |>
+  count(Hour, sort = TRUE)
+
+max_hour_info_law <- hour_counts_law |> filter(n == max(n))
+busiest_hour_law <- sprintf("%02d", max_hour_info_law |> slice(1) |> pull(Hour))
+busiest_hour_count_law <- max_hour_info_law |> slice(1) |> pull(n)
+
+min_hour_info_law <- hour_counts_law |> filter(n == min(n))
+slowest_hour_law <- sprintf("%02d", min_hour_info_law |> slice(1) |> pull(Hour))
+slowest_hour_count_law <- min_hour_info_law |> slice(1) |> pull(n)
+
 barHour_APD <- df_law |> ggplot(aes(x=Hour, fill=Hour)) +
   geom_bar() +
   scale_fill_viridis(discrete=TRUE, option="G") +
@@ -1077,6 +1131,13 @@ The busiest time of the week for APD calls is from 1400 to 1700 hours. 0900 was 
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
 # ggplot2
+cr_counts_law <- df_law |>
+  count(Call_Reception, sort = TRUE)
+
+max_cr_info_law <- cr_counts_law |> filter(n == max(n))
+busiest_cr_law <- max_cr_info_law |> slice(1) |> pull(Call_Reception)
+busiest_cr_count_law <- max_cr_info_law |> slice(1) |> pull(n)
+
 barReception_APD <- df_law |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
   geom_bar() +
   scale_fill_viridis(discrete=TRUE, option="G") +
@@ -1098,12 +1159,19 @@ barReception_APD <- df_law |> ggplot(aes(x=Call_Reception, fill=Call_Reception))
 barReception_APD
 ```
 
-As can be seen, the majority of calls came through telephone. This comports to the call reception results for the week overall.
+As can be seen, the majority of calls came through `r busiest_cr_law`. This comports to the call reception results for the week overall.
 
 ```{r apd-call-type}
 #| echo: false
 #| fig-cap: "Number of calls for service by call type."
 # ggplot2
+prob_counts_law <- df_law |>
+  count(Problem, sort = TRUE)
+
+max_prob_info_law <- prob_counts_law |> filter(n == max(n))
+busiest_prob_law <- max_prob_info_law |> slice(1) |> pull(Problem)
+busiest_prob_count_law <- max_prob_info_law |> slice(1) |> pull(n)
+
 problem_counts_APD <- df_law |>
   count(Problem, sort = TRUE) |>
   slice_head(n = 10)
@@ -1128,12 +1196,19 @@ barProblem_APD <- problem_counts_APD |>
 barProblem_APD
 ```
 
-The largest call type was for Disorderly Conduct, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time.
+The largest call type was for `r busiest_prob_law`, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time.
 
 ```{r apd-priority-level}
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 # ggplot2
+pri_counts_law <- df_law |>
+  count(Priority_Number, sort = TRUE)
+
+max_pri_info_law <- pri_counts_law |> filter(n == max(n))
+busiest_pri_law <- max_pri_info_law |> slice(1) |> pull(Priority_Number)
+busiest_pri_count_law <- max_pri_info_law |> slice(1) |> pull(n)
+
 barPriority_APD <- df_law |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
   geom_bar() +
   scale_fill_viridis(discrete=TRUE, option="G") +
@@ -1155,7 +1230,7 @@ barPriority_APD <- df_law |> ggplot(aes(x=Priority_Number, fill=Priority_Number)
 barPriority_APD
 ```
 
-As expected, the largest number of calls werew Priority 2 calls which represent `r round((sum(df_law$Priority_Number == "2") / nrow(df_law)) * 100, 1)` percent of all APD calls. Again, this comports with the overall weekly trends.
+As expected, the largest number of calls were Priority `r busiest_pri_law` calls which represent `r round((sum(df_law$Priority_Number == busiest_pri_law) / nrow(df_law)) * 100, 1)` percent of all APD calls. Again, this comports with the overall weekly trends.
 
 ```{r apd-custom-summary}
 #| label: apd-custom-summary
@@ -1306,6 +1381,32 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
 # ggplot2
+dow_counts_fire <- df_fire |>
+  count(DOW, sort = TRUE)
+
+max_dow_info_fire <- dow_counts_fire |> filter(n == max(n))
+busiest_day_abbr_fire <- max_dow_info_fire |> slice(1) |> pull(DOW)
+busiest_day_count_fire <- max_dow_info_fire |> slice(1) |> pull(n)
+
+min_dow_info_fire <- dow_counts_fire |> filter(n == min(n))
+slowest_day_abbr_fire <- min_dow_info_fire |> slice(1) |> pull(DOW)
+slowest_day_count_fire <- min_dow_info_fire |> slice(1) |> pull(n)
+
+# Create mapping from abbreviations to full day names
+day_names <- c(
+  "SUN" = "Sunday",
+  "MON" = "Monday", 
+  "TUE" = "Tuesday",
+  "WED" = "Wednesday",
+  "THU" = "Thursday",
+  "FRI" = "Friday",
+  "SAT" = "Saturday"
+)
+
+# Convert abbreviations to full day names
+busiest_day_fire <- day_names[busiest_day_abbr_fire]
+slowest_day_fire <- day_names[slowest_day_abbr_fire]
+
 barDOW_AFD <- df_fire |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
   scale_fill_viridis(discrete=TRUE, option="F") +
@@ -1333,6 +1434,17 @@ This week, the busiest day for fire-related calls was Wednesday with Thursday an
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
 # ggplot2
+hour_counts_fire <- df_fire |>
+  count(Hour, sort = TRUE)
+
+max_hour_info_fire <- hour_counts_fire |> filter(n == max(n))
+busiest_hour_fire <- sprintf("%02d", max_hour_info_fire |> slice(1) |> pull(Hour))
+busiest_hour_count_fire <- max_hour_info_fire |> slice(1) |> pull(n)
+
+min_hour_info_fire <- hour_counts_fire |> filter(n == min(n))
+slowest_hour_fire <- sprintf("%02d", min_hour_info_fire |> slice(1) |> pull(Hour))
+slowest_hour_count_fire <- min_hour_info_fire |> slice(1) |> pull(n)
+
 barHour_AFD <- df_fire |> ggplot(aes(x=Hour, fill=Hour)) +
   geom_bar() +
   scale_fill_viridis(discrete=TRUE, option="F") +
@@ -1589,6 +1701,32 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
 # ggplot2
+dow_counts_ems <- df_ems |>
+  count(DOW, sort = TRUE)
+
+max_dow_info_ems <- dow_counts_ems |> filter(n == max(n))
+busiest_day_abbr_ems <- max_dow_info_ems |> slice(1) |> pull(DOW)
+busiest_day_count_ems <- max_dow_info_ems |> slice(1) |> pull(n)
+
+min_dow_info_ems <- dow_counts_ems |> filter(n == min(n))
+slowest_day_abbr_ems <- min_dow_info_ems |> slice(1) |> pull(DOW)
+slowest_day_count_ems <- min_dow_info_ems |> slice(1) |> pull(n)
+
+# Create mapping from abbreviations to full day names
+day_names <- c(
+  "SUN" = "Sunday",
+  "MON" = "Monday", 
+  "TUE" = "Tuesday",
+  "WED" = "Wednesday",
+  "THU" = "Thursday",
+  "FRI" = "Friday",
+  "SAT" = "Saturday"
+)
+
+# Convert abbreviations to full day names
+busiest_day_ems <- day_names[busiest_day_abbr_ems]
+slowest_day_ems <- day_names[slowest_day_abbr_ems]
+
 barDOW_EMS <- df_ems |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
   scale_fill_viridis(discrete=TRUE, option="D") +
@@ -1616,6 +1754,17 @@ barDOW_EMS
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day." 
 # ggplot2
+hour_counts_ems <- df_ems |>
+  count(Hour, sort = TRUE)
+
+max_hour_info_ems <- hour_counts_ems |> filter(n == max(n))
+busiest_hour_ems <- sprintf("%02d", max_hour_info_ems |> slice(1) |> pull(Hour))
+busiest_hour_count_ems <- max_hour_info_ems |> slice(1) |> pull(n)
+
+min_hour_info_ems <- hour_counts_ems |> filter(n == min(n))
+slowest_hour_ems <- sprintf("%02d", min_hour_info_ems |> slice(1) |> pull(Hour))
+slowest_hour_count_ems <- min_hour_info_ems |> slice(1) |> pull(n)
+
 barHour_EMS <- df_ems |> ggplot(aes(x=Hour, fill=Hour)) +
   geom_bar() +
   scale_fill_viridis(discrete=TRUE, option="D") +
