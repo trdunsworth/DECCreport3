@@ -26,8 +26,6 @@ format:
     prefer-html: true
 ---
 
-## Week 38 covering 14 September through 20 September 2025
-
 ## Table of Contents
 
 ### Main Sections
@@ -143,7 +141,7 @@ WEEK_END_FORMATTED <- format(WEEK_END_DATE, "%d %b")
 DYNAMIC_TITLE <- paste0("Weekly Report: Week ", WEEK_NUMBER, " (", WEEK_START_FORMATTED, " through ", WEEK_END_FORMATTED, ")")
 
 # Print the calculated dates for verification
-cat("Week", WEEK_NUMBER, "dates:", WEEK_START_FORMATTED, "through", WEEK_END_FORMATTED, "\n")
+# cat("Week", WEEK_NUMBER, "dates:", WEEK_START_FORMATTED, "through", WEEK_END_FORMATTED, "\n")
 ```
 
 ## Introduction
