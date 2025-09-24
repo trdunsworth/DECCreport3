@@ -111,6 +111,13 @@ suppressWarnings({
   })
 })
 
+# Verify paletteer is available
+if (!requireNamespace("paletteer", quietly = TRUE)) {
+  stop("paletteer package is not installed or available")
+} else {
+  cat("✓ paletteer package loaded successfully\n")
+}
+
 # Define week number for dynamic title generation
 WEEK_NUMBER <- 38
 
@@ -1316,7 +1323,7 @@ slowest_day_law <- day_names[slowest_day_abbr_law]
 
 barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="G") +
+  paletteer::scale_fill_paletteer_d("cartography::blue.pal") +
   labs(title="Number of Calls for Service for APD by Day of the Week",
        x="Day of the Week",
        y="Number of Calls") +

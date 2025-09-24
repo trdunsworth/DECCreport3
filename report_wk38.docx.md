@@ -26,6 +26,8 @@ format:
     prefer-html: true
 ---
 
+## Week 38 covering 14 September through 20 September 2025
+
 ## Table of Contents
 
 ### Main Sections
@@ -144,6 +146,22 @@ Over the last three weeks of this report structure, we've seen different days of
 
 
 This week, the busiest hour of the day was 1200 hours, with 90 calls for service. 0400 hours was the slowest hour of the day with 26 calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.
+
+Next, we can examnine the differences within the shifts and the split between calls received during the day and during the night to see how that can play a role in addressing staffing needs.
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Number of calls for service by shift.](report_wk38_files/figure-docx/shifts-1.png)
+:::
+
+::: {.cell-output-display}
+![Number of calls for service by shift.](report_wk38_files/figure-docx/shifts-2.png)
+:::
+:::
+
+
+These bar graphs compare the distribution of calls between shifts and by whether the calls were received on day or night shift.
 
 
 ::: {.cell}
