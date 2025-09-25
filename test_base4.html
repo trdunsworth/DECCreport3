@@ -1,0 +1,5689 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tony Dunsworth, PhD">
+<meta name="dcterms.date" content="2025-09-25">
+
+<title>DECC Weekly Report</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="test_base4_files/libs/clipboard/clipboard.min.js"></script>
+<script src="test_base4_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="test_base4_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="test_base4_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="test_base4_files/libs/quarto-html/popper.min.js"></script>
+<script src="test_base4_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="test_base4_files/libs/quarto-html/anchor.min.js"></script>
+<link href="test_base4_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="test_base4_files/libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="test_base4_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="test_base4_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="test_base4_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#week-38-covering-14-september-through-20-september-2025" id="toc-week-38-covering-14-september-through-20-september-2025" class="nav-link active" data-scroll-target="#week-38-covering-14-september-through-20-september-2025">Week 38 covering 14 September through 20 September 2025</a></li>
+  <li><a href="#table-of-contents" id="toc-table-of-contents" class="nav-link" data-scroll-target="#table-of-contents">Table of Contents</a>
+  <ul class="collapse">
+  <li><a href="#main-sections" id="toc-main-sections" class="nav-link" data-scroll-target="#main-sections">Main Sections</a></li>
+  </ul></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">Data Cleaning</a></li>
+  <li><a href="#exploratory-analysis" id="toc-exploratory-analysis" class="nav-link" data-scroll-target="#exploratory-analysis">Exploratory Analysis</a>
+  <ul class="collapse">
+  <li><a href="#call-distribution-hour-by-day-of-week" id="toc-call-distribution-hour-by-day-of-week" class="nav-link" data-scroll-target="#call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</a></li>
+  <li><a href="#summary-statsitcs-and-analyses" id="toc-summary-statsitcs-and-analyses" class="nav-link" data-scroll-target="#summary-statsitcs-and-analyses">Summary statsitcs and analyses</a></li>
+  </ul></li>
+  <li><a href="#discipline-analyses" id="toc-discipline-analyses" class="nav-link" data-scroll-target="#discipline-analyses">Discipline Analyses</a>
+  <ul class="collapse">
+  <li><a href="#apd-analyses" id="toc-apd-analyses" class="nav-link" data-scroll-target="#apd-analyses">APD Analyses</a></li>
+  <li><a href="#afd-fire-analyses" id="toc-afd-fire-analyses" class="nav-link" data-scroll-target="#afd-fire-analyses">AFD FIRE Analyses</a></li>
+  <li><a href="#afd-ems-analyses" id="toc-afd-ems-analyses" class="nav-link" data-scroll-target="#afd-ems-analyses">AFD EMS Analyses</a></li>
+  </ul></li>
+  <li><a href="#additional-analyses" id="toc-additional-analyses" class="nav-link" data-scroll-target="#additional-analyses">Additional Analyses</a>
+  <ul class="collapse">
+  <li><a href="#possible-service-delays" id="toc-possible-service-delays" class="nav-link" data-scroll-target="#possible-service-delays">Possible Service Delays</a></li>
+  </ul></li>
+  <li><a href="#high-priority-and-critical-calls" id="toc-high-priority-and-critical-calls" class="nav-link" data-scroll-target="#high-priority-and-critical-calls">High-Priority and Critical Calls</a>
+  <ul class="collapse">
+  <li><a href="#high-priority-call-types" id="toc-high-priority-call-types" class="nav-link" data-scroll-target="#high-priority-call-types">High-Priority Call Types</a></li>
+  <li><a href="#high-priority-response-times" id="toc-high-priority-response-times" class="nav-link" data-scroll-target="#high-priority-response-times">High-Priority Response Times</a></li>
+  </ul></li>
+  <li><a href="#e-911-service-call-analyses" id="toc-e-911-service-call-analyses" class="nav-link" data-scroll-target="#e-911-service-call-analyses">E-911 Service Call Analyses</a>
+  <ul class="collapse">
+  <li><a href="#e-911-call-response-summary" id="toc-e-911-call-response-summary" class="nav-link" data-scroll-target="#e-911-call-response-summary">E-911 Call Response Summary</a></li>
+  <li><a href="#e-911-call-breakdowns" id="toc-e-911-call-breakdowns" class="nav-link" data-scroll-target="#e-911-call-breakdowns">E-911 Call Breakdowns</a></li>
+  </ul></li>
+  <li><a href="#cardiac-arrest-calls-analysis" id="toc-cardiac-arrest-calls-analysis" class="nav-link" data-scroll-target="#cardiac-arrest-calls-analysis">Cardiac Arrest Calls Analysis</a>
+  <ul class="collapse">
+  <li><a href="#mental-health-analyses" id="toc-mental-health-analyses" class="nav-link" data-scroll-target="#mental-health-analyses">Mental Health Analyses</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">DECC Weekly Report</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tony Dunsworth, PhD </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 25, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="week-38-covering-14-september-through-20-september-2025" class="level2">
+<h2 class="anchored" data-anchor-id="week-38-covering-14-september-through-20-september-2025">Week 38 covering 14 September through 20 September 2025</h2>
+</section>
+<section id="table-of-contents" class="level2">
+<h2 class="anchored" data-anchor-id="table-of-contents">Table of Contents</h2>
+<section id="main-sections" class="level3">
+<h3 class="anchored" data-anchor-id="main-sections">Main Sections</h3>
+<ul>
+<li><strong><a href="#introduction">Introduction</a></strong></li>
+<li><strong><a href="#data-cleaning">Data Cleaning</a></strong></li>
+<li><strong><a href="#exploratory-analysis">Exploratory Analysis</a></strong>
+<ul>
+<li><a href="#call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</a></li>
+<li><a href="#summary-statsitcs-and-analyses">Summary Statistics and Analyses</a></li>
+</ul></li>
+<li><strong><a href="#discipline-analyses">Discipline Analyses</a></strong>
+<ul>
+<li><a href="#apd-analyses">APD Analyses</a></li>
+<li><a href="#afd-fire-analyses">AFD FIRE Analyses</a></li>
+<li><a href="#afd-ems-analyses">AFD EMS Analyses</a></li>
+</ul></li>
+<li><strong><a href="#additional-analyses">Additional Analyses</a></strong>
+<ul>
+<li><a href="#possible-service-delays">Possible Service Delays</a></li>
+</ul></li>
+<li><strong><a href="#high-priority-and-critical-calls">High-Priority and Critical Calls</a></strong>
+<ul>
+<li><a href="#high-priority-call-types">High-Priority Call Types</a></li>
+<li><a href="#high-priority-response-times">High-Priority Response Times</a></li>
+</ul></li>
+<li><strong><a href="#cardiac-arrest-calls-analysis">Cardiac Arrest Calls Analysis</a></strong></li>
+<li><strong><a href="#mental-health-analyses">Mental Health Analyses</a></strong></li>
+<li><strong><a href="#conclusion">Conclusion</a></strong></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This is the weekly report for week 38 covering the period from 14 Sep through 20 Sep 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.</p>
+<p>For this week, there were a total of 1353 calls for service. The column list is below:</p>
+<div class="cell" data-tbl-cap="A sample of the first 10 rows of incident data.">
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Master_Incident_Number"            "Response_Date"                    
+ [3] "WeekNo"                            "DOW"                              
+ [5] "Day"                               "Hour"                             
+ [7] "Shift"                             "Day_Night"                        
+ [9] "ShiftPart"                         "Agency"                           
+[11] "Problem"                           "Priority_Number"                  
+[13] "Call_Reception"                    "Call_Taker"                       
+[15] "Dispatcher"                        "Incident_Start_Time"              
+[17] "TimeCallViewed"                    "Incident_Queue_Time"              
+[19] "Time_To_Queue"                     "Elapsed_PS_Queue"                 
+[21] "Time_To_Queue_Diff"                "Incident_Dispatch_Time"           
+[23] "Time_To_Dispatch"                  "Elapsed_Queue_Disp"               
+[25] "Time_To_Disp_Diff"                 "Incident_Phone_Stop"              
+[27] "Phone_Time"                        "Elapsed_PS_CTD"                   
+[29] "Phone_Time_Diff"                   "TimeFirstUnitDispatchAcknowledged"
+[31] "Processing_Time"                   "Elapsed_Processing"               
+[33] "Diff_Proc_Time"                    "Incident_Enroute_Time"            
+[35] "Rollout_Time"                      "Elapsed_Rollout"                  
+[37] "Diff_Rollout_Time"                 "Incident_Arrival_Time"            
+[39] "Transit_Time"                      "Elapsed_Transit"                  
+[41] "Diff_Transit_Time"                 "TimeFirstCallCleared"             
+[43] "Incident_First_Close_Time"         "Call_Reopened"                    
+[45] "First_Reopen_Time"                 "Final_Closed_Time"                
+[47] "Total_Call_Time"                   "Elapsed_Call_Time"                
+[49] "Diff_Total_Call_Time"              "Disposition"                      </code></pre>
+</div>
+</div>
+</section>
+<section id="data-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning">Data Cleaning</h2>
+<p>In order to have a good dataset for analysis, some data cleaning was performed. The first step is to check for missing values in the dataset.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/missing-values-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Prevalence of missing values. Only columns with missing data are shown.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>From this plot, we can see that there are only 13 columns with missing data. Of those, the column with the largest number of missing values is First_Reopen_Time. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, 12.9% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.</p>
+</section>
+<section id="exploratory-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-analysis">Exploratory Analysis</h2>
+<p>One of the first analyses is to break down different factor elements to see what we have in the dataset. Starting with the day of the week, the barchart below shows the number of calls for service by day of the week.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/day-of-week-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by day of the week.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>From this chart, we can see that Friday was the busiest day of the week with 235 service calls, and the slowest day was Sunday with 155 service calls.</p>
+<p>Over the last three weeks of this report structure, we’ve seen different days of the week for the busiest and slowest days. A larger sample size will be needed to determine if there are any underlying patterns.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/hour-of-day-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by hour of the day.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This week, the busiest hour of the day was 1200 hours, with 90 calls for service. 0400 hours was the slowest hour of the day with 26 calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.</p>
+<p>Next, we can examnine the differences within the shifts and the split between calls received during the day and during the night to see how that can play a role in addressing staffing needs.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/shifts-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by shift.</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/shifts-2.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by shift.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>These bar graphs compare the distribution of calls between shifts and by whether the calls were received on day or night shift.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/priority-level-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by priority level.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The majority of calls received were Priority 2 calls. Priority 2 calls are 39.1 percent of the total number of calls, while Priority 1 calls are 25.8 percent of the total number of calls.</p>
+<p>This appears to be consistent through the new reports.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/discipline-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by discipline.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As expected, the majority of calls are for POLICE. They represent 56.7 percent of the total number of calls. This is fairly consistent with previous analyses. We can also examine the way in which we are receiving the calls by looking at the Call_Reception column. That chart is below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/call-reception-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call reception.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Most of the calls arrived by Phone. 911 trunk line calls were 32.3 percent of all calls. There were 52 calls where we did not indicate how the service call was received. This is 3.8 percent of the total number of calls. The number is staying consistent over the lifespan of the reports, but should be investigated to determine why those calls are not being tracked for origination.</p>
+<p>The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/call-type-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call type.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This week, the most common problem nature was DISORDERLY CONDUCT. For AFD, the most common was FIRE ALARM. The overall trend is that Disorderly Conduct and Trouble Breathing appear in the top 5 weekly over the four weeks of this report. These trends should be brought to the attention of our partners.</p>
+<p>We can also look at the number of calls taken by telecommunicators. Again, like the problem types, we will limit the chart to the top 10 telecommunicators to ensure visual clarity and legibility of the information.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/telecommunicator-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by telecommunicator.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>It is interesting to note that the top “call taker” is C2C again this week with 110 calls, and with a large margin between that volume and the busiest calltaker.</p>
+<section id="call-distribution-hour-by-day-of-week" class="level3">
+<h3 class="anchored" data-anchor-id="call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</h3>
+<p>The following visualization shows the distribution of calls throughout the day (by hour) for each day of the week. This helps identify patterns in call volume across different days and times.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/hour-dow-analysis-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Call Volume by Hour and Day of Week</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/alternative-ridge-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Ridge Plot Alternative - Calls per Hour by Day of Week</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="lhdewrewwz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lhdewrewwz table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#lhdewrewwz thead, #lhdewrewwz tbody, #lhdewrewwz tfoot, #lhdewrewwz tr, #lhdewrewwz td, #lhdewrewwz th {
+  border-style: none;
+}
+
+#lhdewrewwz p {
+  margin: 0;
+  padding: 0;
+}
+
+#lhdewrewwz .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#lhdewrewwz .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lhdewrewwz .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lhdewrewwz .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lhdewrewwz .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lhdewrewwz .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lhdewrewwz .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lhdewrewwz .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lhdewrewwz .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#lhdewrewwz .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#lhdewrewwz .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lhdewrewwz .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lhdewrewwz .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lhdewrewwz .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lhdewrewwz .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lhdewrewwz .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lhdewrewwz .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#lhdewrewwz .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#lhdewrewwz .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lhdewrewwz .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lhdewrewwz .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lhdewrewwz .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lhdewrewwz .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lhdewrewwz .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lhdewrewwz .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lhdewrewwz .gt_left {
+  text-align: left;
+}
+
+#lhdewrewwz .gt_center {
+  text-align: center;
+}
+
+#lhdewrewwz .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lhdewrewwz .gt_font_normal {
+  font-weight: normal;
+}
+
+#lhdewrewwz .gt_font_bold {
+  font-weight: bold;
+}
+
+#lhdewrewwz .gt_font_italic {
+  font-style: italic;
+}
+
+#lhdewrewwz .gt_super {
+  font-size: 65%;
+}
+
+#lhdewrewwz .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#lhdewrewwz .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lhdewrewwz .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#lhdewrewwz .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#lhdewrewwz .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#lhdewrewwz .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#lhdewrewwz .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#lhdewrewwz .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#lhdewrewwz div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="4" class="gt_heading gt_title gt_font_normal">Call Volume Summary by Day of Week</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="4" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Peak hours and average calls per hour</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="DOW" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Day of Week</th>
+<th id="total_calls" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Total Calls</th>
+<th id="peak_hour" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Peak Hour</th>
+<th id="avg_calls_per_hour" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Avg Calls/Hour</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_center" headers="DOW">FRI</td>
+<td class="gt_row gt_right" headers="total_calls">235</td>
+<td class="gt_row gt_right" headers="peak_hour">17</td>
+<td class="gt_row gt_right" headers="avg_calls_per_hour">9.8</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="DOW">THU</td>
+<td class="gt_row gt_right" headers="total_calls">202</td>
+<td class="gt_row gt_right" headers="peak_hour">9</td>
+<td class="gt_row gt_right" headers="avg_calls_per_hour">8.4</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="DOW">WED</td>
+<td class="gt_row gt_right" headers="total_calls">200</td>
+<td class="gt_row gt_right" headers="peak_hour">8</td>
+<td class="gt_row gt_right" headers="avg_calls_per_hour">8.3</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="DOW">SAT</td>
+<td class="gt_row gt_right" headers="total_calls">194</td>
+<td class="gt_row gt_right" headers="peak_hour">11</td>
+<td class="gt_row gt_right" headers="avg_calls_per_hour">8.1</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="DOW">MON</td>
+<td class="gt_row gt_right" headers="total_calls">185</td>
+<td class="gt_row gt_right" headers="peak_hour">11</td>
+<td class="gt_row gt_right" headers="avg_calls_per_hour">7.7</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="DOW">TUE</td>
+<td class="gt_row gt_right" headers="total_calls">182</td>
+<td class="gt_row gt_right" headers="peak_hour">11</td>
+<td class="gt_row gt_right" headers="avg_calls_per_hour">7.6</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="DOW">SUN</td>
+<td class="gt_row gt_right" headers="total_calls">155</td>
+<td class="gt_row gt_right" headers="peak_hour">1</td>
+<td class="gt_row gt_right" headers="avg_calls_per_hour">6.5</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Based on the heat map, the middle of the day is still the busiest time for calls to arrive in the center. For this week, the 1700 hour for Friday was the busiest day and hour combination for the week. We may need to go back to that date and time range to determine if there was a significant event in that hour that could account for the spike in calls.</p>
+</section>
+<section id="summary-statsitcs-and-analyses" class="level3">
+<h3 class="anchored" data-anchor-id="summary-statsitcs-and-analyses">Summary statsitcs and analyses</h3>
+<p>In this section, we will analyse the continuous variables that represent the elapsed time for various segments of the call process. The variables of interest include: Time_To_Queue, Time_To_Dispatch, Phone_Time, Processing_Time, Rollout_Time, Transit_Time, and Total_Call_Time. They are defined as follows:</p>
+<ul>
+<li><dl>
+<dt>Time_To_Queue</dt>
+<dd>
+The time from the start of the call to the time it is released to queue for dispatch.
+</dd>
+</dl></li>
+<li><dl>
+<dt>Time_To_Dispatch</dt>
+<dd>
+The time from the time the call is released for dispatch to the time the first unit is assigned.
+</dd>
+</dl></li>
+<li><dl>
+<dt>Phone_Time</dt>
+<dd>
+The time from the start of the call to the time the phone call ended.
+</dd>
+</dl></li>
+<li><dl>
+<dt>Processing_Time</dt>
+<dd>
+The time from the start of the call until the first unit is assigned.
+</dd>
+</dl></li>
+<li><dl>
+<dt>Rollout_Time</dt>
+<dd>
+The time from the assignment of the first unit to the first unit marking en route to the call.
+</dd>
+</dl></li>
+<li><dl>
+<dt>Transit_Time</dt>
+<dd>
+The time from the first unit marking en route to the call to the first unit arriving on scene.
+</dd>
+</dl></li>
+<li><dl>
+<dt>Total_Call_Time</dt>
+<dd>
+The total time from the start of the call to the time the call was closed. If the call is re-opened, then this clock stops with the first closure.
+</dd>
+</dl></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div id="vyhwqbemsg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vyhwqbemsg table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#vyhwqbemsg thead, #vyhwqbemsg tbody, #vyhwqbemsg tfoot, #vyhwqbemsg tr, #vyhwqbemsg td, #vyhwqbemsg th {
+  border-style: none;
+}
+
+#vyhwqbemsg p {
+  margin: 0;
+  padding: 0;
+}
+
+#vyhwqbemsg .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#vyhwqbemsg .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#vyhwqbemsg .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#vyhwqbemsg .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#vyhwqbemsg .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#vyhwqbemsg .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#vyhwqbemsg .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#vyhwqbemsg .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#vyhwqbemsg .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#vyhwqbemsg .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#vyhwqbemsg .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#vyhwqbemsg .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#vyhwqbemsg .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#vyhwqbemsg .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#vyhwqbemsg .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vyhwqbemsg .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#vyhwqbemsg .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#vyhwqbemsg .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#vyhwqbemsg .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vyhwqbemsg .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#vyhwqbemsg .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vyhwqbemsg .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#vyhwqbemsg .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vyhwqbemsg .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#vyhwqbemsg .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#vyhwqbemsg .gt_left {
+  text-align: left;
+}
+
+#vyhwqbemsg .gt_center {
+  text-align: center;
+}
+
+#vyhwqbemsg .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#vyhwqbemsg .gt_font_normal {
+  font-weight: normal;
+}
+
+#vyhwqbemsg .gt_font_bold {
+  font-weight: bold;
+}
+
+#vyhwqbemsg .gt_font_italic {
+  font-style: italic;
+}
+
+#vyhwqbemsg .gt_super {
+  font-size: 65%;
+}
+
+#vyhwqbemsg .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#vyhwqbemsg .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#vyhwqbemsg .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#vyhwqbemsg .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#vyhwqbemsg .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#vyhwqbemsg .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#vyhwqbemsg .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#vyhwqbemsg .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#vyhwqbemsg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="7" class="gt_heading gt_title gt_font_normal">Weekly Elapsed Time Summary Table</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="7" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Statistical summary of call processing times</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Time Metric</th>
+<th id="Minimum" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Min</th>
+<th id="Mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Mean</th>
+<th id="Median" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Median</th>
+<th id="Std_Dev" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Std Dev</th>
+<th id="Skewness" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Skew</th>
+<th id="Kurtosis" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Kurt</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Time To Queue</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">61.63</td>
+<td class="gt_row gt_right" headers="Median">42.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">120.33</td>
+<td class="gt_row gt_right" headers="Skewness">18.37</td>
+<td class="gt_row gt_right" headers="Kurtosis">494.83</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Time To Dispatch</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">736.99</td>
+<td class="gt_row gt_right" headers="Median">6.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">3,304.48</td>
+<td class="gt_row gt_right" headers="Skewness">13.14</td>
+<td class="gt_row gt_right" headers="Kurtosis">239.33</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Phone Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">215.86</td>
+<td class="gt_row gt_right" headers="Median">149.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">296.39</td>
+<td class="gt_row gt_right" headers="Skewness">4.80</td>
+<td class="gt_row gt_right" headers="Kurtosis">33.89</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Processing Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">798.62</td>
+<td class="gt_row gt_right" headers="Median">74.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">3,319.83</td>
+<td class="gt_row gt_right" headers="Skewness">13.01</td>
+<td class="gt_row gt_right" headers="Kurtosis">236.07</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Rollout Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">32.06</td>
+<td class="gt_row gt_right" headers="Median">9.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">38.48</td>
+<td class="gt_row gt_right" headers="Skewness">1.16</td>
+<td class="gt_row gt_right" headers="Kurtosis">0.62</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Transit Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">373.71</td>
+<td class="gt_row gt_right" headers="Median">266.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">554.55</td>
+<td class="gt_row gt_right" headers="Skewness">8.85</td>
+<td class="gt_row gt_right" headers="Kurtosis">139.16</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Total Call Time</td>
+<td class="gt_row gt_right" headers="Minimum">15.00</td>
+<td class="gt_row gt_right" headers="Mean">3,808.07</td>
+<td class="gt_row gt_right" headers="Median">2,283.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">4,836.67</td>
+<td class="gt_row gt_right" headers="Skewness">3.36</td>
+<td class="gt_row gt_right" headers="Kurtosis">16.53</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is 42 seconds. This is still in line with what has been seen in the last two weeks. The median time in queue was 6 seconds. These are comparable numbers with the prior weeks.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/ttq-plots-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These combined histogram and density plots are designed to show the distribution of the elapsed time between events in the call’s lifecycle. Using the 90<sup>th</sup> percentile, we can state that 90% of all service calls are ready to be dispatched within 136 seconds. The same 90<sup>th</sup> lines are reflected in the remaining plots below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/elapsed-time-plots-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/elapsed-time-plots-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/elapsed-time-plots-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/elapsed-time-plots-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/elapsed-time-plots-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/elapsed-time-plots-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/elapsed-time-grid-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Plot Key:</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Line Type/Color</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Dashed Red</strong></td>
+<td>Median</td>
+</tr>
+<tr class="even">
+<td><strong>Dotted Orange</strong></td>
+<td>90th Percentile (P90)</td>
+</tr>
+<tr class="odd">
+<td><strong>Longdash Green</strong></td>
+<td>NENA 0:15 Standard</td>
+</tr>
+<tr class="even">
+<td><strong>Longdash Purple</strong></td>
+<td>NFPA 0:20 Standard</td>
+</tr>
+</tbody>
+</table>
+<p>These show that the processing times for DECC are well within the NENA and NFPA guidelines. This is good operational data to show how well we are performing with respect to those guidelines. Over time, we can track these metrics to ensure that we continue to meet or exceed those standards.</p>
+</section>
+</section>
+<section id="discipline-analyses" class="level2">
+<h2 class="anchored" data-anchor-id="discipline-analyses">Discipline Analyses</h2>
+<p>As discussed earlier, we can create additional subsets from this data to look at specific areas of interest. We will create several new datasets from this weekly set for further analysis. The first will be a dataset that combines APD Priority 1 calls with AFD Priority 1 and 2 calls and evaluates those as emergency calls. We will also create specific datasets for law, fire, and EMS for specific analyses of the disciplines. We will also create datasets that identify calls that exceed certain parameters that have been defined from other reports. Finally, because we have been evaluating Cardiac Arrest calls for some time, we’ll create and analyze that dataset.</p>
+<p>By defining these datasets, we can now add to our analyses. For example, we can reuse the same information from above to drill down into APD and AFD calls. Starting with APD calls for service, we can examine everything as we did above.</p>
+<section id="apd-analyses" class="level3">
+<h3 class="anchored" data-anchor-id="apd-analyses">APD Analyses</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/apd-day-of-week-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by day of the week.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This week, Friday was the busiest day of the week for APD service calls. Sunday, being the lightest day of the week overall, was the lightest day for the APD as well.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/apd-hour-of-day-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by hour of the day.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The busiest time of the week for APD calls is from 0900 to 1200 hours. This is in contrast to the prior three weeks where the mid to late afternoon was the busiest time of the day.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/apd-call-reception-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call reception.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As can be seen, the majority of calls came through Phone. This comports to the call reception results for the week overall.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/apd-call-type-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call type.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The largest call type was for DISORDERLY CONDUCT, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/apd-priority-level-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by priority level.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As expected, the largest number of calls were Priority 2 calls which represent 63.6 percent of all APD calls. Again, this comports with the overall weekly trends.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="cwohlpolib" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#cwohlpolib table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#cwohlpolib thead, #cwohlpolib tbody, #cwohlpolib tfoot, #cwohlpolib tr, #cwohlpolib td, #cwohlpolib th {
+  border-style: none;
+}
+
+#cwohlpolib p {
+  margin: 0;
+  padding: 0;
+}
+
+#cwohlpolib .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#cwohlpolib .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#cwohlpolib .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#cwohlpolib .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#cwohlpolib .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#cwohlpolib .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#cwohlpolib .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#cwohlpolib .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#cwohlpolib .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#cwohlpolib .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#cwohlpolib .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#cwohlpolib .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#cwohlpolib .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#cwohlpolib .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#cwohlpolib .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cwohlpolib .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#cwohlpolib .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#cwohlpolib .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#cwohlpolib .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cwohlpolib .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#cwohlpolib .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cwohlpolib .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#cwohlpolib .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cwohlpolib .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#cwohlpolib .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cwohlpolib .gt_left {
+  text-align: left;
+}
+
+#cwohlpolib .gt_center {
+  text-align: center;
+}
+
+#cwohlpolib .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#cwohlpolib .gt_font_normal {
+  font-weight: normal;
+}
+
+#cwohlpolib .gt_font_bold {
+  font-weight: bold;
+}
+
+#cwohlpolib .gt_font_italic {
+  font-style: italic;
+}
+
+#cwohlpolib .gt_super {
+  font-size: 65%;
+}
+
+#cwohlpolib .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#cwohlpolib .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#cwohlpolib .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#cwohlpolib .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#cwohlpolib .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#cwohlpolib .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#cwohlpolib .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#cwohlpolib .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#cwohlpolib div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="7" class="gt_heading gt_title gt_font_normal">Weekly Elapsed Time Summary Table</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="7" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Statistical summary of call processing times</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Time Metric</th>
+<th id="Minimum" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Min</th>
+<th id="Mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Mean</th>
+<th id="Median" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Median</th>
+<th id="Std_Dev" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Std Dev</th>
+<th id="Skewness" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Skew</th>
+<th id="Kurtosis" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Kurt</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Time To Queue</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">80.14</td>
+<td class="gt_row gt_right" headers="Median">53.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">153.97</td>
+<td class="gt_row gt_right" headers="Skewness">15.11</td>
+<td class="gt_row gt_right" headers="Kurtosis">317.50</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Time To Dispatch</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">1,298.35</td>
+<td class="gt_row gt_right" headers="Median">172.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">4,306.36</td>
+<td class="gt_row gt_right" headers="Skewness">10.08</td>
+<td class="gt_row gt_right" headers="Kurtosis">140.01</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Phone Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">229.33</td>
+<td class="gt_row gt_right" headers="Median">140.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">338.19</td>
+<td class="gt_row gt_right" headers="Skewness">4.67</td>
+<td class="gt_row gt_right" headers="Kurtosis">29.85</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Processing Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">1,378.49</td>
+<td class="gt_row gt_right" headers="Median">267.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">4,321.37</td>
+<td class="gt_row gt_right" headers="Skewness">10.01</td>
+<td class="gt_row gt_right" headers="Kurtosis">138.56</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Rollout Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">6.58</td>
+<td class="gt_row gt_right" headers="Median">3.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">14.98</td>
+<td class="gt_row gt_right" headers="Skewness">5.26</td>
+<td class="gt_row gt_right" headers="Kurtosis">35.67</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Transit Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">419.23</td>
+<td class="gt_row gt_right" headers="Median">252.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">710.85</td>
+<td class="gt_row gt_right" headers="Skewness">7.14</td>
+<td class="gt_row gt_right" headers="Kurtosis">87.38</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Total Call Time</td>
+<td class="gt_row gt_right" headers="Minimum">38.00</td>
+<td class="gt_row gt_right" headers="Mean">4,811.48</td>
+<td class="gt_row gt_right" headers="Median">2,457.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">6,013.14</td>
+<td class="gt_row gt_right" headers="Skewness">2.62</td>
+<td class="gt_row gt_right" headers="Kurtosis">9.48</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This table shows that overall, we have a median time on the phones of about 140 seconds and it takes about double that for a call to start and be dispatched, 267 seconds. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are 21.8 percent of APD calls, this could have a measureable impact on service times for DECC staff.</p>
+</section>
+<section id="afd-fire-analyses" class="level3">
+<h3 class="anchored" data-anchor-id="afd-fire-analyses">AFD FIRE Analyses</h3>
+<p>Because AFD calls for service can be split into two distinct disciplines, fire-related calls and medical-related calls, DECC has, historically, separated the two disciplines for analytical purposes. So this section will look at fire-related calls for service for the week.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/afd-day-of-week-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by day of the week.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This week, the busiest day for fire-related calls was Friday with 43 calls for service. Monday was the lightest day for fire-related calls with 19 calls for service. The busiest day this week for fire-related calls comports with the overall weekly information.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/afd-hour-of-day-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by hour of the day.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Fire-related calls are much more spread out through the day as can be seen in the graph above. However, 12 hours was the busiest hour for the week There hasn’t been an overall trend identified in the four weeks of this report. However, we will continue to observe the patterns to see if any trends emerge in fire related calls.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/afd-call-reception-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call reception.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Like APD calls, most fire-related calls came in via Phone. That accounts for 0 percent of all fire-related calls. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented 38.1 percent of all fire-related service calls received.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/afd-call-type-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call type.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The greatest number of fire-related service calls were for FIRE ALARM. That is an interesting observation and should be watched through the future.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/afd-priority-level-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by priority level.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The most-used priority for fire-related calls was P3. P1 calls account for 38.1 percent of all fire-related calls this week.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="podyxygjnr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#podyxygjnr table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#podyxygjnr thead, #podyxygjnr tbody, #podyxygjnr tfoot, #podyxygjnr tr, #podyxygjnr td, #podyxygjnr th {
+  border-style: none;
+}
+
+#podyxygjnr p {
+  margin: 0;
+  padding: 0;
+}
+
+#podyxygjnr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#podyxygjnr .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#podyxygjnr .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#podyxygjnr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#podyxygjnr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#podyxygjnr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#podyxygjnr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#podyxygjnr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#podyxygjnr .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#podyxygjnr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#podyxygjnr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#podyxygjnr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#podyxygjnr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#podyxygjnr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#podyxygjnr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#podyxygjnr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#podyxygjnr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#podyxygjnr .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#podyxygjnr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#podyxygjnr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#podyxygjnr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#podyxygjnr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#podyxygjnr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#podyxygjnr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#podyxygjnr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#podyxygjnr .gt_left {
+  text-align: left;
+}
+
+#podyxygjnr .gt_center {
+  text-align: center;
+}
+
+#podyxygjnr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#podyxygjnr .gt_font_normal {
+  font-weight: normal;
+}
+
+#podyxygjnr .gt_font_bold {
+  font-weight: bold;
+}
+
+#podyxygjnr .gt_font_italic {
+  font-style: italic;
+}
+
+#podyxygjnr .gt_super {
+  font-size: 65%;
+}
+
+#podyxygjnr .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#podyxygjnr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#podyxygjnr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#podyxygjnr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#podyxygjnr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#podyxygjnr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#podyxygjnr .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#podyxygjnr .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#podyxygjnr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="7" class="gt_heading gt_title gt_font_normal">Weekly Elapsed Time Summary Table</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="7" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Statistical summary of call processing times</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Time Metric</th>
+<th id="Minimum" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Min</th>
+<th id="Mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Mean</th>
+<th id="Median" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Median</th>
+<th id="Std_Dev" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Std Dev</th>
+<th id="Skewness" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Skew</th>
+<th id="Kurtosis" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Kurt</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Time To Queue</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">31.15</td>
+<td class="gt_row gt_right" headers="Median">26.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">34.57</td>
+<td class="gt_row gt_right" headers="Skewness">1.64</td>
+<td class="gt_row gt_right" headers="Kurtosis">3.59</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Time To Dispatch</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">1.72</td>
+<td class="gt_row gt_right" headers="Median">2.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">2.55</td>
+<td class="gt_row gt_right" headers="Skewness">7.38</td>
+<td class="gt_row gt_right" headers="Kurtosis">66.23</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Phone Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">138.41</td>
+<td class="gt_row gt_right" headers="Median">101.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">168.97</td>
+<td class="gt_row gt_right" headers="Skewness">5.03</td>
+<td class="gt_row gt_right" headers="Kurtosis">36.23</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Processing Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">32.88</td>
+<td class="gt_row gt_right" headers="Median">28.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">35.24</td>
+<td class="gt_row gt_right" headers="Skewness">1.55</td>
+<td class="gt_row gt_right" headers="Kurtosis">3.20</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Rollout Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">66.45</td>
+<td class="gt_row gt_right" headers="Median">64.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">35.83</td>
+<td class="gt_row gt_right" headers="Skewness">0.17</td>
+<td class="gt_row gt_right" headers="Kurtosis">−0.51</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Transit Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">331.73</td>
+<td class="gt_row gt_right" headers="Median">264.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">230.99</td>
+<td class="gt_row gt_right" headers="Skewness">1.82</td>
+<td class="gt_row gt_right" headers="Kurtosis">4.22</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Total Call Time</td>
+<td class="gt_row gt_right" headers="Minimum">44.00</td>
+<td class="gt_row gt_right" headers="Mean">1,488.71</td>
+<td class="gt_row gt_right" headers="Median">1,010.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">1,560.47</td>
+<td class="gt_row gt_right" headers="Skewness">2.58</td>
+<td class="gt_row gt_right" headers="Kurtosis">9.81</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was seconds. The mean time was seconds, which is still amazing.</p>
+</section>
+<section id="afd-ems-analyses" class="level3">
+<h3 class="anchored" data-anchor-id="afd-ems-analyses">AFD EMS Analyses</h3>
+<p>Because AFD calls for service can be split into two distinct disciplines, fire-related calls and medical-related calls, DECC has, historically, separated the two disciplines for analytical purposes. So this section will look at medical-related calls for service for the week.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/ems-day-of-week-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by day of the week.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This week, there is a spike in medical calls on Friday. This appears to correlate to the information that we saw earlier in the report. Outside of Friday, the remainder of the week appears to be consistent for the number of medical calls handled.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/ems-hour-of-day-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by hour of the day.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This week, the busiest hour was 16 hours. The afternoon to evening hours, this week, stayed consistently busy which appears to continue the trends previously observed.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/ems-call-reception-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call reception.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As expected, the vast majority of medical calls arrived via E-911. However, 8.6 percent of medical calls arrived without a method by which we recevied the call. We should continue to monitor and investigate why these are occurring.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/ems-call-type-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call type.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The most prevalent medical service type this week was ‘r busiest_prob_med’. Further we had 62 mutual aid medical calls this week.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/ems-priority-level-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by priority level.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The majority of medical service calls are P1, which is to be expected.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="wjtqflkxzi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wjtqflkxzi table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#wjtqflkxzi thead, #wjtqflkxzi tbody, #wjtqflkxzi tfoot, #wjtqflkxzi tr, #wjtqflkxzi td, #wjtqflkxzi th {
+  border-style: none;
+}
+
+#wjtqflkxzi p {
+  margin: 0;
+  padding: 0;
+}
+
+#wjtqflkxzi .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wjtqflkxzi .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wjtqflkxzi .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wjtqflkxzi .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wjtqflkxzi .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wjtqflkxzi .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wjtqflkxzi .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wjtqflkxzi .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wjtqflkxzi .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#wjtqflkxzi .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#wjtqflkxzi .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wjtqflkxzi .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wjtqflkxzi .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wjtqflkxzi .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wjtqflkxzi .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjtqflkxzi .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wjtqflkxzi .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wjtqflkxzi .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#wjtqflkxzi .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjtqflkxzi .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wjtqflkxzi .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjtqflkxzi .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wjtqflkxzi .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjtqflkxzi .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wjtqflkxzi .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjtqflkxzi .gt_left {
+  text-align: left;
+}
+
+#wjtqflkxzi .gt_center {
+  text-align: center;
+}
+
+#wjtqflkxzi .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wjtqflkxzi .gt_font_normal {
+  font-weight: normal;
+}
+
+#wjtqflkxzi .gt_font_bold {
+  font-weight: bold;
+}
+
+#wjtqflkxzi .gt_font_italic {
+  font-style: italic;
+}
+
+#wjtqflkxzi .gt_super {
+  font-size: 65%;
+}
+
+#wjtqflkxzi .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#wjtqflkxzi .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wjtqflkxzi .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#wjtqflkxzi .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#wjtqflkxzi .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#wjtqflkxzi .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#wjtqflkxzi .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#wjtqflkxzi .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#wjtqflkxzi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="7" class="gt_heading gt_title gt_font_normal">Weekly Elapsed Time Summary Table</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="7" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Statistical summary of call processing times</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Time Metric</th>
+<th id="Minimum" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Min</th>
+<th id="Mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Mean</th>
+<th id="Median" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Median</th>
+<th id="Std_Dev" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Std Dev</th>
+<th id="Skewness" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Skew</th>
+<th id="Kurtosis" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Kurt</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Time To Queue</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">40.37</td>
+<td class="gt_row gt_right" headers="Median">40.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">38.00</td>
+<td class="gt_row gt_right" headers="Skewness">1.42</td>
+<td class="gt_row gt_right" headers="Kurtosis">4.10</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Time To Dispatch</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">2.49</td>
+<td class="gt_row gt_right" headers="Median">2.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">3.44</td>
+<td class="gt_row gt_right" headers="Skewness">6.48</td>
+<td class="gt_row gt_right" headers="Kurtosis">50.77</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Phone Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">216.68</td>
+<td class="gt_row gt_right" headers="Median">175.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">220.89</td>
+<td class="gt_row gt_right" headers="Skewness">2.87</td>
+<td class="gt_row gt_right" headers="Kurtosis">12.59</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Processing Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">42.85</td>
+<td class="gt_row gt_right" headers="Median">42.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">38.95</td>
+<td class="gt_row gt_right" headers="Skewness">1.37</td>
+<td class="gt_row gt_right" headers="Kurtosis">3.73</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Rollout Time</td>
+<td class="gt_row gt_right" headers="Minimum">3.00</td>
+<td class="gt_row gt_right" headers="Mean">63.94</td>
+<td class="gt_row gt_right" headers="Median">62.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">33.90</td>
+<td class="gt_row gt_right" headers="Skewness">0.62</td>
+<td class="gt_row gt_right" headers="Kurtosis">1.10</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Transit Time</td>
+<td class="gt_row gt_right" headers="Minimum">15.00</td>
+<td class="gt_row gt_right" headers="Mean">305.58</td>
+<td class="gt_row gt_right" headers="Median">273.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">178.17</td>
+<td class="gt_row gt_right" headers="Skewness">2.60</td>
+<td class="gt_row gt_right" headers="Kurtosis">10.41</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Total Call Time</td>
+<td class="gt_row gt_right" headers="Minimum">15.00</td>
+<td class="gt_row gt_right" headers="Mean">2,973.67</td>
+<td class="gt_row gt_right" headers="Median">3,091.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">1,885.47</td>
+<td class="gt_row gt_right" headers="Skewness">0.23</td>
+<td class="gt_row gt_right" headers="Kurtosis">−0.88</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The median time to process medical calls was seconds. Again, this puts us in good form when examening our operational efficiency. The median time on phones, seconds, is longer than the overall median. That is to be expected with these calls taking longer to triage.</p>
+</section>
+</section>
+<section id="additional-analyses" class="level2">
+<h2 class="anchored" data-anchor-id="additional-analyses">Additional Analyses</h2>
+<p>Earlier, for this analysis, we created some additional datasets that we can investigate in the course of our analysis. The first two are lists of calls where the elapsed time prior to release to queue or the time spent in dispatch is greater than 60 seconds for <em>emergency</em> calls. For the first, there are 79 emergency service calls where the elapsed time from call start to the call entering the queue for dispatch was over 60 seconds. There are also 10 emergency service calls where the elapsed time from entering queue to the first unit assigned was over 60 seconds.</p>
+<section id="possible-service-delays" class="level3">
+<h3 class="anchored" data-anchor-id="possible-service-delays">Possible Service Delays</h3>
+<p>We can look at the datasets and see if there are telecommunicators who may experience more challenging calls during the week. First will be a table of telecommunicators who worked emergency calls that took longer than 60 seconds to go from start to queue. The second will be a table of dispatchers who assigned an emergency call that waited in queue longer than 60 seconds.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Frequency of Call Taker in Delayed TTQ Calls (Descending)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Call Taker</th>
+<th style="text-align: right;">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CRUZ, STEPHANIE</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LEWIS, LESLIE</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">JACKSON, MALIKA</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BRYANT, THEO</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PERALTA, ANNETTE</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PRIESTLY, SHAVAUGHN</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FLOURNOY, ERICKA</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GARCIA, VILMA</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MCLEOD, DOUGLAS</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DEWBERRY, RE’KEYA</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VALENTIN, EMERITA</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WATSON, JOANNE</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WILLIAMS, DARNELL</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BONSU, VALERIE</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WALKER, JUANITA</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ANDERSON, MARILYN</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GOODWIN, SHEENA</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HARDING, AUTUMN</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MACK, BRIANA</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MESARIS, MATTHEW</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PATTERSON, JAHAIRA</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PEREZ, CARLOS</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMITH, TERESA</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WALKER, KAREN</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WALKER, LATITIA</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. This, however, could be something that is included in the report template in order to monitor. Should a telecommunicator appear multiple times in this table over a period of time, additional training or mentoring may be called for.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Frequency of Dispatcher in Delayed TTD Calls (Descending)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Dispatcher</th>
+<th style="text-align: right;">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">DEWBERRY, RE’KEYA</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BONSU, VALERIE</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BRYANT, THEO</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FLOURNOY, ERICKA</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GATTO, GIANNA</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LEWIS, LESLIE</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PRIESTLY, SHAVAUGHN</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WALKER, JUANITA</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This list is fairly short and could simply be monitored in future should the need arise.</p>
+</section>
+</section>
+<section id="high-priority-and-critical-calls" class="level2">
+<h2 class="anchored" data-anchor-id="high-priority-and-critical-calls">High-Priority and Critical Calls</h2>
+<p>In this section, we will focus on the calls that are deemed high-priority or critical. This includes APD Priority 1 calls and AFD Priority 1 and 2 calls. We have identified these calls in the <code>df_hp</code> dataset created earlier.</p>
+<section id="high-priority-call-types" class="level3">
+<h3 class="anchored" data-anchor-id="high-priority-call-types">High-Priority Call Types</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/hp-call-types-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Top High-Priority Call Types</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Almost all of the problem types in this graph belong to AFD and are medical calls. Based on the information above, this is to be expected.</p>
+</section>
+<section id="high-priority-response-times" class="level3">
+<h3 class="anchored" data-anchor-id="high-priority-response-times">High-Priority Response Times</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/hp-response-times-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>High-Priority Call Response Times</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>These histograms show that, overall, our record for handling these calls is excellent.</p>
+</section>
+</section>
+<section id="e-911-service-call-analyses" class="level2">
+<h2 class="anchored" data-anchor-id="e-911-service-call-analyses">E-911 Service Call Analyses</h2>
+<p>This section will analyze calls that arrived to DECC via E-911 trunk lines.</p>
+<section id="e-911-call-response-summary" class="level3">
+<h3 class="anchored" data-anchor-id="e-911-call-response-summary">E-911 Call Response Summary</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tjyoibtson" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#tjyoibtson table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#tjyoibtson thead, #tjyoibtson tbody, #tjyoibtson tfoot, #tjyoibtson tr, #tjyoibtson td, #tjyoibtson th {
+  border-style: none;
+}
+
+#tjyoibtson p {
+  margin: 0;
+  padding: 0;
+}
+
+#tjyoibtson .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#tjyoibtson .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#tjyoibtson .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#tjyoibtson .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#tjyoibtson .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#tjyoibtson .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#tjyoibtson .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#tjyoibtson .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#tjyoibtson .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#tjyoibtson .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#tjyoibtson .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#tjyoibtson .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#tjyoibtson .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#tjyoibtson .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#tjyoibtson .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tjyoibtson .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#tjyoibtson .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#tjyoibtson .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#tjyoibtson .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tjyoibtson .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#tjyoibtson .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tjyoibtson .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#tjyoibtson .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tjyoibtson .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tjyoibtson .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tjyoibtson .gt_left {
+  text-align: left;
+}
+
+#tjyoibtson .gt_center {
+  text-align: center;
+}
+
+#tjyoibtson .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#tjyoibtson .gt_font_normal {
+  font-weight: normal;
+}
+
+#tjyoibtson .gt_font_bold {
+  font-weight: bold;
+}
+
+#tjyoibtson .gt_font_italic {
+  font-style: italic;
+}
+
+#tjyoibtson .gt_super {
+  font-size: 65%;
+}
+
+#tjyoibtson .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#tjyoibtson .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#tjyoibtson .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#tjyoibtson .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#tjyoibtson .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#tjyoibtson .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#tjyoibtson .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#tjyoibtson .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#tjyoibtson div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="7" class="gt_heading gt_title gt_font_normal">Weekly Elapsed Time Summary Table</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="7" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Statistical summary of call processing times</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Time Metric</th>
+<th id="Minimum" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Min</th>
+<th id="Mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Mean</th>
+<th id="Median" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Median</th>
+<th id="Std_Dev" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Std Dev</th>
+<th id="Skewness" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Skew</th>
+<th id="Kurtosis" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Kurt</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Time To Queue</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">71.08</td>
+<td class="gt_row gt_right" headers="Median">54.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">78.86</td>
+<td class="gt_row gt_right" headers="Skewness">8.50</td>
+<td class="gt_row gt_right" headers="Kurtosis">115.82</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Time To Dispatch</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">429.91</td>
+<td class="gt_row gt_right" headers="Median">3.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">3,081.96</td>
+<td class="gt_row gt_right" headers="Skewness">15.42</td>
+<td class="gt_row gt_right" headers="Kurtosis">266.45</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Phone Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">268.63</td>
+<td class="gt_row gt_right" headers="Median">206.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">260.96</td>
+<td class="gt_row gt_right" headers="Skewness">4.06</td>
+<td class="gt_row gt_right" headers="Kurtosis">24.93</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Processing Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">500.99</td>
+<td class="gt_row gt_right" headers="Median">71.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">3,090.67</td>
+<td class="gt_row gt_right" headers="Skewness">15.32</td>
+<td class="gt_row gt_right" headers="Kurtosis">263.52</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Rollout Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">42.39</td>
+<td class="gt_row gt_right" headers="Median">39.50</td>
+<td class="gt_row gt_right" headers="Std_Dev">39.52</td>
+<td class="gt_row gt_right" headers="Skewness">0.86</td>
+<td class="gt_row gt_right" headers="Kurtosis">0.60</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Transit Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">339.23</td>
+<td class="gt_row gt_right" headers="Median">269.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">349.26</td>
+<td class="gt_row gt_right" headers="Skewness">6.16</td>
+<td class="gt_row gt_right" headers="Kurtosis">58.01</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Total Call Time</td>
+<td class="gt_row gt_right" headers="Minimum">109.00</td>
+<td class="gt_row gt_right" headers="Mean">3,635.99</td>
+<td class="gt_row gt_right" headers="Median">3,076.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">3,349.36</td>
+<td class="gt_row gt_right" headers="Skewness">3.72</td>
+<td class="gt_row gt_right" headers="Kurtosis">22.56</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The table above shows the information about the handling of calls that arrived by 9-1-1 trunk lines.</p>
+</section>
+<section id="e-911-call-breakdowns" class="level3">
+<h3 class="anchored" data-anchor-id="e-911-call-breakdowns">E-911 Call Breakdowns</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/911-call-day-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>E-911 Call Volume by Day of the Week</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As can be seen Sunday was the busiest day for E-911 calls this week.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/911-call-hour-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>E-911 Call Volume by Hour of the Day</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This shows that</p>
+</section>
+</section>
+<section id="cardiac-arrest-calls-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="cardiac-arrest-calls-analysis">Cardiac Arrest Calls Analysis</h2>
+<p>Finally, we will look into the specific subset of calls that are related to cardiac arrests. These calls have been identified in the <code>df_ca</code> dataset.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/ca-call-volume-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Cardiac Arrest Call Volume by Day and Hour</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As we can see, with a very limited number of cardiac arrest calls for the week.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="uiqsvszqog" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#uiqsvszqog table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#uiqsvszqog thead, #uiqsvszqog tbody, #uiqsvszqog tfoot, #uiqsvszqog tr, #uiqsvszqog td, #uiqsvszqog th {
+  border-style: none;
+}
+
+#uiqsvszqog p {
+  margin: 0;
+  padding: 0;
+}
+
+#uiqsvszqog .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#uiqsvszqog .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#uiqsvszqog .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#uiqsvszqog .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#uiqsvszqog .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#uiqsvszqog .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#uiqsvszqog .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#uiqsvszqog .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#uiqsvszqog .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#uiqsvszqog .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#uiqsvszqog .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#uiqsvszqog .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#uiqsvszqog .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#uiqsvszqog .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#uiqsvszqog .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uiqsvszqog .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#uiqsvszqog .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#uiqsvszqog .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#uiqsvszqog .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uiqsvszqog .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#uiqsvszqog .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uiqsvszqog .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#uiqsvszqog .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uiqsvszqog .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uiqsvszqog .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uiqsvszqog .gt_left {
+  text-align: left;
+}
+
+#uiqsvszqog .gt_center {
+  text-align: center;
+}
+
+#uiqsvszqog .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#uiqsvszqog .gt_font_normal {
+  font-weight: normal;
+}
+
+#uiqsvszqog .gt_font_bold {
+  font-weight: bold;
+}
+
+#uiqsvszqog .gt_font_italic {
+  font-style: italic;
+}
+
+#uiqsvszqog .gt_super {
+  font-size: 65%;
+}
+
+#uiqsvszqog .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#uiqsvszqog .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#uiqsvszqog .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#uiqsvszqog .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#uiqsvszqog .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#uiqsvszqog .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#uiqsvszqog .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#uiqsvszqog .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#uiqsvszqog div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="7" class="gt_heading gt_title gt_font_normal">Weekly Elapsed Time Summary Table</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="7" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Statistical summary of call processing times</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Time Metric</th>
+<th id="Minimum" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Min</th>
+<th id="Mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Mean</th>
+<th id="Median" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Median</th>
+<th id="Std_Dev" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Std Dev</th>
+<th id="Skewness" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Skew</th>
+<th id="Kurtosis" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Kurtosis</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Time To Queue</td>
+<td class="gt_row gt_right" headers="Minimum">38.00</td>
+<td class="gt_row gt_right" headers="Mean">44.67</td>
+<td class="gt_row gt_right" headers="Median">43.50</td>
+<td class="gt_row gt_right" headers="Std_Dev">6.80</td>
+<td class="gt_row gt_right" headers="Skewness">0.23</td>
+<td class="gt_row gt_right" headers="Kurtosis">−1.51</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Time To Dispatch</td>
+<td class="gt_row gt_right" headers="Minimum">2.00</td>
+<td class="gt_row gt_right" headers="Mean">2.83</td>
+<td class="gt_row gt_right" headers="Median">3.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">0.41</td>
+<td class="gt_row gt_right" headers="Skewness">−1.36</td>
+<td class="gt_row gt_right" headers="Kurtosis">1.20</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Phone Time</td>
+<td class="gt_row gt_right" headers="Minimum">41.00</td>
+<td class="gt_row gt_right" headers="Mean">316.50</td>
+<td class="gt_row gt_right" headers="Median">313.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">178.71</td>
+<td class="gt_row gt_right" headers="Skewness">−0.09</td>
+<td class="gt_row gt_right" headers="Kurtosis">−0.56</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Processing Time</td>
+<td class="gt_row gt_right" headers="Minimum">40.00</td>
+<td class="gt_row gt_right" headers="Mean">47.50</td>
+<td class="gt_row gt_right" headers="Median">46.50</td>
+<td class="gt_row gt_right" headers="Std_Dev">7.01</td>
+<td class="gt_row gt_right" headers="Skewness">0.19</td>
+<td class="gt_row gt_right" headers="Kurtosis">−1.50</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Rollout Time</td>
+<td class="gt_row gt_right" headers="Minimum">11.00</td>
+<td class="gt_row gt_right" headers="Mean">64.33</td>
+<td class="gt_row gt_right" headers="Median">65.50</td>
+<td class="gt_row gt_right" headers="Std_Dev">44.28</td>
+<td class="gt_row gt_right" headers="Skewness">0.06</td>
+<td class="gt_row gt_right" headers="Kurtosis">−1.35</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Transit Time</td>
+<td class="gt_row gt_right" headers="Minimum">138.00</td>
+<td class="gt_row gt_right" headers="Mean">220.33</td>
+<td class="gt_row gt_right" headers="Median">215.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">73.76</td>
+<td class="gt_row gt_right" headers="Skewness">0.10</td>
+<td class="gt_row gt_right" headers="Kurtosis">−1.47</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Total Call Time</td>
+<td class="gt_row gt_right" headers="Minimum">1,845.00</td>
+<td class="gt_row gt_right" headers="Mean">4,415.33</td>
+<td class="gt_row gt_right" headers="Median">4,657.50</td>
+<td class="gt_row gt_right" headers="Std_Dev">1,630.66</td>
+<td class="gt_row gt_right" headers="Skewness">−0.28</td>
+<td class="gt_row gt_right" headers="Kurtosis">−0.76</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<p>Cardiac Arrest Call Response Times</p>
+</div>
+</div>
+<p>However, we can see that the median time to process a cardiac arrest and get the units rolling is about seconds. The median time that we are on the phone is significantly longer, seconds. That is to be expected since the calltaker is likely giving T-CPR instructions while the units are en route.</p>
+<section id="mental-health-analyses" class="level3">
+<h3 class="anchored" data-anchor-id="mental-health-analyses">Mental Health Analyses</h3>
+<p>With the advent of Marcus’ Law in Virginia, there has been an emphasis on how mental health calls are processed and serviced. The following analyses will focus on the mental health calls that have been defined as such after consultation with DCHS.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/mh-day-of-week-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by day of the week.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The busiest day of the week for mental health calls was Wednesday with 6 service calls.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/mh-hour-of-day-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by hour of the day.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Most of these calls arrived, for this past week, in the late mornings through evenings. Again, should this data prove to be part of a trend, then we should adjust the availability of repsonders to address the community’s needs.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/mh-call-reception-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call reception.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This week, most of our mental health calls Phone Further analysis could be understaken to determine if any of these are transfer calls from our local 988 provider partner.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/mh-call-type-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by call type.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The most used call type was MENTAL HEALTH CASE which is expected.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base4_files/figure-html/mh-priority-level-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Number of calls for service by priority level.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Since MENTAL HEALTH CASE was the most used call type and is a P2 call, Priority 2 is the most used priority. The question, in the future, will be does these calls need to changed to a higher priority?</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="jcaolevktq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jcaolevktq table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#jcaolevktq thead, #jcaolevktq tbody, #jcaolevktq tfoot, #jcaolevktq tr, #jcaolevktq td, #jcaolevktq th {
+  border-style: none;
+}
+
+#jcaolevktq p {
+  margin: 0;
+  padding: 0;
+}
+
+#jcaolevktq .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#jcaolevktq .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#jcaolevktq .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#jcaolevktq .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#jcaolevktq .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#jcaolevktq .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#jcaolevktq .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#jcaolevktq .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#jcaolevktq .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#jcaolevktq .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#jcaolevktq .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#jcaolevktq .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#jcaolevktq .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#jcaolevktq .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#jcaolevktq .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jcaolevktq .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#jcaolevktq .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#jcaolevktq .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#jcaolevktq .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jcaolevktq .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#jcaolevktq .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jcaolevktq .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#jcaolevktq .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jcaolevktq .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jcaolevktq .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jcaolevktq .gt_left {
+  text-align: left;
+}
+
+#jcaolevktq .gt_center {
+  text-align: center;
+}
+
+#jcaolevktq .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#jcaolevktq .gt_font_normal {
+  font-weight: normal;
+}
+
+#jcaolevktq .gt_font_bold {
+  font-weight: bold;
+}
+
+#jcaolevktq .gt_font_italic {
+  font-style: italic;
+}
+
+#jcaolevktq .gt_super {
+  font-size: 65%;
+}
+
+#jcaolevktq .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#jcaolevktq .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#jcaolevktq .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#jcaolevktq .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#jcaolevktq .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#jcaolevktq .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#jcaolevktq .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#jcaolevktq .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#jcaolevktq div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="7" class="gt_heading gt_title gt_font_normal">Weekly Elapsed Time Summary Table</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="7" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Statistical summary of call processing times</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Time Metric</th>
+<th id="Minimum" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Min</th>
+<th id="Mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Mean</th>
+<th id="Median" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Median</th>
+<th id="Std_Dev" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Std Dev</th>
+<th id="Skewness" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Skew</th>
+<th id="Kurtosis" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" style="font-weight: bold" scope="col">Kurt</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Time To Queue</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">89.83</td>
+<td class="gt_row gt_right" headers="Median">70.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">82.61</td>
+<td class="gt_row gt_right" headers="Skewness">1.23</td>
+<td class="gt_row gt_right" headers="Kurtosis">1.78</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Time To Dispatch</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">175.07</td>
+<td class="gt_row gt_right" headers="Median">104.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">206.12</td>
+<td class="gt_row gt_right" headers="Skewness">1.42</td>
+<td class="gt_row gt_right" headers="Kurtosis">1.59</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Phone Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">246.41</td>
+<td class="gt_row gt_right" headers="Median">201.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">207.08</td>
+<td class="gt_row gt_right" headers="Skewness">0.70</td>
+<td class="gt_row gt_right" headers="Kurtosis">0.18</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Processing Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">264.90</td>
+<td class="gt_row gt_right" headers="Median">175.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">254.44</td>
+<td class="gt_row gt_right" headers="Skewness">1.58</td>
+<td class="gt_row gt_right" headers="Kurtosis">2.30</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Rollout Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">17.32</td>
+<td class="gt_row gt_right" headers="Median">4.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">30.41</td>
+<td class="gt_row gt_right" headers="Skewness">1.78</td>
+<td class="gt_row gt_right" headers="Kurtosis">2.36</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Variable">Transit Time</td>
+<td class="gt_row gt_right" headers="Minimum">0.00</td>
+<td class="gt_row gt_right" headers="Mean">435.43</td>
+<td class="gt_row gt_right" headers="Median">342.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">399.86</td>
+<td class="gt_row gt_right" headers="Skewness">0.78</td>
+<td class="gt_row gt_right" headers="Kurtosis">−0.65</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Variable">Total Call Time</td>
+<td class="gt_row gt_right" headers="Minimum">123.00</td>
+<td class="gt_row gt_right" headers="Mean">5,583.03</td>
+<td class="gt_row gt_right" headers="Median">3,727.00</td>
+<td class="gt_row gt_right" headers="Std_Dev">5,377.14</td>
+<td class="gt_row gt_right" headers="Skewness">1.09</td>
+<td class="gt_row gt_right" headers="Kurtosis">0.36</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Processing times for these calls are longer, somewhere around seconds. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This report has covered various aspects of the calls for service during week 38. We have analyzed the data for completeness and accuracy, explored it for insights into call patterns and trends, and focused on specific areas of interest such as high-priority calls and cardiac arrest incidents. The findings will assist in making informed decisions to improve service delivery and operational efficiency.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
