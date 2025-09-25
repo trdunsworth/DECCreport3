@@ -112,11 +112,11 @@ suppressWarnings({
 })
 
 # Verify paletteer is available
-if (!requireNamespace("paletteer", quietly = TRUE)) {
-  stop("paletteer package is not installed or available")
-} else {
-  cat("✓ paletteer package loaded successfully\n")
-}
+#if (!requireNamespace("paletteer", quietly = TRUE)) {
+#  stop("paletteer package is not installed or available")
+#} else {
+#  cat("✓ paletteer package loaded successfully\n")
+#}
 
 # Define week number for dynamic title generation
 WEEK_NUMBER <- 38
@@ -165,9 +165,9 @@ This is the weekly report for week `r WEEK_NUMBER` covering the period from `r W
 # Dynamic data file loading with error handling
 # Check for different naming conventions
 possible_files <- c(
-  paste0("data\\week", WEEK_NUMBER, ".csv"),
-  paste0("data\\Week", WEEK_NUMBER, "_25.csv"),
-  paste0("data\\Week", WEEK_NUMBER, ".csv")
+  paste0("data/week", WEEK_NUMBER, ".csv"),
+  paste0("data/Week", WEEK_NUMBER, "_25.csv"),
+  paste0("data/Week", WEEK_NUMBER, ".csv")
 )
 
 # Find the first file that exists
@@ -1321,23 +1321,27 @@ day_names <- c(
 busiest_day_law <- day_names[busiest_day_abbr_law]
 slowest_day_law <- day_names[slowest_day_abbr_law]
 
-barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
-  geom_bar() +
-  paletteer::scale_fill_paletteer_dynamic("cartography::blue.pal") +
-  labs(title="Number of Calls for Service for APD by Day of the Week",
-       x="Day of the Week",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) + 
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barDOW_APD <- df_law |> ggplot(aes(x = DOW, fill = DOW)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::blue.pal", dynamic = TRUE) +
+    labs(
+        title = "Number of Calls for Service for APD by Day of the Week",
+        x = "Day of the Week",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barDOW_APD
 ```
@@ -1359,23 +1363,38 @@ min_hour_info_law <- hour_counts_law |> filter(n == min(n))
 slowest_hour_law <- sprintf("%02d", min_hour_info_law |> slice(1) |> pull(Hour))
 slowest_hour_count_law <- min_hour_info_law |> slice(1) |> pull(n)
 
-barHour_APD <- df_law |> ggplot(aes(x=Hour, fill=Hour)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="G") +
-  labs(title="Number of Calls for Service for APD by Hour of the Day",
-       x="Hour of the Day",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=8),
-        axis.text.y = element_text(size=10))
+barHour_APD <- df_law |> ggplot(aes(x = Hour, fill = Hour)) +
+    geom_bar() +
+    # Build a robust APD blue palette: prefer cartography::blue.pal via paletteer, fallback to a blue ramp
+    {
+        apd_base_cols <- tryCatch(
+            {
+                as.character(paletteer::paletteer_d("cartography::blue.pal"))
+            },
+            error = function(e) {
+                c("#08306B", "#08519C", "#2171B5", "#4292C6", "#6BAED6", "#9ECAE1", "#C6DBEF", "#DEEBF7")
+            }
+        )
+        scale_fill_manual(values = grDevices::colorRampPalette(apd_base_cols)(nlevels(df_law$Hour)))
+    } +
+    labs(
+        title = "Number of Calls for Service for APD by Hour of the Day",
+        x = "Hour of the Day",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+        axis.text.y = element_text(size = 10)
+    )
 
 barHour_APD
 ```
@@ -1393,23 +1412,27 @@ max_cr_info_law <- cr_counts_law |> filter(n == max(n))
 busiest_cr_law <- max_cr_info_law |> slice(1) |> pull(Call_Reception)
 busiest_cr_count_law <- max_cr_info_law |> slice(1) |> pull(n)
 
-barReception_APD <- df_law |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="G") +
-  labs(title="Number of Calls for Service for by Call Reception",
-       x="Call Reception",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barReception_APD <- df_law |> ggplot(aes(x = Call_Reception, fill = Call_Reception)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::blue.pal", dynamic = TRUE) +
+    labs(
+        title = "Number of Calls for Service for by Call Reception",
+        x = "Call Reception",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barReception_APD
 ```
@@ -1432,21 +1455,26 @@ problem_counts_APD <- df_law |>
   slice_head(n = 10)
 
 barProblem_APD <- problem_counts_APD |>
-  ggplot(aes(x=reorder(Problem, -n), y=n, fill=Problem)) +
-  geom_bar(stat="identity") +
-  scale_fill_viridis(discrete=TRUE, option="G") +
-  labs(title="Number of Calls for Service by Call Type",
-       x="Call Type",
-       y="Number of Calls") +
-  geom_text(
-    aes(label = n),
-    vjust = -0.5,
-    size=3) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+    ggplot(aes(x = reorder(Problem, -n), y = n, fill = Problem)) +
+    geom_bar(stat = "identity") +
+    paletteer::scale_fill_paletteer_d("cartography::blue.pal", dynamic = TRUE, name = "Problem") +
+    labs(
+        title = "Number of Calls for Service by Call Type",
+        x = "Call Type",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        aes(label = n),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barProblem_APD
 ```
@@ -1470,23 +1498,27 @@ busiest_pri_law_percentage <- round((sum(df_law$Priority_Number == busiest_pri_l
 # Calculate percentage for P1 calls
 p1_law_percentage <- round((sum(df_law$Priority_Number == 1, na.rm = TRUE) / nrow(df_law)) * 100, 1)
 
-barPriority_APD <- df_law |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="G") +
-  labs(title="Number of Calls for Service by Priority Level",
-       x="Priority Level",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barPriority_APD <- df_law |> ggplot(aes(x = Priority_Number, fill = Priority_Number)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::blue.pal", dynamic = TRUE) +
+    labs(
+        title = "Number of Calls for Service by Priority Level",
+        x = "Priority Level",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barPriority_APD
 ```
@@ -1710,23 +1742,27 @@ day_names <- c(
 busiest_day_fire <- day_names[busiest_day_abbr_fire]
 slowest_day_fire <- day_names[slowest_day_abbr_fire]
 
-barDOW_AFD <- df_fire |> ggplot(aes(x=DOW, fill=DOW)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="F") +
-  labs(title="Number of Calls for Service for AFD by Day of the Week",
-       x="Day of the Week",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barDOW_AFD <- df_fire |> ggplot(aes(x = DOW, fill = DOW)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::red.pal", dynamic = TRUE, name = "Day of Week") +
+    labs(
+        title = "Number of Calls for Service for AFD by Day of the Week",
+        x = "Day of the Week",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barDOW_AFD
 ```
@@ -1748,23 +1784,34 @@ min_hour_info_fire <- hour_counts_fire |> filter(n == min(n))
 slowest_hour_fire <- sprintf("%02d", min_hour_info_fire |> slice(1) |> pull(Hour))
 slowest_hour_count_fire <- min_hour_info_fire |> slice(1) |> pull(n)
 
-barHour_AFD <- df_fire |> ggplot(aes(x=Hour, fill=Hour)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="F") +
-  labs(title="Number of Calls for Service for AFD by Hour of the Day",
-       x="Hour of the Day",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=8),
-        axis.text.y = element_text(size=10))
+barHour_AFD <- df_fire |> ggplot(aes(x = Hour, fill = Hour)) +
+    geom_bar() +
+    {
+        afd_base_cols <- tryCatch({
+            as.character(paletteer::paletteer_d("cartography::red.pal"))
+        }, error = function(e) {
+            c("#67000D", "#A50F15", "#CB181D", "#EF3B2C", "#FB6A4A", "#FC9272", "#FCBBA1", "#FEE0D2")
+        })
+        scale_fill_manual(values = grDevices::colorRampPalette(afd_base_cols)(nlevels(df_fire$Hour)))
+    } +
+    labs(
+        title = "Number of Calls for Service for AFD by Hour of the Day",
+        x = "Hour of the Day",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+        axis.text.y = element_text(size = 10)
+    )
 
 barHour_AFD
 ```
@@ -1785,23 +1832,27 @@ busiest_cr_count_fire <- max_cr_info_fire |> slice(1) |> pull(n)
 busiest_cr_pct_fire <- round((sum(df_fire$Call_Reception == busiest_cr_count_fire) / nrow(df_fire)) * 100, 1)
 cr_phone_pct_fire <- round((sum(df_fire$Call_Reception == "Phone") / nrow(df_fire)) * 100, 1)
 
-barReception_AFD <- df_fire |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="F") +
-  labs(title="Number of Calls for Service for AFD by Call Reception",
-       x="Call Reception",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barReception_AFD <- df_fire |> ggplot(aes(x = Call_Reception, fill = Call_Reception)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::red.pal", dynamic = TRUE, name = "Call Reception") +
+    labs(
+        title = "Number of Calls for Service for AFD by Call Reception",
+        x = "Call Reception",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barReception_AFD
 ```
@@ -1824,21 +1875,26 @@ problem_counts_AFD <- df_fire |>
   slice_head(n = 10)
 
 barProblem_AFD <- problem_counts_AFD |>
-  ggplot(aes(x=reorder(Problem, -n), y=n, fill=Problem)) +
-  geom_bar(stat="identity") +
-  scale_fill_viridis(discrete=TRUE, option="F") +
-  labs(title="Number of Calls for Service for AFD by Call Type",
-       x="Call Type",
-       y="Number of Calls") +
-  geom_text(
-    aes(label = n),
-    vjust = -0.5,
-    size=3) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+    ggplot(aes(x = reorder(Problem, -n), y = n, fill = Problem)) +
+    geom_bar(stat = "identity") +
+    paletteer::scale_fill_paletteer_d("cartography::red.pal", dynamic = TRUE, name = "Problem") +
+    labs(
+        title = "Number of Calls for Service for AFD by Call Type",
+        x = "Call Type",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        aes(label = n),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barProblem_AFD
 ```
@@ -1862,23 +1918,27 @@ busiest_pri_fire_percentage <- round((sum(df_fire$Priority_Number == busiest_pri
 # Calculate percentage for P1 calls
 p1_fire_percentage <- round((sum(df_fire$Priority_Number == 1, na.rm = TRUE) / nrow(df_fire)) * 100, 1)
 
-barPriority_AFD <- df_fire |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="F") +
-  labs(title="Number of Calls for Service by Priority Level",
-       x="Priority Level",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barPriority_AFD <- df_fire |> ggplot(aes(x = Priority_Number, fill = Priority_Number)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::red.pal", dynamic = TRUE) +
+    labs(
+        title = "Number of Calls for Service by Priority Level",
+        x = "Priority Level",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barPriority_AFD
 ```
@@ -2087,23 +2147,27 @@ day_names <- c(
 busiest_day_ems <- day_names[busiest_day_abbr_ems]
 slowest_day_ems <- day_names[slowest_day_abbr_ems]
 
-barDOW_EMS <- df_ems |> ggplot(aes(x=DOW, fill=DOW)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="D") +
-  labs(title="Number of Calls for Service for EMS by Day of the Week",
-       x="Day of the Week",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barDOW_EMS <- df_ems |> ggplot(aes(x = DOW, fill = DOW)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::green.pal", dynamic = TRUE, name = "Day of Week") +
+    labs(
+        title = "Number of Calls for Service for EMS by Day of the Week",
+        x = "Day of the Week",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barDOW_EMS
 ```
@@ -2125,23 +2189,34 @@ min_hour_info_ems <- hour_counts_ems |> filter(n == min(n))
 slowest_hour_ems <- sprintf("%02d", min_hour_info_ems |> slice(1) |> pull(Hour))
 slowest_hour_count_ems <- min_hour_info_ems |> slice(1) |> pull(n)
 
-barHour_EMS <- df_ems |> ggplot(aes(x=Hour, fill=Hour)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="D") +
-  labs(title="Number of Calls for Service for EMS by Hour of the Day",
-       x="Hour of the Day",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=8),
-        axis.text.y = element_text(size=10))
+barHour_EMS <- df_ems |> ggplot(aes(x = Hour, fill = Hour)) +
+    geom_bar() +
+    {
+        ems_base_cols <- tryCatch({
+            as.character(paletteer::paletteer_d("cartography::green.pal"))
+        }, error = function(e) {
+            c("#00441B", "#006D2C", "#238B45", "#41AE76", "#66C2A4", "#99D8C9", "#C7E9C0", "#E5F5E0")
+        })
+        scale_fill_manual(values = grDevices::colorRampPalette(ems_base_cols)(nlevels(df_ems$Hour)))
+    } +
+    labs(
+        title = "Number of Calls for Service for EMS by Hour of the Day",
+        x = "Hour of the Day",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+        axis.text.y = element_text(size = 10)
+    )
 
 barHour_EMS
 ```
@@ -2161,23 +2236,27 @@ busiest_cr_count_ems <- max_cr_info_ems |> slice(1) |> pull(n)
 
 cr_nr_pct_ems <- round((sum(df_ems$Call_Reception == "NOT CAPTURED") / nrow(df_ems)) * 100, 1)
 
-barReception_EMS <- df_ems |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="D") +
-  labs(title="Number of Calls for Service for EMS by Call Reception",
-       x="Call Reception",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barReception_EMS <- df_ems |> ggplot(aes(x = Call_Reception, fill = Call_Reception)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::green.pal", dynamic = TRUE, name = "Call Reception") +
+    labs(
+        title = "Number of Calls for Service for EMS by Call Reception",
+        x = "Call Reception",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barReception_EMS
 ```
@@ -2202,21 +2281,26 @@ problem_counts_EMS <- df_ems |>
   slice_head(n = 10)
 
 barProblem_EMS <- problem_counts_EMS |>
-  ggplot(aes(x=reorder(Problem, -n), y=n, fill=Problem)) +
-  geom_bar(stat="identity") +
-  scale_fill_viridis(discrete=TRUE, option="E") +
-  labs(title="Number of Calls for Service for EMS by Call Type",
-       x="Call Type",
-       y="Number of Calls") +
-  geom_text(
-    aes(label = n),
-    vjust = -0.5, 
-    size = 3) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+    ggplot(aes(x = reorder(Problem, -n), y = n, fill = Problem)) +
+    geom_bar(stat = "identity") +
+    paletteer::scale_fill_paletteer_d("cartography::green.pal", dynamic = TRUE, name = "Problem") +
+    labs(
+        title = "Number of Calls for Service for EMS by Call Type",
+        x = "Call Type",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        aes(label = n),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
 
 barProblem_EMS
 ```
@@ -2240,23 +2324,28 @@ busiest_pri_ems_percentage <- round((sum(df_ems$Priority_Number == busiest_pri_e
 # Calculate percentage for P1 calls
 p1_ems_percentage <- round((sum(df_ems$Priority_Number == 1, na.rm = TRUE) / nrow(df_ems)) * 100, 1)
 
-barPriority_EMS <- df_ems |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
-  geom_bar() +
-  scale_fill_viridis(discrete=TRUE, option="E") +
-  labs(title="Number of Calls for Service by Priority Level",
-       x="Priority Level",
-       y="Number of Calls") +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.5,
-    size=3
-  ) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size=14),
-        axis.text.x = element_text(angle=45, hjust=1, size=10),
-        axis.text.y = element_text(size=10))
+barPriority_EMS <- df_ems |> ggplot(aes(x = Priority_Number, fill = Priority_Number)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("cartography::green.pal", dynamic = TRUE) +
+    labs(
+        title = "Number of Calls for Service by Priority Level",
+        x = "Priority Level",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 3
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10)
+    )
+
 
 barPriority_EMS
 ```
