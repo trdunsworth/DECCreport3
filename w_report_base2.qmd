@@ -2,7 +2,7 @@
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
 date: "2025-09-23"
-format: 
+format:
   docx:
     toc: false
     toc-depth: 3
@@ -108,6 +108,8 @@ suppressWarnings({
     library(GPfit)
     library(survival)
     library(paletteer)
+    library(flextable)
+    library(officer)
   })
 })
 
@@ -154,6 +156,35 @@ DYNAMIC_TITLE <- paste0("Weekly Report: Week ", WEEK_NUMBER, " (", WEEK_START_FO
 # cat("Week", WEEK_NUMBER, "dates:", WEEK_START_FORMATTED, "through", WEEK_END_FORMATTED, "\n")
 ```
 
+```{r table-helpers}
+#| echo: false
+#| message: false
+#| warning: false
+
+flextable::set_flextable_defaults(
+  theme_fun = flextable::theme_booktabs,
+  font.size = 11,
+  padding = 3,
+  borders = officer::fp_border_default()
+)
+
+to_ft <- function(tbl, caption = NULL, header_map = NULL, digits = 2) {
+  df <- as.data.frame(tbl)
+  ft <- flextable::flextable(df)
+  if (!is.null(header_map)) ft <- flextable::set_header_labels(ft, values = header_map)
+  if (nrow(df) > 0) ft <- flextable::bg(ft, i = seq(1, nrow(df), by = 2), bg = "#F5F5F5", part = "body")
+  ft <- flextable::bold(ft, part = "header")
+  ft <- flextable::fontsize(ft, part = "header", size = 12)
+  num_cols <- names(df)[vapply(df, is.numeric, logical(1))]
+  if (length(num_cols) > 0) {
+    ft <- flextable::align(ft, j = num_cols, align = "right", part = "all")
+    ft <- flextable::colformat_num(ft, j = num_cols, digits = digits, big.mark = ",")
+  }
+  if (!is.null(caption)) ft <- flextable::set_caption(ft, caption)
+  flextable::autofit(ft)
+}
+```
+
 ## Introduction
 
 This is the weekly report for week `r WEEK_NUMBER` covering the period from `r WEEK_START_FORMATTED` through `r WEEK_END_FORMATTED` 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
@@ -188,7 +219,7 @@ cat("Loading data from:", data_file, "\n")
 # Use read_csv with error handling and show parsing issues
 df <- read_csv(data_file, show_col_types = FALSE)
 
-# Check if data loaded correctly and show any parsing problems  
+# Check if data loaded correctly and show any parsing problems
 if(nrow(df) == 0) {
   stop("Data file is empty or failed to load: ", data_file)
 }
@@ -327,7 +358,7 @@ slowest_day_count <- min_dow_info |> slice(1) |> pull(n)
 # Create mapping from abbreviations to full day names
 day_names <- c(
   "SUN" = "Sunday",
-  "MON" = "Monday", 
+  "MON" = "Monday",
   "TUE" = "Tuesday",
   "WED" = "Wednesday",
   "THU" = "Thursday",
@@ -350,7 +381,7 @@ barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -366,7 +397,7 @@ Over the last three weeks of this report structure, we've seen different days of
 
 ```{r hour-of-day}
 #| echo: false
-#| fig-cap: "Number of calls for service by hour of the day." 
+#| fig-cap: "Number of calls for service by hour of the day."
 # ggplot2
 hour_counts <- df |>
   count(Hour, sort = TRUE)
@@ -390,7 +421,7 @@ barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -522,7 +553,7 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -608,7 +639,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
   geom_text(
     stat = "count",
     aes(label = after_stat(count)),
-    vjust = -0.5,
+  vjust = -0.5,
     size=3
   ) + 
   theme_minimal() +
@@ -732,12 +763,12 @@ hourly_dow_summary <- df |>
 # Create a heatmap showing call patterns
 hour_dow_plot <- ggplot(hourly_dow_summary, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
   geom_tile(color = "white", linewidth = 0.1) +
-  scale_x_continuous(name = "Hour of Day", 
+  scale_x_continuous(name = "Hour of Day",
                      breaks = seq(0, 23, 2),
                      labels = sprintf("%02d:00", seq(0, 23, 2))) +
   scale_y_discrete(name = "Day of Week", limits = rev) +
-  scale_fill_gradient2(name = "Calls", 
-                       low = "lightblue", 
+  scale_fill_gradient2(name = "Calls",
+                       low = "lightblue",
                        mid = "yellow",
                        high = "red",
                        midpoint = median(hourly_dow_summary$call_count)) +
@@ -758,7 +789,7 @@ hour_dow_plot
 ```
 
 ```{r alternative-ridge-plot}
-#| label: alternative-ridge-plot  
+#| label: alternative-ridge-plot
 #| echo: false
 #| message: false
 #| warning: false
@@ -772,7 +803,7 @@ tryCatch({
     # Create ridge plot using the raw data for a density estimate
     ridge_plot <- ggplot(df, aes(x = as.numeric(as.character(Hour)), y = DOW, fill = DOW)) +
       ggridges::geom_density_ridges(
-        alpha = 0.7, 
+  alpha = 0.7,
         scale = 1.2, # Adjust scale for better separation
         rel_min_height = 0.01 # Removes trailing tails
       ) +
@@ -791,7 +822,7 @@ tryCatch({
         axis.title = element_text(size = 12),
         legend.position = "none"
       )
-    
+
     print(ridge_plot)
   } else {
     cat("ggridges package not available. Using heatmap above instead.\n")
@@ -820,31 +851,16 @@ hourly_summary <- df |>
   arrange(desc(total_calls))
 
 # Display summary table
-hourly_summary |>
-  gt() |>
-  tab_header(
-    title = "Call Volume Summary by Day of Week",
-    subtitle = "Peak hours and average calls per hour"
-  ) |>
-  cols_label(
+to_ft(
+  hourly_summary,
+  caption = "Call Volume Summary by Day of Week",
+  header_map = c(
     DOW = "Day of Week",
     total_calls = "Total Calls",
     peak_hour = "Peak Hour",
     avg_calls_per_hour = "Avg Calls/Hour"
-  ) |>
-  fmt_number(
-    columns = c(total_calls),
-    decimals = 0
-  ) |>
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels()
-  ) |>
-  tab_options(
-    table.font.size = 12,
-    heading.title.font.size = 14,
-    heading.subtitle.font.size = 12
-  )
+  ), digits = 0
+)
 ```
 
 Based on the heat map, the middle of the day is still the busiest time for calls to arrive in the center. For this week, the 1700 hour for Friday was the busiest day and hour combination for the week. We may need to go back to that date and time range to determine if there was a significant event in that hour that could account for the spike in calls.
@@ -888,16 +904,16 @@ median_time_to_dispatch <- NA_real_
 # Create a summary table of elapsed time variables
 tryCatch({
   # Define the columns we want to analyze
-  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -934,7 +950,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -951,10 +967,10 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
                     
                     # Calculate fourth moment
@@ -982,52 +998,35 @@ tryCatch({
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
     
     # Extract key metrics for use in text
-    median_time_to_queue <- summary_table |> 
-      filter(Variable == "Time To Queue") |> 
+  median_time_to_queue <- summary_table |>
+  filter(Variable == "Time To Queue") |>
       pull(Median)
-      
-    median_time_to_dispatch <- summary_table |> 
-      filter(Variable == "Time To Dispatch") |> 
+
+  median_time_to_dispatch <- summary_table |>
+  filter(Variable == "Time To Dispatch") |>
       pull(Median)
 
     median_processing_time <- summary_table |>
-      filter(Variable == "Processing_Time") |>
+      filter(Variable == "Processing Time") |>
       pull(Median)
 
     median_phone_time <- summary_table |>
-      filter(Variable == "Phone_Time") |>
+      filter(Variable == "Phone Time") |>
       pull(Median)
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(
         Variable = "Time Metric",
         Minimum = "Min",
-        Mean = "Mean", 
+        Mean = "Mean",
         Median = "Median",
         Std_Dev = "Std Dev",
         Skewness = "Skew",
         Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+      ), digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1035,7 +1034,7 @@ tryCatch({
 })
 ```
 
-The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is `r median_time_to_queue` seconds. This is still in line with what has been seen in the last two weeks. The median time in queue was `r median_time_to_dispatch` seconds. These are comparable numbers with the prior weeks.  
+The values from this table describe operations for the week being analyzed. In this case, the median time for a call to be placed in queue is `r median_time_to_queue` seconds. This is still in line with what has been seen in the last two weeks. The median time in queue was `r median_time_to_dispatch` seconds. These are comparable numbers with the prior weeks.
 
 ```{r ttq-plots}
 #| label: ttq-plots
@@ -1323,7 +1322,14 @@ slowest_day_law <- day_names[slowest_day_abbr_law]
 
 barDOW_APD <- df_law |> ggplot(aes(x=DOW, fill=DOW)) +
   geom_bar() +
-  paletteer::scale_fill_paletteer_dynamic("cartography::blue.pal") +
+  # Use a supported discrete palette; fallback to viridis if paletteer not available
+  {
+    if (requireNamespace("paletteer", quietly = TRUE)) {
+      paletteer::scale_fill_paletteer_d("ggsci::blue_material")
+    } else {
+      scale_fill_viridis(discrete = TRUE, option = "E")
+    }
+  } +
   labs(title="Number of Calls for Service for APD by Day of the Week",
        x="Day of the Week",
        y="Number of Calls") +
@@ -1610,43 +1616,26 @@ tryCatch({
       pull(Median)
 
     median_processing_time <- summary_table |>
-      filter(Variable == "Processing_Time") |>
+      filter(Variable == "Processing Time") |>
       pull(Median)
 
     median_phone_time <- summary_table |>
-      filter(Variable == "Phone_Time") |>
+      filter(Variable == "Phone Time") |>
       pull(Median)
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(
         Variable = "Time Metric",
         Minimum = "Min",
-        Mean = "Mean", 
+        Mean = "Mean",
         Median = "Median",
         Std_Dev = "Std Dev",
         Skewness = "Skew",
         Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+      ), digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1664,7 +1653,7 @@ median_phone_time <- tryCatch({
 
 median_processing_time <- tryCatch({
   if (exists("summary_table")) {
-    summary_table |> filter(Variable == "Processing Time") |> pull(Median)  
+  summary_table |> filter(Variable == "Processing Time") |> pull(Median)
   } else {
     NA_real_
   }
@@ -1698,7 +1687,7 @@ slowest_day_count_fire <- min_dow_info_fire |> slice(1) |> pull(n)
 # Create mapping from abbreviations to full day names
 day_names <- c(
   "SUN" = "Sunday",
-  "MON" = "Monday", 
+  "MON" = "Monday",
   "TUE" = "Tuesday",
   "WED" = "Wednesday",
   "THU" = "Thursday",
@@ -1900,7 +1889,7 @@ mean_phone_time <- NA_real_
 # Create a summary table of elapsed time variables
 tryCatch({
   # Define the columns we want to analyze
-  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
   
   # Check which columns actually exist in the data
@@ -2003,47 +1992,30 @@ tryCatch({
       pull(Median)
 
     median_processing_time <- summary_table |>
-      filter(Variable == "Processing_Time") |>
+      filter(Variable == "Processing Time") |>
       pull(Median)
 
     median_phone_time <- summary_table |>
-      filter(Variable == "Phone_Time") |>
+      filter(Variable == "Phone Time") |>
       pull(Median)
 
     mean_phone_time <- summary_table |>
-      filter(Variable == "Phone_Time") |>
+      filter(Variable == "Phone Time") |>
       pull(Mean)
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(
         Variable = "Time Metric",
         Minimum = "Min",
-        Mean = "Mean", 
+        Mean = "Mean",
         Median = "Median",
         Std_Dev = "Std Dev",
         Skewness = "Skew",
         Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+      ), digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -2075,7 +2047,7 @@ slowest_day_count_ems <- min_dow_info_ems |> slice(1) |> pull(n)
 # Create mapping from abbreviations to full day names
 day_names <- c(
   "SUN" = "Sunday",
-  "MON" = "Monday", 
+  "MON" = "Monday",
   "TUE" = "Tuesday",
   "WED" = "Wednesday",
   "THU" = "Thursday",
@@ -2112,7 +2084,7 @@ barDOW_EMS
 
 ```{r ems-hour-of-day}
 #| echo: false
-#| fig-cap: "Number of calls for service by hour of the day." 
+#| fig-cap: "Number of calls for service by hour of the day."
 # ggplot2
 hour_counts_ems <- df_ems |>
   count(Hour, sort = TRUE)
@@ -2134,7 +2106,7 @@ barHour_EMS <- df_ems |> ggplot(aes(x=Hour, fill=Hour)) +
   geom_text(
     stat = "count",
     aes(label = after_stat(count)),
-    vjust = -0.5,
+  vjust = -0.5,
     size=3
   ) +
   theme_minimal() +
@@ -2278,16 +2250,16 @@ median_phone_time <- NA_real_
 # Create a summary table of elapsed time variables
 tryCatch({
   # Define the columns we want to analyze
-  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_ems)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df_ems %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -2324,7 +2296,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -2341,10 +2313,10 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
                     
                     # Calculate fourth moment
@@ -2372,52 +2344,35 @@ tryCatch({
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
     
     # Extract key metrics for use in text
-    median_time_to_queue <- summary_table |> 
-      filter(Variable == "Time To Queue") |> 
+  median_time_to_queue <- summary_table |>
+  filter(Variable == "Time To Queue") |>
       pull(Median)
-      
-    median_time_to_dispatch <- summary_table |> 
-      filter(Variable == "Time To Dispatch") |> 
+
+  median_time_to_dispatch <- summary_table |>
+  filter(Variable == "Time To Dispatch") |>
       pull(Median)
 
     median_processing_time <- summary_table |>
-      filter(Variable == "Processing_Time") |>
+      filter(Variable == "Processing Time") |>
       pull(Median)
 
     median_phone_time <- summary_table |>
-      filter(Variable == "Phone_Time") |>
+      filter(Variable == "Phone Time") |>
       pull(Median)
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(
         Variable = "Time Metric",
         Minimum = "Min",
-        Mean = "Mean", 
+        Mean = "Mean",
         Median = "Median",
         Std_Dev = "Std Dev",
         Skewness = "Skew",
         Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+      ), digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -2447,7 +2402,7 @@ library(knitr)
 call_taker_counts <- df_ttq_delay %>%
   count(Call_Taker, sort = TRUE)
 
-kable(call_taker_counts, col.names = c("Call Taker", "Count"), caption = "Frequency of Call Taker in Delayed TTQ Calls (Descending)")
+to_ft(call_taker_counts, caption = "Frequency of Call Taker in Delayed TTQ Calls (Descending)", header_map = c(Call_Taker = "Call Taker", n = "Count"), digits = 0)
 ```
 
 From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. This, however, could be something that is included in the report template in order to monitor. Should a telecommunicator appear multiple times in this table over a period of time, additional training or mentoring may be called for.
@@ -2461,10 +2416,10 @@ From this, since there are a small number of telecommunicators who have more tha
 dispatcher_counts <- df_ttd_delay %>%
   count(Dispatcher, sort = TRUE)
 
-kable(dispatcher_counts, col.names = c("Dispatcher", "Count"), caption = "Frequency of Dispatcher in Delayed TTD Calls (Descending)")
+to_ft(dispatcher_counts, caption = "Frequency of Dispatcher in Delayed TTD Calls (Descending)", header_map = c(Dispatcher = "Dispatcher", n = "Count"), digits = 0)
 ```
 
-This list is fairly short and could simply be monitored in future should the need arise. 
+This list is fairly short and could simply be monitored in future should the need arise.
 
 ## High-Priority and Critical Calls
 
@@ -2562,7 +2517,7 @@ As we can see, with a very limited number of cardiac arrest calls for the week.
 #| message: false
 tryCatch({
   # Define the columns we want to analyze
-  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
 
   # Check which columns actually exist in the data
@@ -2656,52 +2611,35 @@ tryCatch({
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
      #Extract key metrics for use in text
-    median_time_to_queue <- summary_table |> 
-      filter(Variable == "Time To Queue") |> 
+  median_time_to_queue <- summary_table |>
+  filter(Variable == "Time To Queue") |>
       pull(Median)
       
-    median_time_to_dispatch <- summary_table |> 
-      filter(Variable == "Time To Dispatch") |> 
+  median_time_to_dispatch <- summary_table |>
+  filter(Variable == "Time To Dispatch") |>
       pull(Median)
 
     median_processing_time <- summary_table |>
-      filter(Variable == "Processing_Time") |>
+      filter(Variable == "Processing Time") |>
       pull(Median)
 
     median_phone_time <- summary_table |>
-      filter(Variable == "Phone_Time") |>
+      filter(Variable == "Phone Time") |>
       pull(Median)
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
         Median = "Median",
         Std_Dev = "Std Dev",
         Skewness = "Skew",
-        Kurtosis = "Kurtosis"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+        Kurtosis = "Kurt"
+      ), digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -2733,7 +2671,7 @@ slowest_day_count_mh <- min_dow_info_mh |> slice(1) |> pull(n)
 # Create mapping from abbreviations to full day names
 day_names <- c(
   "SUN" = "Sunday",
-  "MON" = "Monday", 
+  "MON" = "Monday",
   "TUE" = "Tuesday",
   "WED" = "Wednesday",
   "THU" = "Thursday",
@@ -2756,7 +2694,7 @@ barDOW_MH <- df_mh |> ggplot(aes(x=DOW, fill=DOW)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=3
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=14),
@@ -2766,7 +2704,7 @@ barDOW_MH <- df_mh |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW_MH
 ```
 
-The busiest day of the week for mental health calls was `r busiest_day_mh` with `r busiest_day_count_mh` service calls. 
+The busiest day of the week for mental health calls was `r busiest_day_mh` with `r busiest_day_count_mh` service calls.
 
 ```{r mh-hour-of-day}
 #| echo: false
@@ -3030,30 +2968,26 @@ tryCatch({
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
     #Extract key metrics for use in text
-    median_time_to_queue <- summary_table |> 
-      filter(Variable == "Time To Queue") |> 
+  median_time_to_queue <- summary_table |>
+  filter(Variable == "Time To Queue") |>
       pull(Median)
       
-    median_time_to_dispatch <- summary_table |> 
-      filter(Variable == "Time To Dispatch") |> 
+  median_time_to_dispatch <- summary_table |>
+  filter(Variable == "Time To Dispatch") |>
       pull(Median)
 
     median_processing_time <- summary_table |>
-      filter(Variable == "Processing_Time") |>
+      filter(Variable == "Processing Time") |>
       pull(Median)
 
     median_phone_time <- summary_table |>
-      filter(Variable == "Phone_Time") |>
+      filter(Variable == "Phone Time") |>
       pull(Median)
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
@@ -3061,21 +2995,8 @@ tryCatch({
         Std_Dev = "Std Dev",
         Skewness = "Skew",
         Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+      ), digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")

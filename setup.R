@@ -8,7 +8,7 @@ required_packages <- c(
   "ggridges", "multcomp", "emmeans", "RVAideMemoire", "FactoMineR", "DescTools", "nlme",
   "funModeling", "inspectdf", "dlookr", "viridis", "merTools", "factoextra", "nortest", "MASS",
   "randtests", "summarytools", "report", "knitr", "kableExtra", "dbus",
-  "modelbased", "parameters", "performance", "insight", "paletteer"
+  "modelbased", "parameters", "performance", "insight", "paletteer", "flextable", "officer"
 )
 
 is_windows <- identical(tolower(Sys.info()[["sysname"]]), "windows")
@@ -18,8 +18,8 @@ if (is_windows) {
   options(pkgType = "binary")
   # More forgiving install behavior
   Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = "true")
-  # Avoid libcurl TLS quirks on some corp networks
-  options(download.file.method = "wininet")
+  # Use libcurl (wininet deprecated as of R 4.5)
+  options(download.file.method = "libcurl")
 }
 
 # Use Posit Package Manager for stable binaries
@@ -42,9 +42,9 @@ if (length(to_install)) {
       install_fail <<- c(install_fail, pkg)
       FALSE
     }, warning = function(w) {
-      # Treat warnings as non-fatal but log them
+      # Treat warnings as non-fatal; log and continue (avoid muffleWarning restart)
       message(sprintf("!! Warning while installing %s: %s", pkg, conditionMessage(w)))
-      invokeRestart("muffleWarning")
+      NULL
     })
   }
 } else {

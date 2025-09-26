@@ -79,6 +79,47 @@ library(GPfit)
 library(survival)
 ```
 
+```{r table-helpers}
+#| label: table-helpers
+#| echo: false
+#| message: false
+#| warning: false
+
+suppressPackageStartupMessages({
+  library(flextable)
+  library(officer)
+})
+
+# Consistent, accessible Word tables
+to_ft <- function(x, caption = NULL, header_map = NULL, digits = NULL) {
+  ft <- flextable::flextable(x)
+  if (!is.null(header_map)) {
+    ft <- flextable::set_header_labels(ft, values = header_map)
+  }
+  ft <- flextable::theme_booktabs(ft)
+  # zebra striping on body rows
+  if (nrow(x) > 1) {
+    ft <- flextable::bg(ft, i = seq(2, nrow(x), by = 2), bg = "#f7f7f7", part = "body")
+  }
+  # header emphasis
+  ft <- flextable::bold(ft, part = "header")
+  ft <- flextable::fontsize(ft, part = "header", size = 12)
+  # numeric formatting
+  num_cols <- names(Filter(is.numeric, x))
+  if (length(num_cols) > 0) {
+    if (is.null(digits)) {
+      ft <- flextable::colformat_num(ft, col_keys = num_cols, big.mark = ",")
+    } else {
+      ft <- flextable::colformat_num(ft, col_keys = num_cols, digits = digits, big.mark = ",")
+    }
+    ft <- flextable::align(ft, j = num_cols, align = "right", part = "body")
+  }
+  if (!is.null(caption)) ft <- flextable::set_caption(ft, caption)
+  ft <- flextable::autofit(ft)
+  ft
+}
+```
+
 ## Introduction
 
 This is the weekly report for week 37 covering the period from September 08 through September 14, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
@@ -571,31 +612,12 @@ hourly_summary <- df |>
   arrange(desc(total_calls))
 
 # Display summary table
-hourly_summary |>
-  gt() |>
-  tab_header(
-    title = "Call Volume Summary by Day of Week",
-    subtitle = "Peak hours and average calls per hour"
-  ) |>
-  cols_label(
-    DOW = "Day of Week",
-    total_calls = "Total Calls",
-    peak_hour = "Peak Hour",
-    avg_calls_per_hour = "Avg Calls/Hour"
-  ) |>
-  fmt_number(
-    columns = c(total_calls),
-    decimals = 0
-  ) |>
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels()
-  ) |>
-  tab_options(
-    table.font.size = 12,
-    heading.title.font.size = 14,
-    heading.subtitle.font.size = 12
-  )
+to_ft(
+  hourly_summary,
+  caption = "Call Volume Summary by Day of Week",
+  header_map = c(DOW = "Day of Week", total_calls = "Total Calls", peak_hour = "Peak Hour", avg_calls_per_hour = "Avg Calls/Hour"),
+  digits = 0
+)
 ```
 
 These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week. Additionally, we had a large concentration of service calls during the 0800 and 0900 hours on Wednesday. We should review that time period to see if there were any significant events that impacted our call volumes. 
@@ -727,36 +749,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
     
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean", 
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurt"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1258,36 +1256,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurtosis"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1541,36 +1515,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurt"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1824,36 +1774,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurtosis"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurtosis"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1878,12 +1804,16 @@ We can look at the datasets and see if there are telecommunicators who may exper
 
 # Table: Call_Taker frequency in df_ttq_delay (descending)
 library(dplyr)
-library(knitr)
 
 call_taker_counts <- df_ttq_delay %>%
   count(Call_Taker, sort = TRUE)
 
-kable(call_taker_counts, col.names = c("Call Taker", "Count"), caption = "Frequency of Call Taker in Delayed TTQ Calls (Descending)")
+to_ft(
+  call_taker_counts,
+  caption = "Frequency of Call Taker in Delayed TTQ Calls (Descending)",
+  header_map = c(Call_Taker = "Call Taker", n = "Count"),
+  digits = 0
+)
 ```
 
 From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. This, however, could be something that is included in the report template in order to monitor. Should a telecommunicator appear multiple times in this table over a period of time, additional training or mentoring may be called for.
@@ -1897,7 +1827,12 @@ From this, since there are a small number of telecommunicators who have more tha
 dispatcher_counts <- df_ttd_delay %>%
   count(Dispatcher, sort = TRUE)
 
-kable(dispatcher_counts, col.names = c("Dispatcher", "Count"), caption = "Frequency of Dispatcher in Delayed TTD Calls (Descending)")
+to_ft(
+  dispatcher_counts,
+  caption = "Frequency of Dispatcher in Delayed TTD Calls (Descending)",
+  header_map = c(Dispatcher = "Dispatcher", n = "Count"),
+  digits = 0
+)
 ```
 
 This list is fairly short and could simply be monitored in future should the need arise. 
@@ -2091,36 +2026,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurtosis"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurtosis"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -2374,36 +2285,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurt"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")

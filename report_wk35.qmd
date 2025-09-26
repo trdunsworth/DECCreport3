@@ -78,6 +78,39 @@ library(broom)
 library(survival)
 ```
 
+```{r table-helpers}
+#| label: table-helpers
+#| echo: false
+#| message: false
+#| warning: false
+
+suppressPackageStartupMessages({
+  library(flextable)
+  library(officer)
+})
+
+to_ft <- function(x, caption = NULL, header_map = NULL, digits = NULL) {
+  ft <- flextable::flextable(x)
+  if (!is.null(header_map)) ft <- flextable::set_header_labels(ft, values = header_map)
+  ft <- flextable::theme_booktabs(ft)
+  if (nrow(x) > 1) ft <- flextable::bg(ft, i = seq(2, nrow(x), by = 2), bg = "#f7f7f7", part = "body")
+  ft <- flextable::bold(ft, part = "header")
+  ft <- flextable::fontsize(ft, part = "header", size = 12)
+  num_cols <- names(Filter(is.numeric, x))
+  if (length(num_cols) > 0) {
+    if (is.null(digits)) {
+      ft <- flextable::colformat_num(ft, col_keys = num_cols, big.mark = ",")
+    } else {
+      ft <- flextable::colformat_num(ft, col_keys = num_cols, digits = digits, big.mark = ",")
+    }
+    ft <- flextable::align(ft, j = num_cols, align = "right", part = "body")
+  }
+  if (!is.null(caption)) ft <- flextable::set_caption(ft, caption)
+  ft <- flextable::autofit(ft)
+  ft
+}
+```
+
 ## Introduction
 
 This is the weekly report for week 35 covering the period from August 25, 2025, through August 31, 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
@@ -460,31 +493,12 @@ hourly_summary <- df |>
   arrange(desc(total_calls))
 
 # Display summary table
-hourly_summary |>
-  gt() |>
-  tab_header(
-    title = "Call Volume Summary by Day of Week",
-    subtitle = "Peak hours and average calls per hour"
-  ) |>
-  cols_label(
-    DOW = "Day of Week",
-    total_calls = "Total Calls",
-    peak_hour = "Peak Hour",
-    avg_calls_per_hour = "Avg Calls/Hour"
-  ) |>
-  fmt_number(
-    columns = c(total_calls),
-    decimals = 0
-  ) |>
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels()
-  ) |>
-  tab_options(
-    table.font.size = 12,
-    heading.title.font.size = 14,
-    heading.subtitle.font.size = 12
-  )
+to_ft(
+  hourly_summary,
+  caption = "Call Volume Summary by Day of Week",
+  header_map = c(DOW = "Day of Week", total_calls = "Total Calls", peak_hour = "Peak Hour", avg_calls_per_hour = "Avg Calls/Hour"),
+  digits = 0
+)
 ```
 
 These visualizations show that the bulk of our calls are concentrated between 1000 hours and 1400 hours for the week.
@@ -616,36 +630,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
     
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean", 
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurt"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1147,36 +1137,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurt"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1430,36 +1396,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurt"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurt"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
@@ -1713,36 +1655,12 @@ tryCatch({
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
 
-    # Use gt for better formatting compatibility with Word output
-    summary_table %>%
-      gt() %>%
-      tab_header(
-        title = "Weekly Elapsed Time Summary Table",
-        subtitle = "Statistical summary of call processing times"
-      ) %>%
-      cols_label(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurtosis"
-      ) %>%
-      fmt_number(
-        columns = c(Minimum, Mean, Median, Std_Dev, Skewness, Kurtosis),
-        decimals = 2,
-        use_seps = TRUE
-      ) %>%
-      tab_style(
-        style = cell_text(weight = "bold"),
-        locations = cells_column_labels()
-      ) %>%
-      tab_options(
-        table.font.size = 12,
-        heading.title.font.size = 14,
-        heading.subtitle.font.size = 12
-      )
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table",
+      header_map = c(Variable = "Time Metric", Minimum = "Min", Mean = "Mean", Median = "Median", Std_Dev = "Std Dev", Skewness = "Skew", Kurtosis = "Kurtosis"),
+      digits = 2
+    )
   }
 }, error = function(e) {
   cat("Error creating summary table:", e$message, "\n")
