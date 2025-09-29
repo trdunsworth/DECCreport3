@@ -9,7 +9,7 @@ format:
         toc-location: left
 ---
 
-## Week 38 covering 14 September through 20 September 2025
+## Week 39 covering 21 September through 27 September 2025
 
 ## Table of Contents
 
@@ -107,16 +107,16 @@ suppressWarnings({
 #}
 
 # Define week number for dynamic title generation
-WEEK_NUMBER <- 38
+WEEK_NUMBER <- 39
 
 # Calculate week dates properly for 2025
 # Week 38 should be Sept 14-20, 2025 (Sunday to Saturday) - CORRECTED
 # Sunday-first week calculation
 
 # Method 1: Direct date specification for week 38
-if(WEEK_NUMBER == 38) {
-  WEEK_START_DATE <- as.Date("2025-09-14")  # Sunday Sept 14 (CORRECTED)
-  WEEK_END_DATE <- as.Date("2025-09-20")    # Saturday Sept 20 (CORRECTED)
+if(WEEK_NUMBER == 39) {
+  WEEK_START_DATE <- as.Date("2025-09-21")  # Sunday Sept 14 (CORRECTED)
+  WEEK_END_DATE <- as.Date("2025-09-27")    # Saturday Sept 20 (CORRECTED)
 } else {
   # For other weeks, we can use a more general calculation
   # Find the first Sunday of 2025 (which is actually Dec 29, 2024)
@@ -296,6 +296,9 @@ max_missing_count <- max(missing_counts)
 # Calculate percentage of calls without Incident_Arrival_Time
 incident_arrival_missing_pct <- round(missing_counts["Incident_Arrival_Time"] / nrow(df) * 100, 1)
 
+# Identify columns with missing data for inline reporting
+incident_arrival_missing_count <- missing_counts["Incident_Arrival_Time"]
+
 # ...existing code...
 
 inspect_na(df) |>
@@ -309,7 +312,7 @@ inspect_na(df) |>
     aes(label = paste0(round(pcnt, 1), "%")),
     stat = "identity",
     vjust = -0.5,
-    size = 3.5,
+    size = 5,
     color = "black",
     fontface = "bold"
   ) +
@@ -320,7 +323,7 @@ inspect_na(df) |>
   )
 ```
 
-From this plot, we can see that there are only `r missing_cols_count` columns with missing data. Of those, the column with the largest number of missing values is `r max_missing_col`. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. The number of missing values in Incident_Arrival_Time may be something we wish to focus on in future because it shows that we have calls to which we never arrived. We will want to correlate those with their disposition to see if they were cancelled. Where there are calls that were not cancelled but we did not arrive, we will want to look into those further to see what happened. Additionally, `r incident_arrival_missing_pct`% of calls did not have a recorded time that the call stopped. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
+From this plot, we can see that there are only `r missing_cols_count` columns with missing data. Of those, the column with the largest number of missing values is `r max_missing_col`. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. There were `r incident_arrival_missing_count` calls that did not have a recorded time that the call arrived, representing `r incident_arrival_missing_pct`% of calls for the week. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
 
 ## Exploratory Analysis
 
@@ -366,7 +369,7 @@ barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) +
   theme_minimal() +
   theme(legend.position="none",
@@ -379,9 +382,8 @@ barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW
 ```
 
-From this chart, we can see that `r busiest_day` was the busiest day of the week with `r busiest_day_count` service calls, and the slowest day was `r slowest_day` with `r slowest_day_count` service calls.
+From this chart, we can see that `r busiest_day` was the busiest day of the week with `r busiest_day_count` service calls, and the slowest day was `r slowest_day` with `r slowest_day_count` service calls. There is some consistency throughout the week, with `r busiest_day_count - slowest_day_count` calls difference between the busiest and slowest days.
 
-Over the last three weeks of this report structure, we've seen different days of the week for the busiest and slowest days. A larger sample size will be needed to determine if there are any underlying patterns.
 
 ```{r hour-of-day}
 #| echo: false
@@ -420,7 +422,7 @@ barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) +
   theme_minimal() +
   theme(legend.position="none",
@@ -435,7 +437,7 @@ barHour
 
 This week, the busiest hour of the day was `r busiest_hour`00 hours, with `r busiest_hour_count` calls for service. `r slowest_hour`00 hours was the slowest hour of the day with `r slowest_hour_count` calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.
 
-Next, we can examnine the differences within the shifts and the split between calls received during the day and during the night to see how that can play a role in addressing staffing needs.
+Operationally, we should look at the busiest hour for the week this week since it is both unexpected, since it's outside the expected busy hours and stands apart from its neighbors.
 
 ```{r shifts}
 #| echo: false
@@ -461,7 +463,7 @@ barShift <- df |>
     stat = "count",
     aes(label = after_stat(count)),
     position = position_stack(vjust = 0.5),
-    size=5,
+    size=6,
     color = "black",
     fontface = "bold"
   ) +
@@ -470,7 +472,7 @@ barShift <- df |>
     aes(label = after_stat(count), fill = NULL),
     geom = "text",
   vjust = -0.5,
-    size=5.5,
+    size=6.5,
     fontface = "bold",
     color = "black"
   ) +
@@ -498,7 +500,7 @@ barDN <- df |>
     stat = "count",
     aes(label = after_stat(count)),
     position = position_stack(vjust = 0.5),
-    size=5,
+    size=6,
     color = "black",
     fontface = "bold"
   ) +
@@ -507,7 +509,7 @@ barDN <- df |>
     aes(label = after_stat(count), fill = NULL),
     geom = "text",
   vjust = -0.5,
-    size=5.5,
+    size=6.5,
     fontface = "bold",
     color = "black"
   ) +
@@ -524,7 +526,7 @@ barDN <- df |>
 barDN
 ```
 
-These bar graphs compare the distribution of calls between shifts and by whether the calls were received on day or night shift.
+As expected, day shifts are busier than night shifts by a considerable margin. As expected, the call volumes throughout the shift for day shift are fairly consistent and on night shift, the longer the shifts go, fewer calls are received. These are both expected from prior work.
 
 ```{r priority-level}
 #| echo: false
@@ -552,7 +554,7 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) + 
   theme_minimal() +
   theme(legend.position="none",
@@ -565,9 +567,7 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
 barPriority
 ```
 
-The majority of calls received were Priority `r busiest_pn` calls. Priority `r busiest_pn` calls are `r busiest_pn_percentage` percent of the total number of calls, while Priority 1 calls are `r priority1_percentage` percent of the total number of calls.
-
-This appears to be consistent through the new reports.
+The majority of calls received were Priority `r busiest_pn` calls. Priority `r busiest_pn` calls are `r busiest_pn_percentage` percent of the total number of calls, while Priority 1 calls are `r priority1_percentage` percent of the total number of calls. This is a consistent pattern and more detailed analyses of the high priority, and specifically priority 1 calls, can be found below.
 
 ```{r discipline}
 #| echo: false
@@ -596,7 +596,7 @@ barDiscipline <- df |> ggplot(aes(x=Agency, fill=Agency)) +
     stat = "count",
     aes(label = after_stat(count)),
     position = position_stack(vjust = 0.5),
-    size=5,
+    size=6,
     color = "white",
     fontface = "bold"
   ) + 
@@ -644,7 +644,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) + 
   theme_minimal() +
   theme(legend.position="none",
@@ -657,7 +657,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
 barReception
 ```
 
-Most of the calls arrived by `r busiest_cr`. 911 trunk line calls were `r e911_percentage` percent of all calls. There were `r not_captured_count` calls where we did not indicate how the service call was received. This is `r not_captured_percentage` percent of the total number of calls. The number is staying consistent over the lifespan of the reports, but should be investigated to determine why those calls are not being tracked for origination.
+Most of the calls arrived by `r busiest_cr`. 911 trunk line calls were `r e911_percentage` percent of all calls. There were `r not_captured_count` calls where we did not indicate how the service call was received. This is `r not_captured_percentage` percent of the total number of calls. These calls should be investigated to determine why call origination is not being tracked.
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -698,7 +698,7 @@ barProblem <- problem_counts |>
   geom_text(
     aes(label = n),
     vjust = -0.5, 
-    size = 5) +
+    size = 6) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=18),
@@ -710,7 +710,7 @@ barProblem <- problem_counts |>
 barProblem
 ```
 
-This week, the most common problem nature was `r busiest_ct`. For AFD, the most common was `r agency_top_problem_names["FIRE"]`. The overall trend is that Disorderly Conduct and Trouble Breathing appear in the top 5 weekly over the four weeks of this report. These trends should be brought to the attention of our partners.
+This week, the most common problem nature was `r busiest_ct`. For AFD, the most common was `r agency_top_problem_names["FIRE"]`.
 
 We can also look at the number of calls taken by telecommunicators. Again, like the problem types, we will limit the chart to the top 10 telecommunicators to ensure visual clarity and legibility of the information.
 
@@ -739,7 +739,7 @@ barCallTaker <- tc_counts |>
   geom_text(
     aes(label = n),
     vjust = -0.5,
-    size = 5) +
+    size = 6) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=18),
@@ -750,6 +750,8 @@ barCallTaker <- tc_counts |>
 
 barCallTaker
 ```
+
+It is interesting to note that the top "call taker" is `r busiest_tc` again this week with `r busiest_tc_count` calls, and with a large margin between that volume and the busiest calltaker.
 
 ```{r time-on-phone}
 #| label: time-on-phone
@@ -783,6 +785,10 @@ ttq_by_ct <- df_times |>
     Mean_TTQ_Sec = ifelse(N_TTQ > 0, round(Total_Time_To_Queue_Sec / N_TTQ), NA_real_)
   )
 
+  most_time_ct <- ttq_by_ct$Call_Taker[1]
+  most_time_ct_total <- ttq_by_ct$Total_Time_To_Queue_Sec[1]
+  most_time_ct_mean <- ttq_by_ct$Mean_TTQ_Sec[1]
+
 phone_by_ct <- df_times |>
   filter(!is.na(Call_Taker)) |>
   group_by(Call_Taker) |>
@@ -797,6 +803,10 @@ phone_by_ct <- df_times |>
     Total_Phone_Time_Min = round(Total_Phone_Time_Sec / 60, 1),
     Mean_Phone_Sec = ifelse(N_Phone > 0, round(Total_Phone_Time_Sec / N_Phone), NA_real_)
   )
+
+  longest_to_queue_ct <- phone_by_ct$Call_Taker[1]
+  longest_to_queue_ct_total <- phone_by_ct$Total_Phone_Time_Sec[1]
+  longest_to_queue_ct_mean <- phone_by_ct$Mean_Phone_Sec[1]
 
 # Render tables with accessible Word-friendly formatting
 to_ft(
@@ -826,7 +836,7 @@ to_ft(
 )
 ```
 
-It is interesting to note that the top "call taker" is `r busiest_tc` again this week with `r busiest_tc_count` calls, and with a large margin between that volume and the busiest calltaker.
+However, when we look at the total time on the phone, we see that `r busiest_tc` is not in the top 10 for total time on the phone. So while we are receiving more calls for service from CAD2CAD, the total time spend on those calls is not significantly high. The first table represents the total amount of time that telecommunicators spent on calls. This week, `r most_time_ct` spent the most time on the phone with a total of `r most_time_ct_total` seconds (or `r round(most_time_ct_total / 60, 1)` minutes) and an average of `r most_time_ct_mean` seconds per call. The second table represents the longest averages to get a call into the queue. This week, `r longest_to_queue_ct` had the longest average time to get a call into queue with an average of `r longest_to_queue_ct_mean` seconds per call.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -951,7 +961,7 @@ to_ft(
 )
 ```
 
-Based on the heat map, the middle of the day is still the busiest time for calls to arrive in the center. For this week, the 1700 hour for Friday was the busiest day and hour combination for the week. We may need to go back to that date and time range to determine if there was a significant event in that hour that could account for the spike in calls.
+The ridgeline plot shows there is a consistency throughout the week for the middle of the day to receive the most calls. The heat map, however, shows there are two concentrations of calls for Wednesday that likely contributed to the rise in call volumes. There are spikes at 1200 and 1900 hours. Overall, since `r busiest_hour`00 hours was the busiest hour of the week, the heatmap shows that it was reasonably consistent throughout the week. Equally, the heatmap shows that Friday, the second busiest day of the week, was consistent through the day and shared the same mean calls per hour as found on `r busiest_day`.
 
 ### Summary statsitcs and analyses
 
@@ -1456,7 +1466,7 @@ barDOW_APD <- df_law |> ggplot(aes(x = DOW, fill = DOW)) +
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -1511,7 +1521,7 @@ barHour_APD <- df_law |> ggplot(aes(x = Hour, fill = Hour)) +
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -1551,7 +1561,7 @@ barReception_APD <- df_law |> ggplot(aes(x = Call_Reception, fill = Call_Recepti
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -1595,7 +1605,7 @@ barProblem_APD <- problem_counts_APD |>
     geom_text(
         aes(label = n),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -1641,7 +1651,7 @@ barPriority_APD <- df_law |> ggplot(aes(x = Priority_Number, fill = Priority_Num
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -1790,6 +1800,35 @@ tryCatch({
   # Keep a namespaced copy for APD section
   median_phone_time_apd <- median_phone_time
 
+  apd_p1_calls <- df_apd |>
+    dplyr::filter(df_apd$Priority == 1)
+
+  apd_p1_spec <- df_apd |>
+    dplyr::filter(df_apd$Priority == 1 && df_apd$Processing_Time <= 120)
+
+  apd_p2_calls <- df_apd |>
+    dplyr::filter(df_apd$Priority == 2)
+
+  apd_p2_spec <- df_apd |>
+    dplyr::filter(df_apd$Priority == 2 && df_apd$Processing_Time <= 600)
+
+  apd_p3_calls <- df_apd |>
+    dplyr::filter(df_apd$Priority == 3)
+
+  apd_p3_spec <- df_apd |>
+    dplyr::filter(df_apd$Priority == 3 && df_apd$Processing_Time <= 1200)
+
+  apd_p4_calls <- df_apd |>
+    dplyr::filter(df_apd$Priority == 4)
+
+  apd_p4_spec <- df_apd |>
+    dplyr::filter(df_apd$Priority == 4 && df_apd$Processing_Time <= 3600)
+
+  apd_p1_compliance_pct <- round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 1)
+  apd_p2_compliance_pct <- round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 1)
+  apd_p3_compliance_pct <- round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 1)
+  apd_p4_compliance_pct <- round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 1)
+
     to_ft(
       summary_table,
       caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
@@ -1879,7 +1918,7 @@ barDOW_AFD <- df_fire |> ggplot(aes(x = DOW, fill = DOW)) +
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -1930,7 +1969,7 @@ barHour_AFD <- df_fire |> ggplot(aes(x = Hour, fill = Hour)) +
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -1973,7 +2012,7 @@ barReception_AFD <- df_fire |> ggplot(aes(x = Call_Reception, fill = Call_Recept
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -2017,7 +2056,7 @@ barProblem_AFD <- problem_counts_AFD |>
     geom_text(
         aes(label = n),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -2063,7 +2102,7 @@ barPriority_AFD <- df_fire |> ggplot(aes(x = Priority_Number, fill = Priority_Nu
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -2196,18 +2235,34 @@ tryCatch({
     median_time_to_dispatch <- summary_table |> 
       filter(Variable == "Time To Dispatch") |> 
       pull(Median)
+    median_time_to_dispatch_afd <- median_time_to_dispatch
 
     median_processing_time <- summary_table |>
       filter(Variable == "Processing_Time") |>
       pull(Median)
+    median_processing_time_afd <- median_processing_time
 
     median_phone_time <- summary_table |>
       filter(Variable == "Phone_Time") |>
       pull(Median)
+    median_phone_time_afd <- median_phone_time
 
     mean_phone_time <- summary_table |>
       filter(Variable == "Phone_Time") |>
       pull(Mean)
+    mean_phone_time_afd <- mean_phone_time
+
+    fire_hp_calls <- df_fire |>
+      dplyr::filter(df_fire$Priority <= 2)
+
+    fire_64_calls <- df_fire |>
+      dplyr::filter(df_fire$Priority <= 2 && df_fire$Processing_Time <= 64)
+
+    fire_106_calls <- df_fire |>
+      dplyr::filter(df_fire$Priority <= 2 && df_fire$Processing_Time <= 106)
+
+    fire_64_compliance_pct <- round((nrow(fire_64_calls) / nrow(fire_hp_calls)) * 100, 1)
+    fire_106_compliance_pct <- round((nrow(fire_106_calls) / nrow(fire_hp_calls)) * 100, 1)
 
     to_ft(
       summary_table,
@@ -2278,7 +2333,7 @@ barDOW_EMS <- df_ems |> ggplot(aes(x = DOW, fill = DOW)) +
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -2329,7 +2384,7 @@ barHour_EMS <- df_ems |> ggplot(aes(x = Hour, fill = Hour)) +
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -2371,7 +2426,7 @@ barReception_EMS <- df_ems |> ggplot(aes(x = Call_Reception, fill = Call_Recepti
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -2417,7 +2472,7 @@ barProblem_EMS <- problem_counts_EMS |>
     geom_text(
         aes(label = n),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -2463,7 +2518,7 @@ barPriority_EMS <- df_ems |> ggplot(aes(x = Priority_Number, fill = Priority_Num
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -2593,18 +2648,34 @@ tryCatch({
     median_time_to_queue <- summary_table |> 
       filter(Variable == "Time To Queue") |> 
       pull(Median)
+    median_time_to_queue_ems <- median_time_to_queue
       
     median_time_to_dispatch <- summary_table |> 
       filter(Variable == "Time To Dispatch") |> 
       pull(Median)
+    median_time_to_dispatch_ems <- median_time_to_dispatch
 
     median_processing_time <- summary_table |>
       filter(Variable == "Processing_Time") |>
       pull(Median)
+    median_processing_time_ems <- median_processing_time
 
     median_phone_time <- summary_table |>
       filter(Variable == "Phone_Time") |>
       pull(Median)
+    median_phone_time_ems <- median_phone_time
+
+    ems_hp_calls <- df_ems |>
+      dplyr::filter(df_ems$Priority <= 2)
+
+    ems_64_calls <- df_ems |>
+      dplyr::filter(df_ems$Priority <= 2 && df_ems$Processing_Time <= 64)
+
+    ems_106_calls <- df_ems |>
+      dplyr::filter(df_ems$Priority <= 2 && df_ems$Processing_Time <= 106)
+
+    ems_64_compliance_pct <- round((nrow(ems_64_calls) / nrow(ems_hp_calls)) * 100, 1)
+    ems_106_compliance_pct <- round((nrow(ems_106_calls) / nrow(ems_hp_calls)) * 100, 1)
 
     to_ft(
       summary_table,
@@ -2702,7 +2773,7 @@ ggplot(hp_call_types, aes(x = reorder(Problem, n), y = n, fill = Problem)) +
   geom_text(
     aes(label = n),
     hjust = -0.2,
-    size = 4
+    size = 5
   ) +
   theme_minimal() +
   theme(
@@ -2967,7 +3038,7 @@ barDOW_911 <- df_911 |> ggplot(aes(x = DOW, fill = DOW)) +
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-        size = 5
+        size = 6
     ) +
     theme_minimal() +
     theme(
@@ -3012,7 +3083,7 @@ barHour <- df_911 |> ggplot(aes(x=Hour, fill=Hour)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) +
   theme_minimal() +
   theme(legend.position="none",
@@ -3045,7 +3116,7 @@ barDOW_CA <- df_ca |> ggplot(aes(x=DOW, fill=DOW)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) +
   theme_minimal() +
   theme(legend.position="none",
@@ -3244,7 +3315,7 @@ barDOW_MH <- df_mh |> ggplot(aes(x=DOW, fill=DOW)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) +
   theme_minimal() +
   theme(legend.position="none",
@@ -3296,7 +3367,7 @@ barHour_MH <- df_mh |> ggplot(aes(x=Hour, fill=Hour)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) +
   theme_minimal() +
   theme(legend.position="none",
@@ -3336,7 +3407,7 @@ barReception_MH <- df_mh |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) +
   theme_minimal() +
   theme(legend.position="none",
@@ -3380,7 +3451,7 @@ barProblem_MH <- problem_counts_MH |>
     geom_text(
         aes(label = n),
         vjust = -0.7,
-        size = 4) +
+        size = 5) +
     theme_minimal(base_size = 14) +
     theme(
         legend.position = "none",
@@ -3419,7 +3490,7 @@ barPriority_MH <- df_mh |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) 
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size=5
+    size=6
   ) +
   theme_minimal() +
   theme(legend.position="none",

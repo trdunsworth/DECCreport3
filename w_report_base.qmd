@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-09-26"
+date: "2025-09-29"
 format: 
   docx:
     toc: false
@@ -26,7 +26,7 @@ format:
     prefer-html: true
 ---
 
-## Week 38 covering 14 September through 20 September 2025
+## Week 39 covering 21 September through 27 September 2025
 
 ## Table of Contents
 
@@ -116,11 +116,6 @@ suppressWarnings({
   })
 })
 
-# Source shared plotting helpers (sz function for DOCX-aware sizing)
-try({
-  source("R/plot_helpers.R")
-}, silent = TRUE)
-
 # Verify paletteer is available
 #if (!requireNamespace("paletteer", quietly = TRUE)) {
 #  stop("paletteer package is not installed or available")
@@ -129,16 +124,16 @@ try({
 #}
 
 # Define week number for dynamic title generation
-WEEK_NUMBER <- 38
+WEEK_NUMBER <- 39
 
 # Calculate week dates properly for 2025
 # Week 38 should be Sept 14-20, 2025 (Sunday to Saturday) - CORRECTED
 # Sunday-first week calculation
 
 # Method 1: Direct date specification for week 38
-if(WEEK_NUMBER == 38) {
-  WEEK_START_DATE <- as.Date("2025-09-14")  # Sunday Sept 14 (CORRECTED)
-  WEEK_END_DATE <- as.Date("2025-09-20")    # Saturday Sept 20 (CORRECTED)
+if(WEEK_NUMBER == 39) {
+  WEEK_START_DATE <- as.Date("2025-09-21")  # Sunday Sept 14 (CORRECTED)
+  WEEK_END_DATE <- as.Date("2025-09-27")    # Saturday Sept 20 (CORRECTED)
 } else {
   # For other weeks, we can use a more general calculation
   # Find the first Sunday of 2025 (which is actually Dec 29, 2024)
@@ -169,7 +164,6 @@ DYNAMIC_TITLE <- paste0("Weekly Report: Week ", WEEK_NUMBER, " (", WEEK_START_FO
 #| message: false
 #| warning: false
 
-# Set readable Word defaults for all flextable outputs
 flextable::set_flextable_defaults(
   theme_fun = flextable::theme_booktabs,
   font.size = 11,
@@ -177,34 +171,20 @@ flextable::set_flextable_defaults(
   borders = officer::fp_border_default()
 )
 
-# Helper to produce accessible tables for Word (Office 365)
 to_ft <- function(tbl, caption = NULL, header_map = NULL, digits = 2) {
   df <- as.data.frame(tbl)
   ft <- flextable::flextable(df)
-  if (!is.null(header_map)) {
-    ft <- flextable::set_header_labels(ft, values = header_map)
-  }
-  # zebra striping
-  if (nrow(df) > 0) {
-    ft <- flextable::bg(ft, i = seq(1, nrow(df), by = 2), bg = "#F5F5F5", part = "body")
-  }
-  # header emphasis
+  if (!is.null(header_map)) ft <- flextable::set_header_labels(ft, values = header_map)
+  if (nrow(df) > 0) ft <- flextable::bg(ft, i = seq(1, nrow(df), by = 2), bg = "#F5F5F5", part = "body")
   ft <- flextable::bold(ft, part = "header")
   ft <- flextable::fontsize(ft, part = "header", size = 12)
-
-  # numeric columns: right-align and format
   num_cols <- names(df)[vapply(df, is.numeric, logical(1))]
   if (length(num_cols) > 0) {
     ft <- flextable::align(ft, j = num_cols, align = "right", part = "all")
     ft <- flextable::colformat_num(ft, j = num_cols, digits = digits, big.mark = ",")
   }
-
-  if (!is.null(caption)) {
-    ft <- flextable::set_caption(ft, caption)
-  }
-
-  ft <- flextable::autofit(ft)
-  ft
+  if (!is.null(caption)) ft <- flextable::set_caption(ft, caption)
+  flextable::autofit(ft)
 }
 ```
 
@@ -403,15 +383,15 @@ barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size = sz(5, 3.5)
+    size=5
   ) +
   theme_minimal() +
   theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-        axis.text.x = element_text(angle=45, hjust=1, size = sz(14, 10)),
-        axis.text.y = element_text(size = sz(14, 10)),
-        axis.title.x = element_text(size = sz(16, 12)),
-        axis.title.y = element_text(size = sz(16, 12)))
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=14),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16))
 
 barDOW
 ```
@@ -457,15 +437,15 @@ barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size = sz(5, 3.5)
+    size=5
   ) +
   theme_minimal() +
   theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-        axis.text.x = element_text(angle=45, hjust=1, size = sz(12, 9)),
-        axis.text.y = element_text(size = sz(14, 10)),
-        axis.title.x = element_text(size = sz(16, 12)),
-        axis.title.y = element_text(size = sz(16, 12)))
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=12),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16))
 
 barHour
 ```
@@ -498,7 +478,7 @@ barShift <- df |>
     stat = "count",
     aes(label = after_stat(count)),
     position = position_stack(vjust = 0.5),
-    size = sz(5, 3.5),
+    size=5,
     color = "black",
     fontface = "bold"
   ) +
@@ -506,20 +486,20 @@ barShift <- df |>
   stat_count(
     aes(label = after_stat(count), fill = NULL),
     geom = "text",
-    vjust = -0.5,
-    size = sz(5.5, 4),
+  vjust = -0.5,
+    size=5.5,
     fontface = "bold",
     color = "black"
   ) +
   theme_minimal() +
   theme(legend.position="right",
-        plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-        axis.text.x = element_text(angle=45, hjust=1, size = sz(14, 10)),
-        axis.text.y = element_text(size = sz(14, 10)),
-        axis.title.x = element_text(size = sz(16, 12)),
-        axis.title.y = element_text(size = sz(16, 12)),
-        legend.title = element_text(size = sz(14, 11)),
-        legend.text = element_text(size = sz(12, 9)))
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=14),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.title = element_text(size=14),
+        legend.text = element_text(size=12))
 
 barShift
 
@@ -535,7 +515,7 @@ barDN <- df |>
     stat = "count",
     aes(label = after_stat(count)),
     position = position_stack(vjust = 0.5),
-    size = sz(5, 3.5),
+    size=5,
     color = "black",
     fontface = "bold"
   ) +
@@ -543,20 +523,20 @@ barDN <- df |>
   stat_count(
     aes(label = after_stat(count), fill = NULL),
     geom = "text",
-    vjust = -0.5,
-    size = sz(5.5, 4),
+  vjust = -0.5,
+    size=5.5,
     fontface = "bold",
     color = "black"
   ) +
   theme_minimal() +
   theme(legend.position="right",
-        plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-        axis.text.x = element_text(angle=45, hjust=1, size = sz(14, 10)),
-        axis.text.y = element_text(size = sz(14, 10)),
-        axis.title.x = element_text(size = sz(16, 12)),
-        axis.title.y = element_text(size = sz(16, 12)),
-        legend.title = element_text(size = sz(14, 11)),
-        legend.text = element_text(size = sz(12, 9)))
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=14),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.title = element_text(size=14),
+        legend.text = element_text(size=12))
 
 barDN
 ```
@@ -589,15 +569,15 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
     stat = "count",
     aes(label = after_stat(count)),
     vjust = -0.5,
-    size = sz(5, 3.5)
+    size=5
   ) + 
   theme_minimal() +
   theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-        axis.text.x = element_text(angle=45, hjust=1, size = sz(14, 10)),
-        axis.text.y = element_text(size = sz(14, 10)),
-        axis.title.x = element_text(size = sz(16, 12)),
-        axis.title.y = element_text(size = sz(16, 12)))
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=14),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16))
 
 barPriority
 ```
@@ -788,55 +768,54 @@ barCallTaker <- tc_counts |>
 barCallTaker
 ```
 
-It is interesting to note that the top "call taker" is `r busiest_tc` again this week with `r busiest_tc_count` calls, and with a large margin between that volume and the busiest calltaker.
-
-```{r time-ph-phone}
-#| label: time-ph-phone
+```{r time-on-phone}
+#| label: time-on-phone
 #| echo: false
 #| message: false
 #| warning: false
+#| fig-cap: "Total Time on Phone for Top 10 calltakers"
 
 # Two tables: top 10 Call_Taker by cumulative Time_To_Queue and Phone_Time
 
 # Ensure numeric seconds for aggregation
 df_times <- df |>
-  dplyr::mutate(
+  mutate(
     Time_To_Queue = suppressWarnings(as.numeric(Time_To_Queue)),
     Phone_Time    = suppressWarnings(as.numeric(Phone_Time))
   )
 
 # Summarize cumulative seconds by Call_Taker
 ttq_by_ct <- df_times |>
-  dplyr::filter(!is.na(Call_Taker)) |>
-  dplyr::group_by(Call_Taker) |>
+  filter(!is.na(Call_Taker)) |>
+  group_by(Call_Taker) |>
   dplyr::summarise(
     N_TTQ = sum(!is.na(Time_To_Queue)),
     Total_Time_To_Queue_Sec = sum(Time_To_Queue, na.rm = TRUE),
     .groups = "drop"
   ) |>
-  dplyr::arrange(dplyr::desc(Total_Time_To_Queue_Sec)) |>
-  dplyr::slice_head(n = 10) |>
-  dplyr::mutate(
+  arrange(desc(Total_Time_To_Queue_Sec)) |>
+  slice_head(n = 10) |>
+  mutate(
     Total_Time_To_Queue_Min = round(Total_Time_To_Queue_Sec / 60, 1),
     Mean_TTQ_Sec = ifelse(N_TTQ > 0, round(Total_Time_To_Queue_Sec / N_TTQ), NA_real_)
   )
 
 phone_by_ct <- df_times |>
-  dplyr::filter(!is.na(Call_Taker)) |>
-  dplyr::group_by(Call_Taker) |>
+  filter(!is.na(Call_Taker)) |>
+  group_by(Call_Taker) |>
   dplyr::summarise(
     N_Phone = sum(!is.na(Phone_Time)),
     Total_Phone_Time_Sec = sum(Phone_Time, na.rm = TRUE),
     .groups = "drop"
   ) |>
-  dplyr::arrange(dplyr::desc(Total_Phone_Time_Sec)) |>
-  dplyr::slice_head(n = 10) |>
-  dplyr::mutate(
+  arrange(desc(Total_Phone_Time_Sec)) |>
+  slice_head(n = 10) |>
+  mutate(
     Total_Phone_Time_Min = round(Total_Phone_Time_Sec / 60, 1),
     Mean_Phone_Sec = ifelse(N_Phone > 0, round(Total_Phone_Time_Sec / N_Phone), NA_real_)
   )
 
-# Render tables
+# Render tables with accessible Word-friendly formatting
 to_ft(
   ttq_by_ct |> dplyr::select(Call_Taker, N_TTQ, Total_Time_To_Queue_Sec, Total_Time_To_Queue_Min, Mean_TTQ_Sec),
   caption = "Top 10 Call Takers by Cumulative Time To Queue",
@@ -863,6 +842,8 @@ to_ft(
   digits = 0
 )
 ```
+
+It is interesting to note that the top "call taker" is `r busiest_tc` again this week with `r busiest_tc_count` calls, and with a large margin between that volume and the busiest calltaker.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -976,8 +957,8 @@ hourly_summary <- df |>
 # Display summary table
 to_ft(
   hourly_summary,
-  caption = "Call Volume Summary by Day of Week",
-  header_map = c(
+  caption = "Call Volume Summary by Day of Week — Peak hours and average calls per hour",
+  header_map = list(
     DOW = "Day of Week",
     total_calls = "Total Calls",
     peak_hour = "Peak Hour",
@@ -1161,7 +1142,7 @@ tryCatch({
     to_ft(
       summary_table,
       caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
-      header_map = c(
+      header_map = list(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
@@ -1239,13 +1220,13 @@ ttq_hist_dens <- ggplot(ttq, aes(x = ttq_sec)) +
   geom_vline(xintercept = 20, linetype = "longdash", color = "#9467bd", linewidth = 0.7) +
   # Labels for markers (placed above the density peak area)
   annotate("label", x = ttq_med, y = Inf, vjust = 1.2,
-           label = paste0("Median: ", round(ttq_med), "s"), size = sz(4, 3.2), fill = "white") +
+           label = paste0("Median: ", round(ttq_med), "s"), size = 4, fill = "white") +
   annotate("label", x = ttq_p90, y = Inf, vjust = 1.2,
-           label = paste0("P90: ", round(ttq_p90), "s"), size = sz(4, 3.2), fill = "white") +
+           label = paste0("P90: ", round(ttq_p90), "s"), size = 4, fill = "white") +
   annotate("label", x = 15, y = Inf, vjust = 1.2,
-           label = "NENA 0:15", size = sz(4, 3.2), fill = "white") +
+           label = "NENA 0:15", size = 4, fill = "white") +
   annotate("label", x = 20, y = Inf, vjust = 1.2,
-           label = "NFPA 0:20", size = sz(4, 3.2), fill = "white") +
+           label = "NFPA 0:20", size = 4, fill = "white") +
   scale_x_continuous(name = "Time to Queue (mm:ss)",
                      limits = c(0, x_max),
                      breaks = scales::pretty_breaks(8),
@@ -1255,14 +1236,14 @@ ttq_hist_dens <- ggplot(ttq, aes(x = ttq_sec)) +
     subtitle = paste0("Histogram normalized to density; clipped at 99th percentile (", scales::comma(n_clipped), " removed).\n",
           "Median (dashed red), 90th percentile (dotted orange). Reference lines at 0:15 (NENA) and 0:20 (NFPA 1225)."),
        caption = "Data: CAD") +
-  theme_minimal(base_size = sz(14, 12)) +
+  theme_minimal(base_size = 14) +
   theme(
-    plot.title = element_text(face = "bold", size = sz(18, 14)),
-    plot.subtitle = element_text(size = sz(14, 12)),
-    axis.title.x = element_text(size = sz(16, 12)),
-    axis.title.y = element_text(size = sz(16, 12)),
-    axis.text.x = element_text(size = sz(12, 10)),
-    axis.text.y = element_text(size = sz(12, 10))
+    plot.title = element_text(face = "bold", size = 18),
+    plot.subtitle = element_text(size = 14),
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)
   )
 
 ttq_hist_dens
@@ -1324,13 +1305,13 @@ plot_time_hist_dens <- function(data, var, title_text) {
     geom_vline(xintercept = 15, linetype = "longdash", color = "#2ca02c", linewidth = 0.7) +
     geom_vline(xintercept = 20, linetype = "longdash", color = "#9467bd", linewidth = 0.7) +
   annotate("label", x = med, y = Inf, vjust = 1.2,
-    label = "Median", size = sz(3.5, 3), fill = "white") +
+       label = "Median", size = 3.5, fill = "white") +
   annotate("label", x = p90, y = Inf, vjust = 1.2,
-    label = "P90", size = sz(3.5, 3), fill = "white") +
+       label = "P90", size = 3.5, fill = "white") +
   annotate("label", x = 15, y = Inf, vjust = 1.2,
-    label = "NENA", size = sz(3.5, 3), fill = "white") +
+       label = "NENA", size = 3.5, fill = "white") +
   annotate("label", x = 20, y = Inf, vjust = 1.2,
-    label = "NFPA", size = sz(3.5, 3), fill = "white") +
+       label = "NFPA", size = 3.5, fill = "white") +
     scale_x_continuous(name = "Time (mm:ss)",
                        limits = c(0, x_max),
                        breaks = scales::pretty_breaks(8),
@@ -1339,13 +1320,13 @@ plot_time_hist_dens <- function(data, var, title_text) {
     labs(title = title_text,
       subtitle = NULL,
       caption = "Data: CAD") +
-    theme_minimal(base_size = sz(14, 12)) +
+    theme_minimal(base_size = 14) +
     theme(
-      plot.title = element_text(face = "bold", size = sz(16, 13)),
-      axis.title.x = element_text(size = sz(14, 12)),
-      axis.title.y = element_text(size = sz(14, 12)),
-      axis.text.x = element_text(size = sz(12, 10)),
-      axis.text.y = element_text(size = sz(12, 10))
+      plot.title = element_text(face = "bold", size = 16),
+      axis.title.x = element_text(size = 14),
+      axis.title.y = element_text(size = 14),
+      axis.text.x = element_text(size = 12),
+      axis.text.y = element_text(size = 12)
     )
 }
 
@@ -1488,20 +1469,20 @@ barDOW_APD <- df_law |> ggplot(aes(x = DOW, fill = DOW)) +
         x = "Day of the Week",
         y = "Number of Calls"
     ) +
-  geom_text(
+    geom_text(
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-    size = sz(5, 3.5)
+        size = 5
     ) +
     theme_minimal() +
     theme(
         legend.position = "none",
-    plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = sz(14, 10)),
-    axis.text.y = element_text(size = sz(14, 10)),
-    axis.title.x = element_text(size = sz(16, 12)),
-    axis.title.y = element_text(size = sz(16, 12))
+        plot.title = element_text(hjust = 0.5, size = 18),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16)
     )
 
 barDOW_APD
@@ -1543,20 +1524,20 @@ barHour_APD <- df_law |> ggplot(aes(x = Hour, fill = Hour)) +
         x = "Hour of the Day",
         y = "Number of Calls"
     ) +
-  geom_text(
+    geom_text(
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-    size = sz(5, 3.5)
+        size = 5
     ) +
     theme_minimal() +
     theme(
         legend.position = "none",
-    plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = sz(12, 9)),
-    axis.text.y = element_text(size = sz(14, 10)),
-    axis.title.x = element_text(size = sz(16, 12)),
-    axis.title.y = element_text(size = sz(16, 12))
+        plot.title = element_text(hjust = 0.5, size = 18),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16)
     )
 
 barHour_APD
@@ -1583,20 +1564,20 @@ barReception_APD <- df_law |> ggplot(aes(x = Call_Reception, fill = Call_Recepti
         x = "Call Reception",
         y = "Number of Calls"
     ) +
-  geom_text(
+    geom_text(
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-    size = sz(5, 3.5)
+        size = 5
     ) +
     theme_minimal() +
     theme(
         legend.position = "none",
-    plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = sz(14, 10)),
-    axis.text.y = element_text(size = sz(14, 10)),
-    axis.title.x = element_text(size = sz(16, 12)),
-    axis.title.y = element_text(size = sz(16, 12))
+        plot.title = element_text(hjust = 0.5, size = 18),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16)
     )
 
 barReception_APD
@@ -1673,20 +1654,20 @@ barPriority_APD <- df_law |> ggplot(aes(x = Priority_Number, fill = Priority_Num
         x = "Priority Level",
         y = "Number of Calls"
     ) +
-  geom_text(
+    geom_text(
         stat = "count",
         aes(label = after_stat(count)),
         vjust = -0.5,
-    size = sz(5, 3.5)
+        size = 5
     ) +
     theme_minimal() +
     theme(
         legend.position = "none",
-    plot.title = element_text(hjust = 0.5, size = sz(18, 14)),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = sz(14, 10)),
-    axis.text.y = element_text(size = sz(14, 10)),
-    axis.title.x = element_text(size = sz(16, 12)),
-    axis.title.y = element_text(size = sz(16, 12))
+        plot.title = element_text(hjust = 0.5, size = 18),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16)
     )
 
 barPriority_APD
@@ -1828,8 +1809,8 @@ tryCatch({
 
     to_ft(
       summary_table,
-      caption = "Weekly Elapsed Time Summary Table — APD",
-      header_map = c(
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
+      header_map = list(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
@@ -2247,8 +2228,8 @@ tryCatch({
 
     to_ft(
       summary_table,
-      caption = "Weekly Elapsed Time Summary Table — AFD",
-      header_map = c(
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
+      header_map = list(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
@@ -2644,8 +2625,8 @@ tryCatch({
 
     to_ft(
       summary_table,
-      caption = "Weekly Elapsed Time Summary Table — EMS",
-      header_map = c(
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
+      header_map = list(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
@@ -2685,7 +2666,12 @@ library(knitr)
 call_taker_counts <- df_ttq_delay %>%
   count(Call_Taker, sort = TRUE)
 
-to_ft(call_taker_counts, caption = "Frequency of Call Taker in Delayed TTQ Calls (Descending)", header_map = c(Call_Taker = "Call Taker", n = "Count"), digits = 0)
+to_ft(
+  call_taker_counts,
+  caption = "Frequency of Call Taker in Delayed TTQ Calls (Descending)",
+  header_map = list(Call_Taker = "Call Taker", n = "Count"),
+  digits = 0
+)
 ```
 
 From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. This, however, could be something that is included in the report template in order to monitor. Should a telecommunicator appear multiple times in this table over a period of time, additional training or mentoring may be called for.
@@ -2699,7 +2685,12 @@ From this, since there are a small number of telecommunicators who have more tha
 dispatcher_counts <- df_ttd_delay %>%
   count(Dispatcher, sort = TRUE)
 
-to_ft(dispatcher_counts, caption = "Frequency of Dispatcher in Delayed TTD Calls (Descending)", header_map = c(Dispatcher = "Dispatcher", n = "Count"), digits = 0)
+to_ft(
+  dispatcher_counts,
+  caption = "Frequency of Dispatcher in Delayed TTD Calls (Descending)",
+  header_map = list(Dispatcher = "Dispatcher", n = "Count"),
+  digits = 0
+)
 ```
 
 This list is fairly short and could simply be monitored in future should the need arise.
@@ -2916,8 +2907,8 @@ tryCatch({
 
     to_ft(
       summary_table,
-      caption = "Weekly Elapsed Time Summary Table — E-911",
-      header_map = c(
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
+      header_map = list(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
@@ -3205,15 +3196,15 @@ tryCatch({
 
     to_ft(
       summary_table,
-      caption = "Weekly Elapsed Time Summary Table — Cardiac Arrest",
-      header_map = c(
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
+      header_map = list(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
         Median = "Median",
         Std_Dev = "Std Dev",
         Skewness = "Skew",
-        Kurtosis = "Kurt"
+        Kurtosis = "Kurtosis"
       ),
       digits = 2
     )
@@ -3585,8 +3576,8 @@ tryCatch({
 
     to_ft(
       summary_table,
-      caption = "Weekly Elapsed Time Summary Table — Mental Health",
-      header_map = c(
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
+      header_map = list(
         Variable = "Time Metric",
         Minimum = "Min",
         Mean = "Mean",
