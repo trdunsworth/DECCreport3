@@ -392,12 +392,27 @@ From this chart, we can see that `r busiest_day` was the busiest day of the week
 hour_counts <- df |>
   count(Hour, sort = TRUE)
 
-max_hour_info <- hour_counts |> filter(n == max(n))
-busiest_hour <- sprintf("%02d", max_hour_info |> slice(1) |> pull(Hour))
+# Find the actual maximum count and corresponding hour(s)
+max_count <- max(hour_counts$n)
+max_hour_info <- hour_counts |> filter(n == max_count)
+
+# Convert factor levels back to numeric for proper comparison, then back to formatted string
+busiest_hour_numeric <- max_hour_info |> 
+  slice(1) |> 
+  pull(Hour) |> 
+  as.character() |> 
+  as.numeric()
+busiest_hour <- sprintf("%02d", busiest_hour_numeric)
 busiest_hour_count <- max_hour_info |> slice(1) |> pull(n)
 
 min_hour_info <- hour_counts |> filter(n == min(n))
-slowest_hour <- sprintf("%02d", min_hour_info |> slice(1) |> pull(Hour))
+# Convert factor levels back to numeric for proper comparison, then back to formatted string  
+slowest_hour_numeric <- min_hour_info |> 
+  slice(1) |> 
+  pull(Hour) |> 
+  as.character() |> 
+  as.numeric()
+slowest_hour <- sprintf("%02d", slowest_hour_numeric)
 slowest_hour_count <- min_hour_info |> slice(1) |> pull(n)
 
 barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
@@ -836,7 +851,7 @@ to_ft(
 )
 ```
 
-However, when we look at the total time on the phone, we see that `r busiest_tc` is not in the top 10 for total time on the phone. So while we are receiving more calls for service from CAD2CAD, the total time spend on those calls is not significantly high. The first table represents the total amount of time that telecommunicators spent on calls. This week, `r most_time_ct` spent the most time on the phone with a total of `r most_time_ct_total` seconds (or `r round(most_time_ct_total / 60, 1)` minutes) and an average of `r most_time_ct_mean` seconds per call. The second table represents the longest averages to get a call into the queue. This week, `r longest_to_queue_ct` had the longest average time to get a call into queue with an average of `r longest_to_queue_ct_mean` seconds per call.
+However, when we look at the total time on the phone, we see that `r busiest_tc` is not in the top 10 for total time on the phone. So while we are receiving more calls for service from CAD2CAD, the total time spend on those calls is not significantly high. The first table represents the total amount of time that telecommunicators spent on calls. This week, `r most_time_ct` spent the most time on the phone with a total of `r most_time_ct_total` seconds (or `r round(most_time_ct_total / 60, 1)` minutes) and an average of `r most_time_ct_mean` seconds per call. The second table represents the longest averages to get a call into the queue. This week, `r longest_to_queue_ct` had the longest average time to get a call into queue with an average of `r longest_to_queue_ct_mean` seconds per call. This could be due to a number of factors, including the complexity of the calls she faces. 
 
 ### Call Distribution: Hour by Day of Week
 
@@ -1431,11 +1446,11 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 dow_counts_law <- df_law |>
   count(DOW, sort = TRUE)
 
-max_dow_info_law <- dow_counts |> filter(n == max(n))
+max_dow_info_law <- dow_counts_law |> filter(n == max(n))
 busiest_day_abbr_law <- max_dow_info_law |> slice(1) |> pull(DOW)
 busiest_day_count_law <- max_dow_info_law |> slice(1) |> pull(n)
 
-min_dow_info_law <- dow_counts |> filter(n == min(n))
+min_dow_info_law <- dow_counts_law |> filter(n == min(n))
 slowest_day_abbr_law <- min_dow_info_law |> slice(1) |> pull(DOW)
 slowest_day_count_law <- min_dow_info_law |> slice(1) |> pull(n)
 
@@ -1800,29 +1815,29 @@ tryCatch({
   # Keep a namespaced copy for APD section
   median_phone_time_apd <- median_phone_time
 
-  apd_p1_calls <- df_apd |>
-    dplyr::filter(df_apd$Priority == 1)
+  apd_p1_calls <- df_law |>
+    dplyr::filter(Priority_Number == 1)
 
-  apd_p1_spec <- df_apd |>
-    dplyr::filter(df_apd$Priority == 1 && df_apd$Processing_Time <= 120)
+  apd_p1_spec <- df_law |>
+    dplyr::filter(Priority_Number == 1 & Time_To_Dispatch <= 120)
 
-  apd_p2_calls <- df_apd |>
-    dplyr::filter(df_apd$Priority == 2)
+  apd_p2_calls <- df_law |>
+    dplyr::filter(Priority_Number == 2)
 
-  apd_p2_spec <- df_apd |>
-    dplyr::filter(df_apd$Priority == 2 && df_apd$Processing_Time <= 600)
+  apd_p2_spec <- df_law |>
+    dplyr::filter(Priority_Number == 2 & Time_To_Dispatch <= 600)
 
-  apd_p3_calls <- df_apd |>
-    dplyr::filter(df_apd$Priority == 3)
+  apd_p3_calls <- df_law |>
+    dplyr::filter(Priority_Number == 3)
 
-  apd_p3_spec <- df_apd |>
-    dplyr::filter(df_apd$Priority == 3 && df_apd$Processing_Time <= 1200)
+  apd_p3_spec <- df_law |>
+    dplyr::filter(Priority_Number == 3 & Time_To_Dispatch <= 1200)
 
-  apd_p4_calls <- df_apd |>
-    dplyr::filter(df_apd$Priority == 4)
+  apd_p4_calls <- df_law |>
+    dplyr::filter(Priority_Number == 4)
 
-  apd_p4_spec <- df_apd |>
-    dplyr::filter(df_apd$Priority == 4 && df_apd$Processing_Time <= 3600)
+  apd_p4_spec <- df_law |>
+    dplyr::filter(Priority_Number == 4 & Time_To_Dispatch <= 3600)
 
   apd_p1_compliance_pct <- round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 1)
   apd_p2_compliance_pct <- round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 1)
@@ -1871,6 +1886,15 @@ p4_percentage_apd <- round((sum(df_law$Priority_Number == "4", na.rm = TRUE) / n
 ```
 
 This table shows that overall, we have a median time on the phones of about `r median_phone_time` seconds and it takes about double that for a call to start and be dispatched, `r median_processing_time` seconds. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are `r p4_percentage_apd` percent of APD calls, this could have a measureable impact on service times for DECC staff.
+
+| Priority | Dispatched in SLA | Total Calls | Pct in SLA |
+|:--------:|:--------:|:--------:|:--------:|
+| 1 | `r nrow(apd_p1_spec)` | `r nrow(apd_p1_calls)` | `r apd_p1_compliance_pct`% |
+| 2 | `r nrow(apd_p2_spec)` | `r nrow(apd_p2_calls)` | `r apd_p2_compliance_pct`% |
+| 3 | `r nrow(apd_p3_spec)` | `r nrow(apd_p3_calls)` | `r apd_p3_compliance_pct`% |
+| 4 | `r nrow(apd_p4_spec)` | `r nrow(apd_p4_calls)` | `r apd_p4_compliance_pct`% |
+
+As you will note, these numbers are significantly lower than those found in the other weekend reports. In those reports, there was an additional filter which removed all calls where the time in queue was longer than 30 minutes. This report reflects a more accurate view of actual compliance with our partners' SLAs. This table will be repeated for the fire and medical calls later in the report.
 
 ### AFD FIRE Analyses
 
@@ -2253,13 +2277,13 @@ tryCatch({
     mean_phone_time_afd <- mean_phone_time
 
     fire_hp_calls <- df_fire |>
-      dplyr::filter(df_fire$Priority <= 2)
+      dplyr::filter(Priority_Number <= 2)
 
     fire_64_calls <- df_fire |>
-      dplyr::filter(df_fire$Priority <= 2 && df_fire$Processing_Time <= 64)
+      dplyr::filter(Priority_Number <= 2 & Time_To_Dispatch <= 64)
 
     fire_106_calls <- df_fire |>
-      dplyr::filter(df_fire$Priority <= 2 && df_fire$Processing_Time <= 106)
+      dplyr::filter(Priority_Number <= 2 & Time_To_Dispatch <= 106)
 
     fire_64_compliance_pct <- round((nrow(fire_64_calls) / nrow(fire_hp_calls)) * 100, 1)
     fire_106_compliance_pct <- round((nrow(fire_106_calls) / nrow(fire_hp_calls)) * 100, 1)
@@ -2286,6 +2310,10 @@ tryCatch({
 ```
 
 Overall, DECC operations appear to be very efficient at getting fire-related service calls out to the field. The median processing time was only `r median_processing_time` seconds. This shows that we can easily be in compliance with all necessary NENA and NFPA guidelines. The median time on the phone was `r median_phone_time` seconds. The mean time was `r mean_phone_time` seconds, which is still amazing.
+
+| Calls dispatched in 64 seconds | Calls dispatched in 106 seconds | P1 & P2 Calls | Pct in 64 sec. | Pct in 106 sec. |
+|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|
+| `r nrow(fire_64_calls)` | `r nrow(fire_106_calls)` | `r nrow(fire_hp_calls)` | `r fire_64_compliance_pct`% | `r fire_106_compliance_pct`% |
 
 ### AFD EMS Analyses
 
@@ -2666,13 +2694,13 @@ tryCatch({
     median_phone_time_ems <- median_phone_time
 
     ems_hp_calls <- df_ems |>
-      dplyr::filter(df_ems$Priority <= 2)
+      dplyr::filter(Priority_Number <= 2)
 
     ems_64_calls <- df_ems |>
-      dplyr::filter(df_ems$Priority <= 2 && df_ems$Processing_Time <= 64)
+      dplyr::filter(Priority_Number <= 2 & Processing_Time <= 64)
 
     ems_106_calls <- df_ems |>
-      dplyr::filter(df_ems$Priority <= 2 && df_ems$Processing_Time <= 106)
+      dplyr::filter(Priority_Number <= 2 & Processing_Time <= 106)
 
     ems_64_compliance_pct <- round((nrow(ems_64_calls) / nrow(ems_hp_calls)) * 100, 1)
     ems_106_compliance_pct <- round((nrow(ems_106_calls) / nrow(ems_hp_calls)) * 100, 1)
