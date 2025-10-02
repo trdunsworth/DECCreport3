@@ -29,7 +29,7 @@ format:
 - **[High-Priority and Critical Calls](#high-priority-and-critical-calls)**
   - [High-Priority Call Types](#high-priority-call-types)
   - [High-Priority Response Times](#high-priority-response-times)
-- **[E-911 Service Call Analyses](#e-911-service-call-analyses)
+- **[E-911 Service Call Analyses](#e-911-service-call-analyses)**
   - [E-911 Call Response Summary](#e-911-call-response-summary)
   - [E-911 Call Breakdowns](#e-911-call-breakdowns)
 - **[Cardiac Arrest Calls Analysis](#cardiac-arrest-calls-analysis)**
@@ -1839,10 +1839,10 @@ tryCatch({
   apd_p4_spec <- df_law |>
     dplyr::filter(Priority_Number == 4 & Time_To_Dispatch <= 3600)
 
-  apd_p1_compliance_pct <- round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 1)
-  apd_p2_compliance_pct <- round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 1)
-  apd_p3_compliance_pct <- round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 1)
-  apd_p4_compliance_pct <- round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 1)
+  apd_p1_compliance_pct <- round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 3)
+  apd_p2_compliance_pct <- round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 3)
+  apd_p3_compliance_pct <- round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 3)
+  apd_p4_compliance_pct <- round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 3)
 
     to_ft(
       summary_table,
@@ -1887,12 +1887,15 @@ p4_percentage_apd <- round((sum(df_law$Priority_Number == "4", na.rm = TRUE) / n
 
 This table shows that overall, we have a median time on the phones of about `r median_phone_time` seconds and it takes about double that for a call to start and be dispatched, `r median_processing_time` seconds. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are `r p4_percentage_apd` percent of APD calls, this could have a measureable impact on service times for DECC staff.
 
+
 | Priority | Dispatched in SLA | Total Calls | Pct in SLA |
 |:--------:|:--------:|:--------:|:--------:|
 | 1 | `r nrow(apd_p1_spec)` | `r nrow(apd_p1_calls)` | `r apd_p1_compliance_pct`% |
 | 2 | `r nrow(apd_p2_spec)` | `r nrow(apd_p2_calls)` | `r apd_p2_compliance_pct`% |
 | 3 | `r nrow(apd_p3_spec)` | `r nrow(apd_p3_calls)` | `r apd_p3_compliance_pct`% |
 | 4 | `r nrow(apd_p4_spec)` | `r nrow(apd_p4_calls)` | `r apd_p4_compliance_pct`% |
+
+: SLA Compliance for APD Calls (P1 & P2) {.striped .hover}
 
 As you will note, these numbers are significantly lower than those found in the other weekend reports. In those reports, there was an additional filter which removed all calls where the time in queue was longer than 30 minutes. This report reflects a more accurate view of actual compliance with our partners' SLAs. This table will be repeated for the fire and medical calls later in the report.
 
@@ -2285,8 +2288,8 @@ tryCatch({
     fire_106_calls <- df_fire |>
       dplyr::filter(Priority_Number <= 2 & Time_To_Dispatch <= 106)
 
-    fire_64_compliance_pct <- round((nrow(fire_64_calls) / nrow(fire_hp_calls)) * 100, 1)
-    fire_106_compliance_pct <- round((nrow(fire_106_calls) / nrow(fire_hp_calls)) * 100, 1)
+    fire_64_compliance_pct <- round((nrow(fire_64_calls) / nrow(fire_hp_calls)) * 100, 3)
+    fire_106_compliance_pct <- round((nrow(fire_106_calls) / nrow(fire_hp_calls)) * 100, 3)
 
     to_ft(
       summary_table,
@@ -2314,6 +2317,10 @@ Overall, DECC operations appear to be very efficient at getting fire-related ser
 | Calls dispatched in 64 seconds | Calls dispatched in 106 seconds | P1 & P2 Calls | Pct in 64 sec. | Pct in 106 sec. |
 |:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|
 | `r nrow(fire_64_calls)` | `r nrow(fire_106_calls)` | `r nrow(fire_hp_calls)` | `r fire_64_compliance_pct`% | `r fire_106_compliance_pct`% |
+
+: SLA Compliance for AFD Fire Calls (P1 & P2) {.striped .hover}
+
+These numbers show that we are meeting and exceeding our SLAs with the AFD. 
 
 ### AFD EMS Analyses
 
@@ -2728,6 +2735,13 @@ tryCatch({
 
 The median time to process medical calls was `r median_processing_time` seconds. Again, this puts us in good form when examening our operational efficiency. The median time on phones, `r median_phone_time` seconds, is longer than the overall median. That is to be expected with these calls taking longer to triage.
 
+| Calls dispatched in 64 seconds | Calls dispatched in 106 seconds | P1 & P2 Calls | Pct in 64 sec. | Pct in 106 sec. |
+|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|
+| `r nrow(ems_64_calls)` | `r nrow(ems_106_calls)` | `r nrow(ems_hp_calls)` | `r ems_64_compliance_pct`% | `r ems_106_compliance_pct`% |
+: SLA Compliance for AFD Medical Calls (P1 & P2) {.striped .hover}
+
+These numbers show that there is some room for improvement in meeting the SLAs for AFD medical calls. Like the APD SLA analysis, the change in numbers can be explained by the removal of the filter for calls that remained in queue over 30 minutes. Originally, this filter was implemented to address calls that appeared to be defective, but this may not be the case and further investigation is merited.
+
 ## Additional Analyses
 
 Earlier, for this analysis, we created some additional datasets that we can investigate in the course of our analysis. The first two are lists of calls where the elapsed time prior to release to queue or the time spent in dispatch is greater than 60 seconds for *emergency* calls. For the first, there are `r nrow(df_ttq_delay)` emergency service calls where the elapsed time from call start to the call entering the queue for dispatch was over 60 seconds. There are also `r nrow(df_ttd_delay)` emergency service calls where the elapsed time from entering queue to the first unit assigned was over 60 seconds.
@@ -3058,7 +3072,7 @@ barDOW_911 <- df_911 |> ggplot(aes(x = DOW, fill = DOW)) +
     geom_bar() +
     paletteer::scale_fill_paletteer_d("ggsci::indigo_material") +
     labs(
-        title = "Number of Calls for Service for EMS by Day of the Week",
+        title = "Number of Calls for Service for 911 cals by Day of the Week",
         x = "Day of the Week",
         y = "Number of Calls"
     ) +
@@ -3078,7 +3092,7 @@ barDOW_911 <- df_911 |> ggplot(aes(x = DOW, fill = DOW)) +
         axis.title.y = element_text(size = 16)
     )
 
-barDOW_EMS
+barDOW_911
 ```
 
 As can be seen `r busiest_day_911` was the busiest day for E-911 calls this week.
@@ -3103,7 +3117,19 @@ slowest_hour_count_911 <- min_hour_info_911 |> slice(1) |> pull(n)
 
 barHour <- df_911 |> ggplot(aes(x=Hour, fill=Hour)) +
   geom_bar() +
-  paletteer::scale_fill_paletteer_d("ggsci::indigo_material") +
+  # Use ggsci::indigo_material palette with robust fallback
+  {
+    indigo_material_cols <- tryCatch(
+      {
+        as.character(paletteer::paletteer_d("ggsci::indigo_material"))
+      },
+      error = function(e) {
+        # Fallback indigo colors if palette not available
+        c("#1A237E", "#283593", "#3949AB", "#3F51B5", "#5C6BC0", "#7986CB", "#9FA8DA", "#C5CAE9")
+      }
+    )
+    scale_fill_manual(values = grDevices::colorRampPalette(indigo_material_cols)(nlevels(df_911$Hour)))
+  } +
   labs(title="Number of Calls for Service by Hour of the Day",
        x="Hour of the Day",
        y="Number of Calls") +
@@ -3126,7 +3152,7 @@ barHour
 
 This shows that
 
-## Cardiac Arrest Calls Analysis
+### Cardiac Arrest Calls Analysis
 
 Finally, we will look into the specific subset of calls that are related to cardiac arrests. These calls have been identified in the `df_ca` dataset.
 

@@ -1,0 +1,19 @@
+{
+  "markdown.validate.enabled": false,
+  "markdown.suggest.paths.enabled": false,
+  "markdown.experimental.validate.enabled": false,
+  "files.associations": {
+    "*.qmd": "quarto"
+  },
+  "quarto.render.previewType": "external",
+  "editor.largeFileOptimizations": true,
+  "editor.maxFileSize": 200,
+  "extensions.autoUpdate": false,
+  "workbench.settings.enableNaturalLanguageSearch": false,
+  "search.useIgnoreFiles": true,
+  "files.exclude": {
+    "**/*.html": true,
+    "**/*_files/": true,
+    "**/*.knit.md": true
+  }
+}
