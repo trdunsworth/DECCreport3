@@ -1,0 +1,25 @@
+# EditorConfig for Quarto/R project
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Quarto files - NO FORMATTING
+[*.qmd]
+indent_style = space
+indent_size = 4
+# Prevent any auto-formatting
+max_line_length = off
+
+# R files
+[*.R]
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
