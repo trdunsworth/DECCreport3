@@ -1771,8 +1771,8 @@ max_cr_info_fire <- cr_counts_fire |> filter(n == max(n))
 busiest_cr_fire <- max_cr_info_fire |> slice(1) |> pull(Call_Reception)
 busiest_cr_count_fire <- max_cr_info_fire |> slice(1) |> pull(n)
 
-busiest_cr_pct_fire <- round((sum(df_fire$Call_Reception == busiest_cr_count_fire) / nrow(df_fire)) * 100, 1)
-cr_phone_pct_fire <- round((sum(df_fire$Call_Reception == "Phone") / nrow(df_fire)) * 100, 1)
+busiest_cr_pct_fire <- round((sum(df_fire$Call_Reception == busiest_cr_fire, na.rm = TRUE) / nrow(df_fire)) * 100, 1)
+cr_phone_pct_fire <- round((sum(df_fire$Call_Reception == "Phone", na.rm = TRUE) / nrow(df_fire)) * 100, 1)
 
 barReception_AFD <- df_fire |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
   geom_bar() +

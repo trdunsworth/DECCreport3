@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-09-25"
+date: "2025-10-06"
 format:
     html:
         toc: true
@@ -9,7 +9,7 @@ format:
         toc-location: left
 ---
 
-## Week 39 covering 21 September through 27 September 2025
+## Week 40 from 28 September through 04 October 2025.
 
 ## Table of Contents
 
@@ -107,16 +107,16 @@ suppressWarnings({
 #}
 
 # Define week number for dynamic title generation
-WEEK_NUMBER <- 39
+WEEK_NUMBER <- 40
 
 # Calculate week dates properly for 2025
 # Week 38 should be Sept 14-20, 2025 (Sunday to Saturday) - CORRECTED
 # Sunday-first week calculation
 
 # Method 1: Direct date specification for week 38
-if(WEEK_NUMBER == 39) {
-  WEEK_START_DATE <- as.Date("2025-09-21")  # Sunday Sept 14 (CORRECTED)
-  WEEK_END_DATE <- as.Date("2025-09-27")    # Saturday Sept 20 (CORRECTED)
+if(WEEK_NUMBER == 40) {
+  WEEK_START_DATE <- as.Date("2025-09-28")  # Sunday Sept 14 (CORRECTED)
+  WEEK_END_DATE <- as.Date("2025-10-04")    # Saturday Sept 20 (CORRECTED)
 } else {
   # For other weeks, we can use a more general calculation
   # Find the first Sunday of 2025 (which is actually Dec 29, 2024)
@@ -452,8 +452,6 @@ barHour
 
 This week, the busiest hour of the day was `r busiest_hour`00 hours, with `r busiest_hour_count` calls for service. `r slowest_hour`00 hours was the slowest hour of the day with `r slowest_hour_count` calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.
 
-Operationally, we should look at the busiest hour for the week this week since it is both unexpected, since it's outside the expected busy hours and stands apart from its neighbors.
-
 ```{r shifts}
 #| echo: false
 #| fig-cap: "Number of calls for service by shift."
@@ -725,7 +723,7 @@ barProblem <- problem_counts |>
 barProblem
 ```
 
-This week, the most common problem nature was `r busiest_ct`. For AFD, the most common was `r agency_top_problem_names["FIRE"]`.
+This week, the most common problem nature was `r busiest_ct`. For AFD, the most common was `r agency_top_problem_names["FIRE"]`. The most common medical call for service was `r agency_top_problem_names["EMS"]`.
 
 We can also look at the number of calls taken by telecommunicators. Again, like the problem types, we will limit the chart to the top 10 telecommunicators to ensure visual clarity and legibility of the information.
 
@@ -766,7 +764,7 @@ barCallTaker <- tc_counts |>
 barCallTaker
 ```
 
-It is interesting to note that the top "call taker" is `r busiest_tc` again this week with `r busiest_tc_count` calls, and with a large margin between that volume and the busiest calltaker.
+It is interesting to note that the top "call taker" is `r busiest_tc` again this week with `r busiest_tc_count` calls.
 
 ```{r time-on-phone}
 #| label: time-on-phone
@@ -819,23 +817,23 @@ phone_by_ct <- df_times |>
     Mean_Phone_Sec = ifelse(N_Phone > 0, round(Total_Phone_Time_Sec / N_Phone), NA_real_)
   )
 
-  longest_to_queue_ct <- phone_by_ct$Call_Taker[1]
-  longest_to_queue_ct_total <- phone_by_ct$Total_Phone_Time_Sec[1]
-  longest_to_queue_ct_mean <- phone_by_ct$Mean_Phone_Sec[1]
+  longest_phone_ct <- phone_by_ct$Call_Taker[1]
+  longest_phone_ct_total <- phone_by_ct$Total_Phone_Time_Sec[1]
+  longest_phone_ct_mean <- phone_by_ct$Mean_Phone_Sec[1]
 
 # Render tables with accessible Word-friendly formatting
-to_ft(
-  ttq_by_ct |> dplyr::select(Call_Taker, N_TTQ, Total_Time_To_Queue_Sec, Total_Time_To_Queue_Min, Mean_TTQ_Sec),
-  caption = "Top 10 Call Takers by Cumulative Time To Queue",
-  header_map = list(
-    Call_Taker = "Call Taker",
-    N_TTQ = "Calls",
-    Total_Time_To_Queue_Sec = "Total TTQ (sec)",
-    Total_Time_To_Queue_Min = "Total TTQ (min)",
-    Mean_TTQ_Sec = "Mean TTQ (sec)"
-  ),
-  digits = 0
-)
+#to_ft(
+#  ttq_by_ct |> dplyr::select(Call_Taker, N_TTQ, Total_Time_To_Queue_Sec, Total_Time_To_Queue_Min, Mean_TTQ_Sec),
+#  caption = "Top 10 Call Takers by Cumulative Time To Queue",
+#  header_map = list(
+#    Call_Taker = "Call Taker",
+#    N_TTQ = "Calls",
+#    Total_Time_To_Queue_Sec = "Total TTQ (sec)",
+#    Total_Time_To_Queue_Min = "Total TTQ (min)",
+#    Mean_TTQ_Sec = "Mean TTQ (sec)"
+#  ),
+#  digits = 0
+#)
 
 to_ft(
   phone_by_ct |> dplyr::select(Call_Taker, N_Phone, Total_Phone_Time_Sec, Total_Phone_Time_Min, Mean_Phone_Sec),
@@ -851,7 +849,7 @@ to_ft(
 )
 ```
 
-However, when we look at the total time on the phone, we see that `r busiest_tc` is not in the top 10 for total time on the phone. So while we are receiving more calls for service from CAD2CAD, the total time spend on those calls is not significantly high. The first table represents the total amount of time that telecommunicators spent on calls. This week, `r most_time_ct` spent the most time on the phone with a total of `r most_time_ct_total` seconds (or `r round(most_time_ct_total / 60, 1)` minutes) and an average of `r most_time_ct_mean` seconds per call. The second table represents the longest averages to get a call into the queue. This week, `r longest_to_queue_ct` had the longest average time to get a call into queue with an average of `r longest_to_queue_ct_mean` seconds per call. This could be due to a number of factors, including the complexity of the calls she faces. 
+This table shows the call takers with the highest cumulative time on the phone. This week, `r longest_phone_ct` had the largest average time on the phone with an average of `r longest_phone_ct_mean` seconds per call. This could be due to a number of factors, including the complexity of the calls faced.
 
 ### Call Distribution: Hour by Day of Week
 
@@ -976,7 +974,7 @@ to_ft(
 )
 ```
 
-The ridgeline plot shows there is a consistency throughout the week for the middle of the day to receive the most calls. The heat map, however, shows there are two concentrations of calls for Wednesday that likely contributed to the rise in call volumes. There are spikes at 1200 and 1900 hours. Overall, since `r busiest_hour`00 hours was the busiest hour of the week, the heatmap shows that it was reasonably consistent throughout the week. Equally, the heatmap shows that Friday, the second busiest day of the week, was consistent through the day and shared the same mean calls per hour as found on `r busiest_day`.
+The ridgeline plot shows there is a consistency throughout the week for the middle of the day to receive the most calls. The heat map shows one intense spike on Tuesday at 1000 hours. There are spikes at 1200 and 1900 hours. Overall, since `r busiest_hour`00 hours was the busiest hour of the week, the heatmap shows that it was reasonably consistent throughout the week. Equally, the heatmap shows that Friday, the second busiest day of the week, was consistent through the day and shared the same mean calls per hour as found on `r busiest_day`.
 
 ### Summary statsitcs and analyses
 
@@ -1342,16 +1340,16 @@ plot_time_hist_dens <- function(data, var, title_text) {
 p_dispatch   <- plot_time_hist_dens(df, "Time_To_Dispatch",  "Time to Dispatch — Histogram with Density")
 p_phone      <- plot_time_hist_dens(df, "Phone_Time",       "Phone Time — Histogram with Density")
 p_processing <- plot_time_hist_dens(df, "Processing_Time",  "Processing Time — Histogram with Density")
-p_rollout    <- plot_time_hist_dens(df, "Rollout_Time",     "Rollout Time — Histogram with Density")
-p_transit    <- plot_time_hist_dens(df, "Transit_Time",     "Transit Time — Histogram with Density")
-p_total      <- plot_time_hist_dens(df, "Total_Call_Time",  "Total Call Time — Histogram with Density")
+#p_rollout    <- plot_time_hist_dens(df, "Rollout_Time",     "Rollout Time — Histogram with Density")
+#p_transit    <- plot_time_hist_dens(df, "Transit_Time",     "Transit Time — Histogram with Density")
+#p_total      <- plot_time_hist_dens(df, "Total_Call_Time",  "Total Call Time — Histogram with Density")
 
 if (!is.null(p_dispatch))   print(p_dispatch)
 if (!is.null(p_phone))      print(p_phone)
 if (!is.null(p_processing)) print(p_processing)
-if (!is.null(p_rollout))    print(p_rollout)
-if (!is.null(p_transit))    print(p_transit)
-if (!is.null(p_total))      print(p_total)
+#if (!is.null(p_rollout))    print(p_rollout)
+#if (!is.null(p_transit))    print(p_transit)
+#if (!is.null(p_total))      print(p_total)
 ```
 
 ```{r elapsed-time-grid}
@@ -1364,23 +1362,27 @@ if (!is.null(p_total))      print(p_total)
 p_dispatch_grid   <- plot_time_hist_dens(df, "Time_To_Dispatch",  "Time to Dispatch")
 p_phone_grid      <- plot_time_hist_dens(df, "Phone_Time",       "Phone Time")
 p_processing_grid <- plot_time_hist_dens(df, "Processing_Time",  "Processing Time")
-p_rollout_grid    <- plot_time_hist_dens(df, "Rollout_Time",     "Rollout Time")
-p_transit_grid    <- plot_time_hist_dens(df, "Transit_Time",     "Transit Time")
-p_total_grid      <- plot_time_hist_dens(df, "Total_Call_Time",  "Total Call Time")
+#p_rollout_grid    <- plot_time_hist_dens(df, "Rollout_Time",     "Rollout Time")
+#p_transit_grid    <- plot_time_hist_dens(df, "Transit_Time",     "Transit Time")
+#p_total_grid      <- plot_time_hist_dens(df, "Total_Call_Time",  "Total Call Time")
 
-# Arrange elapsed-time plots in a 2x3 grid (skip NULL plots)
+# Arrange elapsed-time plots in an adaptive grid (skip NULL plots)
 plots_list <- list(
   p_dispatch_grid,  # Time To Dispatch
   p_phone_grid,     # Phone Time
-  p_processing_grid,# Processing Time
-  p_rollout_grid,   # Rollout Time
-  p_transit_grid,   # Transit Time
-  p_total_grid      # Total Call Time
+  p_processing_grid # Processing Time
+  # p_rollout_grid,   # Rollout Time
+  # p_transit_grid,   # Transit Time
+  # p_total_grid      # Total Call Time
 )
 plots_list <- Filter(Negate(is.null), plots_list)
 
 if (length(plots_list) > 0) {
-  grid <- ggpubr::ggarrange(plotlist = plots_list, ncol = 3, nrow = 2, align = "hv")
+  n_plots <- length(plots_list)
+  # Prefer 2x2 when exactly 4 plots; otherwise use up to 3 columns
+  ncol <- if (n_plots == 4) 2 else min(3, n_plots)
+  nrow <- ceiling(n_plots / ncol)
+  grid <- ggpubr::ggarrange(plotlist = plots_list, ncol = ncol, nrow = nrow, align = "hv")
   print(grid)
 }
 ```
@@ -1408,6 +1410,9 @@ As discussed earlier, we can create additional subsets from this data to look at
 
 df_hp <- df |>
   filter((Agency == "POLICE" & Priority_Number < 2) | (Agency %in% c("FIRE", "EMS") & Priority_Number < 3))
+
+df_lp <- df |>
+  filter((Agency == "POLICE" & Priority_Number >= 2) | (Agency %in% c("FIRE", "EMS") & Priority_Number >= 3))
 
 df_law <- df |> filter(Agency == "POLICE")
 df_fire <- df |> filter(Agency == "FIRE")
@@ -1551,7 +1556,7 @@ barHour_APD <- df_law |> ggplot(aes(x = Hour, fill = Hour)) +
 barHour_APD
 ```
 
-The busiest time of the week for APD calls is from 0900 to 1200 hours. This is in contrast to the prior three weeks where the mid to late afternoon was the busiest time of the day.
+The busiest hours for the week were 1000 and 1700 hours. There is still a consistent pattern to the morning and afternoon rush hours being the busiest times of the week.
 
 ```{r apd-call-reception}
 #| echo: false
@@ -1591,7 +1596,7 @@ barReception_APD <- df_law |> ggplot(aes(x = Call_Reception, fill = Call_Recepti
 barReception_APD
 ```
 
-As can be seen, the majority of calls came through `r busiest_cr_law`. This comports to the call reception results for the week overall.
+As can be seen, the majority of calls came through `r busiest_cr_law`. This stands in contrast to `r busiest_cr` being the vehicle for the most calls overall for the week.
 
 ```{r apd-call-type}
 #| echo: false
@@ -1839,10 +1844,10 @@ tryCatch({
   apd_p4_spec <- df_law |>
     dplyr::filter(Priority_Number == 4 & Time_To_Dispatch <= 3600)
 
-  apd_p1_compliance_pct <- round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 3)
-  apd_p2_compliance_pct <- round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 3)
-  apd_p3_compliance_pct <- round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 3)
-  apd_p4_compliance_pct <- round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 3)
+  apd_p1_compliance_pct <- round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 2)
+  apd_p2_compliance_pct <- round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 2)
+  apd_p3_compliance_pct <- round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 2)
+  apd_p4_compliance_pct <- round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 2)
 
     to_ft(
       summary_table,
@@ -1960,7 +1965,7 @@ barDOW_AFD <- df_fire |> ggplot(aes(x = DOW, fill = DOW)) +
 barDOW_AFD
 ```
 
-This week, the busiest day for fire-related calls was `r busiest_day_fire` with `r busiest_day_count_fire` calls for service. `r slowest_day_fire` was the lightest day for fire-related calls with `r slowest_day_count_fire` calls for service. The busiest day this week for fire-related calls comports with the overall weekly information.
+This week, the busiest day for fire-related calls was `r busiest_day_fire` with `r busiest_day_count_fire` calls for service. `r slowest_day_fire` was the lightest day for fire-related calls with `r slowest_day_count_fire` calls for service.
 
 ```{r afd-hour-of-day}
 #| echo: false
@@ -2011,7 +2016,7 @@ barHour_AFD <- df_fire |> ggplot(aes(x = Hour, fill = Hour)) +
 barHour_AFD
 ```
 
-Fire-related calls are much more spread out through the day as can be seen in the graph above. However, `r busiest_hour_fire` hours was the busiest hour for the week There hasn't been an overall trend identified in the four weeks of this report. However, we will continue to observe the patterns to see if any trends emerge in fire related calls.
+Fire-related calls are much more spread out through the day as can be seen in the graph above. However, `r busiest_hour_fire`00 hours was the busiest hour for the week There hasn't been an overall trend identified in the four weeks of this report. However, we will continue to observe the patterns to see if any trends emerge in fire related calls.
 
 ```{r afd-call-reception}
 #| echo: false
@@ -2024,8 +2029,8 @@ max_cr_info_fire <- cr_counts_fire |> filter(n == max(n))
 busiest_cr_fire <- max_cr_info_fire |> slice(1) |> pull(Call_Reception)
 busiest_cr_count_fire <- max_cr_info_fire |> slice(1) |> pull(n)
 
-busiest_cr_pct_fire <- round((sum(df_fire$Call_Reception == busiest_cr_count_fire) / nrow(df_fire)) * 100, 1)
-cr_phone_pct_fire <- round((sum(df_fire$Call_Reception == "Phone") / nrow(df_fire)) * 100, 1)
+busiest_cr_pct_fire <- round((sum(df_fire$Call_Reception == busiest_cr_fire, na.rm = TRUE) / nrow(df_fire)) * 100, 2)
+cr_phone_pct_fire <- round((sum(df_fire$Call_Reception == "Phone", na.rm = TRUE) / nrow(df_fire)) * 100, 2)
 
 barReception_AFD <- df_fire |> ggplot(aes(x = Call_Reception, fill = Call_Reception)) +
     geom_bar() +
@@ -2054,7 +2059,7 @@ barReception_AFD <- df_fire |> ggplot(aes(x = Call_Reception, fill = Call_Recept
 barReception_AFD
 ```
 
-Like APD calls, most fire-related calls came in via `r busiest_cr_fire`. That accounts for `r busiest_cr_pct_fire` percent of all fire-related calls. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented `r cr_phone_pct_fire` percent of all fire-related service calls received.
+The majority of fire-related calls came in via `r busiest_cr_fire`. That accounts for `r busiest_cr_pct_fire` percent of all fire-related calls. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented `r cr_phone_pct_fire` percent of all fire-related service calls received.
 
 ```{r afd-call-type}
 #| echo: false
@@ -2522,7 +2527,7 @@ barProblem_EMS <- problem_counts_EMS |>
 barProblem_EMS
 ```
 
-The most prevalent medical service type this week was 'r busiest_prob_med'. Further we had `r ems_ma_call` mutual aid medical calls this week.
+The most prevalent medical service type this week was `r busiest_prob_med`. Further we had `r ems_ma_call` mutual aid medical calls this week.
 
 ```{r ems-priority-level}
 #| echo: false
@@ -2733,7 +2738,7 @@ tryCatch({
 })
 ```
 
-The median time to process medical calls was `r median_processing_time` seconds. Again, this puts us in good form when examening our operational efficiency. The median time on phones, `r median_phone_time` seconds, is longer than the overall median. That is to be expected with these calls taking longer to triage.
+The median time to process medical calls was `r median_processing_time_ems` seconds. Again, this puts us in good form when examening our operational efficiency. The median time on phones, `r median_phone_time_ems` seconds, is longer than the overall median. That is to be expected with these calls taking longer to triage.
 
 | Calls dispatched in 64 seconds | Calls dispatched in 106 seconds | P1 & P2 Calls | Pct in 64 sec. | Pct in 106 sec. |
 |:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|
@@ -2744,7 +2749,7 @@ These numbers show that there is some room for improvement in meeting the SLAs f
 
 ## Additional Analyses
 
-Earlier, for this analysis, we created some additional datasets that we can investigate in the course of our analysis. The first two are lists of calls where the elapsed time prior to release to queue or the time spent in dispatch is greater than 60 seconds for *emergency* calls. For the first, there are `r nrow(df_ttq_delay)` emergency service calls where the elapsed time from call start to the call entering the queue for dispatch was over 60 seconds. There are also `r nrow(df_ttd_delay)` emergency service calls where the elapsed time from entering queue to the first unit assigned was over 60 seconds.
+Earlier, for this report, we created some additional datasets that we can investigate in the course of our analysis. The first two are lists of calls where the elapsed time prior to release to queue or the time spent in dispatch is greater than 60 seconds for *emergency* calls. For the first, there are `r nrow(df_ttq_delay)` emergency service calls where the elapsed time from call start to the call entering the queue for dispatch was over 60 seconds. There are also `r nrow(df_ttd_delay)` emergency service calls where the elapsed time from entering queue to the first unit assigned was over 60 seconds.
 
 ### Possible Service Delays
 
@@ -2832,47 +2837,168 @@ Almost all of the problem types in this graph belong to AFD and are medical call
 
 ### High-Priority Response Times
 
-```{r hp-response-times}
+```{r hp-call-summary}
+#| label: hp-call-summary
 #| echo: false
-#| fig-cap: "High-Priority Call Response Times"
-#| warning: false
 #| message: false
-# ggplot2
-hp_response_times <- df_hp |>
-  transmute(
-    Time_To_Queue = as.numeric(Time_To_Queue),
-    Time_To_Dispatch = as.numeric(Time_To_Dispatch),
-    Phone_Time = as.numeric(Phone_Time),
-    Processing_Time = as.numeric(Processing_Time),
-    Rollout_Time = as.numeric(Rollout_Time),
-    Transit_Time = as.numeric(Transit_Time),
-    Total_Call_Time = as.numeric(Total_Call_Time)
-  ) |>
-  pivot_longer(everything(), names_to = "Metric", values_to = "Time")
-  
-ggplot(hp_response_times |> filter(!is.na(Time) & Time >= 0), aes(x = Time)) +
-  geom_histogram(binwidth = 5, fill = "#1c5789", color = "white", alpha = 0.7) +
-  facet_wrap(~ Metric, scales = "free") +
-  scale_x_continuous(labels = scales::comma) + # Improve readability of x-axis
-  labs(title = "Distribution of Response Times for High-Priority Calls",
-       x = "Time (seconds)",
-       y = "Frequency") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 18),
-    strip.text = element_text(size = 14),
-    axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16)
-  )
-```
+#| warning: false
 
-These histograms show that, overall, our record for handling these calls is excellent.
+# Initialize variables
+summary_table <- NULL
+median_processing_time <- NA_real_
+median_phone_time <- NA_real_
+
+# Create a summary table of elapsed time variables
+# Create a summary table of elapsed time variables
+tryCatch({
+  # Define the columns we want to analyze
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
+                    "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
+  
+  # Check which columns actually exist in the data
+  existing_columns <- time_columns[time_columns %in% names(df_hp)]
+  
+  if (length(existing_columns) == 0) {
+    cat("No time columns found in the data.\n")
+  } else {
+    
+    summary_table <- df_hp %>%
+      # 1. Select only the columns that exist
+      dplyr::select(all_of(existing_columns)) %>%
+      # 2. Summarize across all selected columns, converting difftime to numeric safely
+      summarise(across(everything(),
+        list(
+          Minimum  = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(min(vals, na.rm = TRUE), 2)
+          },
+          Mean     = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(mean(vals, na.rm = TRUE), 2)
+          },
+          Median   = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(median(vals, na.rm = TRUE), 2)
+          },
+          Std_Dev  = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(sd(vals, na.rm = TRUE), 2)
+          },
+          Skewness = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else {
+              tryCatch(round(psych::skew(vals, na.rm = TRUE), 2), error = function(e) NA_real_)
+            }
+          },
+          Kurtosis = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals)) || length(vals[!is.na(vals)]) < 4) {
+              NA_real_
+            } else {
+              tryCatch({
+                # Remove NA values first
+                clean_vals <- vals[!is.na(vals)]
+                
+                # Try multiple approaches for kurtosis calculation
+                result <- tryCatch({
+                  # Method 1: Use psych::kurtosis with explicit namespace
+                  psych::kurtosis(clean_vals)
+                }, error = function(e1) {
+                  tryCatch({
+                    # Method 2: Use moments package if available
+                    if (requireNamespace("moments", quietly = TRUE)) {
+                      moments::kurtosis(clean_vals) - 3  # Convert to excess kurtosis
+                    } else {
+                      stop("moments not available")
+                    }
+                  }, error = function(e2) {
+                    # Method 3: Manual calculation
+                    n <- length(clean_vals)
+                    if (n < 4) return(NA_real_)
+                    
+                    mean_val <- mean(clean_vals)
+                    var_val <- var(clean_vals)
+                    
+                    if (var_val == 0) return(NA_real_)
+                    
+                    # Calculate fourth moment
+                    fourth_moment <- mean((clean_vals - mean_val)^4)
+                    # Calculate kurtosis (excess kurtosis = kurtosis - 3)
+                    kurt_val <- (fourth_moment / (var_val^2)) - 3
+                    kurt_val
+                  })
+                })
+                
+                round(result, 2)
+              }, error = function(e) {
+                # Final fallback
+                NA_real_
+              })
+            }
+          }
+        ),
+        .names = "{.col}---{.fn}" # Use a unique separator
+      )) %>%
+      # 3. Reshape the data to a long format, then back to a clean wide format
+      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+      separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
+      pivot_wider(names_from = Statistic, values_from = Value) %>%
+      mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
+    
+    # Extract key metrics for use in text
+  median_time_to_queue <- summary_table |>
+  filter(Variable == "Time To Queue") |>
+      pull(Median)
+      
+  median_time_to_dispatch <- summary_table |>
+  filter(Variable == "Time To Dispatch") |>
+      pull(Median)
+
+    median_processing_time <- summary_table |>
+      filter(Variable == "Processing_Time") |>
+      pull(Median)
+
+    median_phone_time <- summary_table |>
+      filter(Variable == "Phone_Time") |>
+      pull(Median)
+
+
+    # Always assign these for inline use
+    median_phone_time_hp <- tryCatch({
+      summary_table |> filter(Variable == "Phone Time") |> pull(Median)
+    }, error = function(e) NA_real_)
+
+    median_processing_time_hp <- tryCatch({
+      summary_table |> filter(Variable == "Processing Time") |> pull(Median)
+    }, error = function(e) NA_real_)
+
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of high priority call processing times",
+      header_map = list(
+        Variable = "Time Metric",
+        Minimum = "Min",
+        Mean = "Mean",
+        Median = "Median",
+        Std_Dev = "Std Dev",
+        Skewness = "Skew",
+        Kurtosis = "Kurt"
+      ),
+      digits = 2
+    )
+  }
+}, error = function(e) {
+  cat("Error creating summary table:", e$message, "\n")
+  cat("Available columns in df:", paste(names(df), collapse = ", "), "\n")
+  median_phone_time_hp <- NA_real_
+  median_processing_time_hp <- NA_real_
+})
+
+```
 
 ## E-911 Service Call Analyses
 
-This section will analyze calls that arrived to DECC via E-911 trunk lines.
+This section will analyze calls that arrived to DECC via E-911 trunk lines. Last wee, the median processing time for high-priority calls was `r median_processing_time_hp` seconds. 
 
 ### E-911 Call Response Summary
 
@@ -3003,7 +3129,7 @@ tryCatch({
 
     to_ft(
       summary_table,
-      caption = "Weekly Elapsed Time Summary Table — Statistical summary of call processing times",
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of 9-1-1 call processing times",
       header_map = list(
         Variable = "Time Metric",
         Minimum = "Min",
@@ -3021,9 +3147,17 @@ tryCatch({
   cat("Available columns in df:", paste(names(df), collapse = ", "), "\n")
 })
 
+    # Always assign these for inline use
+    median_phone_time_911 <- tryCatch({
+      summary_table |> filter(Variable == "Phone Time") |> pull(Median)
+    }, error = function(e) NA_real_)
+
+    median_processing_time_911 <- tryCatch({
+      summary_table |> filter(Variable == "Processing Time") |> pull(Median)
+    }, error = function(e) NA_real_)
 ```
 
-The table above shows the information about the handling of calls that arrived by 9-1-1 trunk lines.
+The table above shows the information about the handling of calls that arrived by 9-1-1 trunk lines. The median time to process those calls for dispatch was `r median_processing_time_911` seconds.
 
 ```{r restore-overall-medians}
 #| echo: false
@@ -3095,7 +3229,7 @@ barDOW_911 <- df_911 |> ggplot(aes(x = DOW, fill = DOW)) +
 barDOW_911
 ```
 
-As can be seen `r busiest_day_911` was the busiest day for E-911 calls this week.
+As can be seen `r busiest_day_911` was the busiest day for E-911 calls this week. This is inline with the busiest day of the week for all calls to the center.
 
 ```{r 911-call-hour}
 #| label: 911-call-hour
@@ -3108,11 +3242,21 @@ hour_counts_911 <- df_911 |>
   count(Hour, sort = TRUE)
 
 max_hour_info_911 <- hour_counts_911 |> filter(n == max(n))
-busiest_hour_911 <- sprintf("%02d", max_hour_info_911 |> slice(1) |> pull(Hour))
+busiest_hour_numeric_911 <- max_hour_info_911 |> 
+  slice(1) |> 
+  pull(Hour) |> 
+  as.character() |> 
+  as.numeric()
+busiest_hour_911 <- sprintf("%02d", busiest_hour_numeric_911)
 busiest_hour_count_911 <- max_hour_info_911 |> slice(1) |> pull(n)
 
 min_hour_info_911 <- hour_counts_911 |> filter(n == min(n))
-slowest_hour_911 <- sprintf("%02d", min_hour_info_911 |> slice(1) |> pull(Hour))
+slowest_hour_numeric_911 <- min_hour_info_911 |> 
+  slice(1) |> 
+  pull(Hour) |> 
+  as.character() |> 
+  as.numeric()
+slowest_hour_911 <- sprintf("%02d", slowest_hour_numeric_911)
 slowest_hour_count_911 <- min_hour_info_911 |> slice(1) |> pull(n)
 
 barHour <- df_911 |> ggplot(aes(x=Hour, fill=Hour)) +
@@ -3150,7 +3294,11 @@ barHour <- df_911 |> ggplot(aes(x=Hour, fill=Hour)) +
 barHour
 ```
 
-This shows that
+This shows that while the overall pattern for 9-1-1 calls is in keeping with the general weekly trend. However, the spike at `r busiest_hour_911`00 hours stands out. Was there a significant call for service during that hour that generated a lot of calls on the 9-1-1 lines for the floor?
+
+### Non 9-1-1 Call Breakdowns
+
+Additionally, we've been asked to report on calls that were received by other means than the 9-1-1 trunk lines. These will include calls arriving on the administrative trunk lines, officer generated call, walk-in calls at 3600 Wheeler, etc. There is an interest in paying attention to these calls to identify trends and determine if there are operational; improvement opportunities present in handling these non-9-1-1 calls.
 
 ### Cardiac Arrest Calls Analysis
 
@@ -3294,11 +3442,11 @@ tryCatch({
   filter(Variable == "Time To Dispatch") |>
       pull(Median)
 
-    median_processing_time <- summary_table |>
+  median_processing_time <- summary_table |>
       filter(Variable == "Processing_Time") |>
       pull(Median)
 
-    median_phone_time <- summary_table |>
+  median_phone_time <- summary_table |>
       filter(Variable == "Phone_Time") |>
       pull(Median)
 
@@ -3321,9 +3469,18 @@ tryCatch({
   cat("Error creating summary table:", e$message, "\n")
   cat("Available columns in df:", paste(names(df), collapse = ", "), "\n")
 })
+
+    # Always assign these for inline use
+    median_phone_time_ca <- tryCatch({
+      summary_table |> filter(Variable == "Phone Time") |> pull(Median)
+    }, error = function(e) NA_real_)
+
+    median_processing_time_ca <- tryCatch({
+      summary_table |> filter(Variable == "Processing Time") |> pull(Median)
+    }, error = function(e) NA_real_)
 ```
 
-However, we can see that the median time to process a cardiac arrest and get the units rolling is about `r median_processing_time` seconds. The median time that we are on the phone is significantly longer, `r median_phone_time` seconds. That is to be expected since the calltaker is likely giving T-CPR instructions while the units are en route.
+However, we can see that the median time to process a cardiac arrest and get the units rolling is about `r median_processing_time_ca` seconds. The median time that we are on the phone is significantly longer, `r median_phone_time_ca` seconds. That is to be expected since the calltaker is likely giving T-CPR instructions while the units are en route.
 
 ### Mental Health Analyses
 
@@ -3701,9 +3858,18 @@ tryCatch({
   cat("Error creating summary table:", e$message, "\n")
   cat("Available columns in df:", paste(names(df), collapse = ", "), "\n")
 })
+
+    # Always assign these for inline use
+    median_phone_time_mh <- tryCatch({
+      summary_table |> filter(Variable == "Phone Time") |> pull(Median)
+    }, error = function(e) NA_real_)
+
+    median_processing_time_mh <- tryCatch({
+      summary_table |> filter(Variable == "Processing Time") |> pull(Median)
+    }, error = function(e) NA_real_)
 ```
 
-Processing times for these calls are longer, somewhere around `r median_processing_time` seconds. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them.
+Processing times for these calls are longer, somewhere around `r median_processing_time_mh` seconds. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them.
 
 ## Conclusion
 
