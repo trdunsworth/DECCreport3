@@ -15,5 +15,16 @@
     "**/*.html": true,
     "**/*_files/": true,
     "**/*.knit.md": true
-  }
+  },
+  // Prevent Air formatter from touching Quarto files
+  "air.excludeFiles": ["**/*.qmd"],
+  "[quarto]": {
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false,
+    "editor.defaultFormatter": null
+  },
+  // Disable all formatting during file operations that might trigger during preview
+  "editor.formatOnSaveMode": "file",
+  "files.autoSave": "off"
 }
