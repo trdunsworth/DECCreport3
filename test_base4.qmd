@@ -107,7 +107,7 @@ suppressWarnings({
 #}
 
 # Define week number for dynamic title generation
-WEEK_NUMBER <- 40
+WEEK_NUMBER <- 41
 
 # Calculate week dates properly for 2025
 # Week 38 should be Sept 14-20, 2025 (Sunday to Saturday) - CORRECTED
