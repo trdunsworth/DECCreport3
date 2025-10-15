@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-10-06"
+date: "2025-10-15"
 format:
     html:
         toc: true
@@ -9,7 +9,7 @@ format:
         toc-location: left
 ---
 
-## Week 40 from 28 September through 04 October 2025.
+## Week 41 from 05 October through 11 October 2025.
 
 ## Table of Contents
 
@@ -34,6 +34,7 @@ format:
   - [E-911 Call Breakdowns](#e-911-call-breakdowns)
 - **[Cardiac Arrest Calls Analysis](#cardiac-arrest-calls-analysis)**
 - **[Mental Health Analyses](#mental-health-analyses)**
+- **[Outlier Identification](#outlier-identification)**
 - **[Conclusion](#conclusion)**
 
 ---
@@ -96,6 +97,7 @@ suppressWarnings({
     library(paletteer)
     library(flextable)
     library(officer)
+    library(outliers)
   })
 })
 
@@ -110,13 +112,13 @@ suppressWarnings({
 WEEK_NUMBER <- 41
 
 # Calculate week dates properly for 2025
-# Week 38 should be Sept 14-20, 2025 (Sunday to Saturday) - CORRECTED
+# Week 41 should be Oct 05-11, 2025 (Sunday to Saturday)
 # Sunday-first week calculation
 
-# Method 1: Direct date specification for week 38
-if(WEEK_NUMBER == 40) {
-  WEEK_START_DATE <- as.Date("2025-09-28")  # Sunday Sept 14 (CORRECTED)
-  WEEK_END_DATE <- as.Date("2025-10-04")    # Saturday Sept 20 (CORRECTED)
+# Method 1: Direct date specification for week 41
+if(WEEK_NUMBER == 41) {
+  WEEK_START_DATE <- as.Date("2025-10-05")  # Sunday Oct 05
+  WEEK_END_DATE <- as.Date("2025-10-11")    # Saturday Oct 11
 } else {
   # For other weeks, we can use a more general calculation
   # Find the first Sunday of 2025 (which is actually Dec 29, 2024)
@@ -3306,6 +3308,281 @@ This shows that while the overall pattern for 9-1-1 calls is in keeping with the
 
 Additionally, we've been asked to report on calls that were received by other means than the 9-1-1 trunk lines. These will include calls arriving on the administrative trunk lines, officer generated call, walk-in calls at 3600 Wheeler, etc. There is an interest in paying attention to these calls to identify trends and determine if there are operational; improvement opportunities present in handling these non-9-1-1 calls.
 
+```{r non-e911-call-summary}
+#| label: non-e911-calls
+#| echo: false
+#| message: false
+#| warning: false
+
+# Initialize variables
+summary_table <- NULL
+median_processing_time_non911 <- NA_real_
+median_phone_time_non911 <- NA_real_
+
+# Create a summary table of elapsed time variables
+tryCatch({
+  # Define the columns we want to analyze
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
+                    "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
+  
+  # Check which columns actually exist in the data
+  existing_columns <- time_columns[time_columns %in% names(df_non_e)]
+  
+  if (length(existing_columns) == 0) {
+    cat("No time columns found in the data.\n")
+  } else {
+    
+    summary_table <<- df_non_e %>%
+      # 1. Select only the columns that exist
+      dplyr::select(all_of(existing_columns)) %>%
+      # 2. Summarize across all selected columns, converting difftime to numeric safely
+      summarise(across(everything(),
+        list(
+          Minimum  = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(min(vals, na.rm = TRUE), 2)
+          },
+          Mean     = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(mean(vals, na.rm = TRUE), 2)
+          },
+          Median   = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(median(vals, na.rm = TRUE), 2)
+          },
+          Std_Dev  = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else round(sd(vals, na.rm = TRUE), 2)
+          },
+          Skewness = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals))) NA_real_ else {
+              tryCatch(round(psych::skew(vals, na.rm = TRUE), 2), error = function(e) NA_real_)
+            }
+          },
+          Kurtosis = ~ {
+            vals <- as.numeric(.)
+            if (all(is.na(vals)) || length(vals[!is.na(vals)]) < 4) {
+              NA_real_
+            } else {
+              tryCatch({
+                # Remove NA values first
+                clean_vals <- vals[!is.na(vals)]
+                
+                # Try multiple approaches for kurtosis calculation
+                result <- tryCatch({
+                  # Method 1: Use psych::kurtosis with explicit namespace
+                  psych::kurtosis(clean_vals)
+                }, error = function(e1) {
+                  tryCatch({
+                    # Method 2: Use moments package if available
+                    if (requireNamespace("moments", quietly = TRUE)) {
+                      moments::kurtosis(clean_vals) - 3  # Convert to excess kurtosis
+                    } else {
+                      stop("moments not available")
+                    }
+                  }, error = function(e2) {
+                    # Method 3: Manual calculation
+                    n <- length(clean_vals)
+                    if (n < 4) return(NA_real_)
+                    
+                    mean_val <- mean(clean_vals)
+                    var_val <- var(clean_vals)
+                    
+                    if (var_val == 0) return(NA_real_)
+                    
+                    # Calculate fourth moment
+                    fourth_moment <- mean((clean_vals - mean_val)^4)
+                    # Calculate kurtosis (excess kurtosis = kurtosis - 3)
+                    kurt_val <- (fourth_moment / (var_val^2)) - 3
+                    kurt_val
+                  })
+                })
+                
+                round(result, 2)
+              }, error = function(e) {
+                # Final fallback
+                NA_real_
+              })
+            }
+          }
+        ),
+        .names = "{.col}---{.fn}" # Use a unique separator
+      )) %>%
+      # 3. Reshape the data to a long format, then back to a clean wide format
+      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+      separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
+      pivot_wider(names_from = Statistic, values_from = Value) %>%
+      mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
+    
+    # Extract key metrics for use in text (use <<- to assign to parent environment)
+    median_time_to_queue_non911 <<- summary_table |>
+      filter(Variable == "Time To Queue") |>
+      pull(Median)
+      
+    median_time_to_dispatch_non911 <<- summary_table |>
+      filter(Variable == "Time To Dispatch") |>
+      pull(Median)
+
+    median_processing_time_non911 <<- summary_table |>
+      filter(Variable == "Processing Time") |>
+      pull(Median)
+
+    median_phone_time_non911 <<- summary_table |>
+      filter(Variable == "Phone Time") |>
+      pull(Median)
+
+    to_ft(
+      summary_table,
+      caption = "Weekly Elapsed Time Summary Table — Statistical summary of non E-911 call processing times",
+      header_map = list(
+        Variable = "Time Metric",
+        Minimum = "Min",
+        Mean = "Mean",
+        Median = "Median",
+        Std_Dev = "Std Dev",
+        Skewness = "Skew",
+        Kurtosis = "Kurt"
+      ),
+      digits = 2
+    )
+  }
+}, error = function(e) {
+  cat("Error creating summary table:", e$message, "\n")
+  cat("Available columns in df_non_e:", paste(names(df_non_e), collapse = ", "), "\n")
+})
+```
+
+It is interesting to note that the median processing time, `r median_processing_time_non911` seconds, is not that much longer than the 9-1-1 median processing time. Also interesting to note is that the median time on the phones, `r median_phone_time_non911` seconds is less than the same for E-911 calls. This is likely because the calls coming in on the E-911 lines will require more triage and support during the call's lifespan.
+
+```{r non-911-call-day}
+#| label: non-911-call-day
+#| echo: false
+#| fig-cap: "Non E-911 Call Volume by Day of the Week"
+# ggpl0t2
+
+dow_counts_non911 <- df_non_e |>
+  count(DOW, sort = TRUE)
+
+max_dow_info_non911 <- dow_counts_non911 |> filter(n == max(n))
+busiest_day_abbr_non911 <- max_dow_info_non911 |> slice(1) |> pull(DOW)
+busiest_day_count_non911 <- max_dow_info_non911 |> slice(1) |> pull(n)
+
+min_dow_info_non911 <- dow_counts_non911 |> filter(n == min(n))
+slowest_day_abbr_non911 <- min_dow_info_non911 |> slice(1) |> pull(DOW)
+slowest_day_count_non911 <- min_dow_info_non911 |> slice(1) |> pull(n)
+
+# Create mapping from abbreviations to full day names
+day_names <- c(
+  "SUN" = "Sunday",
+  "MON" = "Monday",
+  "TUE" = "Tuesday",
+  "WED" = "Wednesday",
+  "THU" = "Thursday",
+  "FRI" = "Friday",
+  "SAT" = "Saturday"
+)
+
+# Convert abbreviations to full day names
+busiest_day_non911 <- day_names[busiest_day_abbr_non911]
+slowest_day_non911 <- day_names[slowest_day_abbr_non911]
+
+barDOW_non911 <- df_non_e |> ggplot(aes(x = DOW, fill = DOW)) +
+    geom_bar() +
+    paletteer::scale_fill_paletteer_d("ggsci::indigo_material") +
+    labs(
+        title = "Number of Calls for Service for Non-911 cals by Day of the Week",
+        x = "Day of the Week",
+        y = "Number of Calls"
+    ) +
+    geom_text(
+        stat = "count",
+        aes(label = after_stat(count)),
+        vjust = -0.5,
+        size = 6
+    ) +
+    theme_minimal() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 18),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16)
+    )
+
+barDOW_911
+```
+
+As can be seen `r busiest_day_non911` was the busiest day for Non-E-911 calls this week. This is inline with the busiest day of the week for all calls to the center.
+
+```{r non-911-call-hour}
+#| label: non-911-call-hour
+#| echo: false
+#| fig-cap: "Non-E-911 Call Volume by Hour of the Day"
+#| warning: false
+# ggplot2
+
+hour_counts_non911 <- df_non_e |>
+  count(Hour, sort = TRUE)
+
+max_hour_info_non911 <- hour_counts_non911 |> filter(n == max(n))
+busiest_hour_numeric_non911 <- max_hour_info_non911 |> 
+  slice(1) |> 
+  pull(Hour) |> 
+  as.character() |> 
+  as.numeric()
+busiest_hour_non911 <- sprintf("%02d", busiest_hour_numeric_non911)
+busiest_hour_count_non911 <- max_hour_info_non911 |> slice(1) |> pull(n)
+
+min_hour_info_non911 <- hour_counts_non911 |> filter(n == min(n))
+slowest_hour_numeric_non911 <- min_hour_info_non911 |> 
+  slice(1) |> 
+  pull(Hour) |> 
+  as.character() |> 
+  as.numeric()
+slowest_hour_non911 <- sprintf("%02d", slowest_hour_numeric_non911)
+slowest_hour_count_non911 <- min_hour_info_non911 |> slice(1) |> pull(n)
+
+barHour <- df_non_e |> ggplot(aes(x=Hour, fill=Hour)) +
+  geom_bar() +
+  # Use ggsci::indigo_material palette with robust fallback
+  {
+    indigo_material_cols <- tryCatch(
+      {
+        as.character(paletteer::paletteer_d("ggsci::indigo_material"))
+      },
+      error = function(e) {
+        # Fallback indigo colors if palette not available
+        c("#1A237E", "#283593", "#3949AB", "#3F51B5", "#5C6BC0", "#7986CB", "#9FA8DA", "#C5CAE9")
+      }
+    )
+    scale_fill_manual(values = grDevices::colorRampPalette(indigo_material_cols)(nlevels(df_non_e$Hour)))
+  } +
+  labs(title="Number of Calls for Service by Hour of the Day",
+       x="Hour of the Day",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size=6
+  ) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=12),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16))
+
+barHour
+```
+
+## Topical Analyses
+
+These specific analyses have been included regardless of the emergency status of the call. They include types of calls that we have been requested to monitor and looking at outlier calls for any existing patterns.
+
 ### Cardiac Arrest Calls Analysis
 
 Finally, we will look into the specific subset of calls that are related to cardiac arrests. These calls have been identified in the `df_ca` dataset.
@@ -3876,6 +4153,97 @@ tryCatch({
 ```
 
 Processing times for these calls are longer, somewhere around `r median_processing_time_mh` seconds. There are several factors that can impact this. The time to make it dispatchable was longer, implying that with these types of calls, it take calltakers longer to get the information necessary in the initial triage to accurately locate and classify the call. Another possible issue, in reviewing the dispatch times is that these calls require specialized training and skill sets on the part of the field responders. If those responders are already assigned to other calls, this could create the delay as seen here. As these values change over time, we should be able to build better pictures and determine the delay points and create strategies to ameliorate them.
+
+## Outlier Identification
+
+The calls in this set have been identified as outliers using four methods. The first is called the 'Z-score' method. This method calculates the number of standard deviations the observation is from the mean. When that number is greater than 3 or less than -3, the observation will be flagged as an outlier. The second method uses the Interquartile range (IQR), or the distance between the 25th and 75th percentiles. Each row is evaluated to see if the column in question contains a value that is greater than 1.5 times the IQR above the 75th percentile or less than 1.5 times the IQR below the 25th percentile.
+The third is called the Hampel identifier. This method uses the median and the median absolute deviation (MAD) to identify outliers. The MAD is multiplied by 3 and added to and subtracted from the median to create upper and lower bounds for the data. Any value outside of these bounds is flagged as an outlier. This method is more robust than the Z-score method as it is less affected by extreme values in the data. This method was included because this data is non-parametric and we are relying on the median values in our reports. A final test that is used occasionally is to identify the rows that are in the 1st and 99th percentiles for the column in question. Each of these methods has advantages and disadvantages in use. Additionally, the IQR can pre-suppose a normal distribution of data, which as can be seen above, does not exist in our datasets. The output of this test should identify rows with values larger than the target values and very few, if any, that are lower than the target values. This is also due to the distribution of the data.
+
+```{r outliers}
+#| label: outliers
+#| echo: false
+#| message: false
+#| warning: false
+
+ttq_lbq <- quantile(df$Time_To_Queue, 0.01, na.rm = TRUE)
+ttq_ubq <- quantile(df$Time_To_Queue, 0.99, na.rm = TRUE)
+ttd_lbq <- quantile(df$Time_To_Dispatch, 0.01, na.rm = TRUE)
+ttd_ubq <- quantile(df$Time_To_Dispatch, 0.99, na.rm = TRUE)
+phone_lbq <- quantile(df$Phone_Time, 0.01, na.rm = TRUE)
+phone_ubq <- quantile(df$Phone_Time, 0.99, na.rm = TRUE)
+proc_lbq <- quantile(df$Processing_Time, 0.01, na.rm = TRUE)
+proc_ubq <- quantile(df$Processing_Time, 0.99, na.rm = TRUE)
+
+ttq_q1 <- quantile(df$Time_To_Queue, 0.25, na.rm = TRUE)
+ttq_q3 <- quantile(df$Time_To_Queue, 0.75, na.rm = TRUE)
+ttd_q1 <- quantile(df$Time_To_Dispatch, 0.25, na.rm = TRUE)
+ttd_q3 <- quantile(df$Time_To_Dispatch, 0.75, na.rm = TRUE)
+phone_q1 <- quantile(df$Phone_Time, 0.25, na.rm = TRUE)
+phone_q3 <- quantile(df$Phone_Time, 0.75, na.rm = TRUE)
+proc_q1 <- quantile(df$Processing_Time, 0.25, na.rm = TRUE)
+proc_q3 <- quantile(df$Processing_Time, 0.75, na.rm = TRUE)
+
+ttq_iqr <- IQR(df$Time_To_Queue, na.rm = TRUE)
+ttd_iqr <- IQR(df$Time_To_Dispatch, na.rm = TRUE)
+phone_iqr <- IQR(df$Phone_Time, na.rm = TRUE)
+proc_iqr <- IQR(df$Processing_Time, na.rm = TRUE)
+
+ttq_iql <- ttq_q1 - 1.5 * ttq_iqr
+ttq_iqu <- ttq_q3 + 1.5 * ttq_iqr
+ttd_iql <- ttd_q1 - 1.5 * ttd_iqr
+ttd_iqu <- ttd_q3 + 1.5 * ttd_iqr
+phone_iql <- phone_q1 - 1.5 * phone_iqr
+phone_iqu <- phone_q3 + 1.5 * phone_iqr
+proc_iql <- proc_q1 - 1.5 * proc_iqr
+proc_iqu <- proc_q3 + 1.5 * proc_iqr
+
+ttq_hampl <- median(df$Time_To_Queue, na.rm = TRUE) - 3*mad(df$Time_To_Queue, constant = 1, na.rm = TRUE)
+ttq_hampu <- median(df$Time_To_Queue, na.rm = TRUE) + 3*mad(df$Time_To_Queue, constant = 1, na.rm = TRUE)
+ttd_hampl <- median(df$Time_To_Dispatch, na.rm = TRUE) - 3*mad(df$Time_To_Dispatch, constant = 1, na.rm = TRUE)
+ttd_hampu <- median(df$Time_To_Dispatch, na.rm = TRUE) + 3*mad(df$Time_To_Dispatch, constant = 1, na.rm = TRUE)
+phone_hampl <- median(df$Phone_Time, na.rm = TRUE) - 3*mad(df$Phone_Time, constant = 1, na.rm = TRUE)
+phone_hampu <- median(df$Phone_Time, na.rm = TRUE) + 3*mad(df$Phone_Time, constant = 1, na.rm = TRUE)
+proc_hampl <- median(df$Processing_Time, na.rm = TRUE) - 3*mad(df$Processing_Time, constant = 1, na.rm = TRUE)
+proc_hampu <- median(df$Processing_Time, na.rm = TRUE) + 3*mad(df$Processing_Time, constant = 1, na.rm = TRUE)
+
+outlier_df <- df %>%
+  mutate(
+    TTQ_Z_Score = (as.numeric(Time_To_Queue) - mean(as.numeric(Time_To_Queue), na.rm = TRUE)) / sd(as.numeric(Time_To_Queue), na.rm = TRUE),
+    TTD_Z_Score = (as.numeric(Time_To_Dispatch) - mean(as.numeric(Time_To_Dispatch), na.rm = TRUE)) / sd(as.numeric(Time_To_Dispatch), na.rm = TRUE),
+    Phone_Z_Score = (as.numeric(Phone_Time) - mean(as.numeric(Phone_Time), na.rm = TRUE)) / sd(as.numeric(Phone_Time), na.rm = TRUE),
+    Proc_Z_Score = (as.numeric(Processing_Time) - mean(as.numeric(Processing_Time), na.rm = TRUE)) / sd(as.numeric(Processing_Time), na.rm = TRUE),
+    TTQ_Outlier_Z = ifelse(abs(TTQ_Z_Score) > 3, TRUE, FALSE),
+    TTD_Outlier_Z = ifelse(abs(TTD_Z_Score) > 3, TRUE, FALSE),
+    Phone_Outlier_Z = ifelse(abs(Phone_Z_Score) > 3, TRUE, FALSE),
+    Proc_Outlier_Z = ifelse(abs(Proc_Z_Score) > 3, TRUE, FALSE),
+    TTQ_Outlier_IQR = ifelse(Time_To_Queue < ttq_iql | Time_To_Queue > ttq_iqu, TRUE, FALSE),
+    TTD_Outlier_IQR = ifelse(Time_To_Dispatch < ttd_iql | Time_To_Dispatch > ttd_iqu, TRUE, FALSE),
+    Phone_Outlier_IQR = ifelse(Phone_Time < phone_iql | Phone_Time > phone_iqu, TRUE, FALSE),
+    Proc_Outlier_IQR = ifelse(Processing_Time < proc_iql | Processing_Time > proc_iqu, TRUE, FALSE),
+    TTQ_Outlier_Percentile = ifelse(Time_To_Queue < ttq_lbq | Time_To_Queue > ttq_ubq, TRUE, FALSE),
+    TTD_Outlier_Percentile = ifelse(Time_To_Dispatch < ttd_lbq | Time_To_Dispatch > ttd_ubq, TRUE, FALSE),
+    Phone_Outlier_Percentile = ifelse(Phone_Time < phone_lbq | Phone_Time > phone_ubq, TRUE, FALSE),
+    Proc_Outlier_Percentile = ifelse(Processing_Time < proc_lbq | Processing_Time > proc_ubq, TRUE, FALSE),
+    TTQ_Hampel = ifelse(Time_To_Queue < ttq_hampl | Time_To_Queue > ttq_hampu, TRUE, FALSE),
+    TTD_Hampel = ifelse(Time_To_Dispatch < ttd_hampl | Time_To_Dispatch > ttd_hampu, TRUE, FALSE),
+    Phone_Hampel = ifelse(Phone_Time < phone_hampl | Phone_Time > phone_hampu, TRUE, FALSE),
+    Proc_Hampel = ifelse(Processing_Time < proc_hampl | Processing_Time > proc_hampu, TRUE, FALSE)
+  ) %>%
+  # Create composite flags: a row is an outlier for a variable if flagged by all 4 methods
+  mutate(
+    TTQ_Outlier_All = TTQ_Outlier_Z & TTQ_Outlier_IQR & TTQ_Outlier_Percentile & TTQ_Hampel,
+    TTD_Outlier_All = TTD_Outlier_Z & TTD_Outlier_IQR & TTD_Outlier_Percentile & TTD_Hampel,
+    Phone_Outlier_All = Phone_Outlier_Z & Phone_Outlier_IQR & Phone_Outlier_Percentile & Phone_Hampel,
+    Proc_Outlier_All = Proc_Outlier_Z & Proc_Outlier_IQR & Proc_Outlier_Percentile & Proc_Hampel
+  ) %>%
+  # Filter to keep only rows where at least one variable is flagged by all 4 methods
+  filter(
+    TTQ_Outlier_All | TTD_Outlier_All | Phone_Outlier_All | Proc_Outlier_All
+  )
+
+```
+
+This filter identified `r nrow(outlier_df)` rows that should be investigated as outliers. We can now look at those calls specifically and examine them in detail to see why these have been collected in our outlier set.
 
 ## Conclusion
 
