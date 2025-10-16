@@ -7,9 +7,11 @@ format:
         toc: true
         toc-depth: 3
         toc-location: left
+execute:
+  freeze: auto
 ---
 
-## Week 41 from 05 October through 11 October 2025.
+## Week 41 from 05 October through 11 October 2025
 
 ## Table of Contents
 
@@ -44,6 +46,7 @@ format:
 #| echo: false
 #| message: false
 #| warning: false
+#| cache: false
 
 # Suppress dbus warnings that can cause preview issues
 suppressWarnings({
@@ -144,10 +147,49 @@ DYNAMIC_TITLE <- paste0("Weekly Report: Week ", WEEK_NUMBER, " (", WEEK_START_FO
 # cat("Week", WEEK_NUMBER, "dates:", WEEK_START_FORMATTED, "through", WEEK_END_FORMATTED, "\n")
 ```
 
+```{r global-options}
+#| label: global-options
+#| include: false
+#| cache: false
+
+# Global knitr options for faster renders and consistent behavior
+knitr::opts_chunk$set(
+  cache = TRUE,           # enable caching by default
+  cache.lazy = FALSE,     # avoid lazy loading cache on Windows
+  cache.path = paste0('cache/week-', WEEK_NUMBER, '/'),
+  fig.retina = 1,         # smaller figures in HTML for speed
+  dpi = 96,               # reasonable default DPI for speed
+  dev = 'png',            # faster device for HTML
+  message = FALSE,
+  warning = FALSE
+)
+
+# Reduce noisy dplyr summarise messages
+options(dplyr.summarise.inform = FALSE)
+
+# Precompute a few shared palettes to avoid repeated paletteer calls
+palette_cyan_base <- tryCatch(as.character(paletteer::paletteer_d("ggsci::cyan_material")),
+                              error = function(e) c("#E0F2F1", "#B2DFDB", "#80CBC4", "#4DB6AC", "#26A69A", "#009688", "#00897B", "#00796B", "#00695C", "#004D40"))
+palette_blue_base <- tryCatch(as.character(paletteer::paletteer_d("cartography::blue.pal")),
+                              error = function(e) c("#08306B", "#08519C", "#2171B5", "#4292C6", "#6BAED6", "#9ECAE1", "#C6DBEF", "#DEEBF7"))
+palette_red_base  <- tryCatch(as.character(paletteer::paletteer_d("cartography::red.pal")),
+                              error = function(e) c("#67000D", "#A50F15", "#CB181D", "#EF3B2C", "#FB6A4A", "#FC9272", "#FCBBA1", "#FEE0D2"))
+
+palette_cyan_24 <- grDevices::colorRampPalette(palette_cyan_base)(24)
+palette_blue_24 <- grDevices::colorRampPalette(palette_blue_base)(24)
+palette_red_24  <- grDevices::colorRampPalette(palette_red_base)(24)
+
+# Small helper: safe quantiles/iqr with na.rm
+q90 <- function(x) as.numeric(quantile(x, 0.9, na.rm = TRUE))
+q99 <- function(x) as.numeric(quantile(x, 0.99, na.rm = TRUE))
+iqr_safe <- function(x) IQR(x, na.rm = TRUE)
+```
+
 ```{r table-helpers}
 #| echo: false
 #| message: false
 #| warning: false
+#| cache: false
 
 flextable::set_flextable_defaults(
   theme_fun = flextable::theme_booktabs,
@@ -180,6 +222,7 @@ This is the weekly report for week `r WEEK_NUMBER` covering the period from `r W
 ```{r data-load}
 #| echo: false
 #| output: false
+#| cache: true
 
 # Dynamic data file loading with error handling
 # Check for different naming conventions
@@ -204,8 +247,17 @@ if(is.null(data_file)) {
 
 cat("Loading data from:", data_file, "\n")
 
-# Use read_csv with error handling and show parsing issues
-df <- read_csv(data_file, show_col_types = FALSE)
+# Prefer vroom for faster CSV loading when available; fallback to readr
+df <- tryCatch({
+  if (requireNamespace("vroom", quietly = TRUE)) {
+    as_tibble(vroom::vroom(data_file, col_types = vroom::cols()))
+  } else {
+    readr::read_csv(data_file, show_col_types = FALSE)
+  }
+}, error = function(e) {
+  # Final fallback
+  readr::read_csv(data_file, show_col_types = FALSE)
+})
 
 # Check if data loaded correctly and show any parsing problems
 if(nrow(df) == 0) {
@@ -259,6 +311,9 @@ df$Priority_Number <- ordered(df$Priority_Number)
 
 # Convert numeric variables from 'doubles' to integers
 df[c('Time_To_Queue', 'Time_To_Dispatch', 'Phone_Time', 'Processing_Time', 'Rollout_Time', 'Transit_Time', 'Total_Call_Time')] <- sapply(df[c('Time_To_Queue', 'Time_To_Dispatch', 'Phone_Time', 'Processing_Time', 'Rollout_Time', 'Transit_Time', 'Total_Call_Time')], as.numeric)
+
+# Ensure cache invalidates when the source CSV changes
+try({ knitr::opts_current$set(cache.extra = file.info(data_file)$mtime) }, silent = TRUE)
 ```
 
 For this week, there were a total of `r nrow(df)` calls for service. The column list is below:
@@ -266,9 +321,12 @@ For this week, there were a total of `r nrow(df)` calls for service. The column 
 ```{r example-data}
 #| echo: false
 #| tbl-cap: "A sample of the first 10 rows of incident data."
+#| cache: true
 
 colnames(df)
 ```
+
+ 
 
 ## Data Cleaning
 
@@ -278,6 +336,7 @@ In order to have a good dataset for analysis, some data cleaning was performed. 
 #| echo: false
 #| warning: false
 #| fig-cap: "Prevalence of missing values. Only columns with missing data are shown."
+#| cache: true
 
 # ...existing code...
 # Count columns with any missing data
@@ -340,6 +399,7 @@ One of the first analyses is to break down different factor elements to see what
 ```{r day-of-week}
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
+#| cache: true
 # ggplot2
 dow_counts <- df |>
   count(DOW, sort = TRUE)
@@ -396,6 +456,7 @@ From this chart, we can see that `r busiest_day` was the busiest day of the week
 ```{r hour-of-day}
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
+#| cache: true
 # ggplot2
 hour_counts <- df |>
   count(Hour, sort = TRUE)
@@ -425,19 +486,8 @@ slowest_hour_count <- min_hour_info |> slice(1) |> pull(n)
 
 barHour <- df |> ggplot(aes(x=Hour, fill=Hour)) +
   geom_bar() +
-  # Use ggsci::cyan_material palette scaled to 24 levels for hours
-  {
-    cyan_material_cols <- tryCatch(
-      {
-        as.character(paletteer::paletteer_d("ggsci::cyan_material"))
-      },
-      error = function(e) {
-        # Fallback cyan colors if palette not available
-        c("#E0F2F1", "#B2DFDB", "#80CBC4", "#4DB6AC", "#26A69A", "#009688", "#00897B", "#00796B", "#00695C", "#004D40")
-      }
-    )
-    scale_fill_manual(values = grDevices::colorRampPalette(cyan_material_cols)(24))
-  } +
+  # Use precomputed palette to avoid repeated paletteer calls
+  scale_fill_manual(values = palette_cyan_24) +
   labs(title="Number of Calls for Service by Hour of the Day",
        x="Hour of the Day",
        y="Number of Calls") +
@@ -463,6 +513,7 @@ This week, the busiest hour of the day was `r busiest_hour`00 hours, with `r bus
 ```{r shifts}
 #| echo: false
 #| fig-cap: "Number of calls for service by shift."
+#| cache: true
 shift_counts <- df |>
   count(Shift, sort = TRUE)
 
@@ -552,6 +603,7 @@ As expected, day shifts are busier than night shifts by a considerable margin. A
 ```{r priority-level}
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
+#| cache: true
 # ggplot2
 pn_counts <- df |>
   count(Priority_Number, sort = TRUE)
@@ -593,6 +645,7 @@ The majority of calls received were Priority `r busiest_pn` calls. Priority `r b
 ```{r discipline}
 #| echo: false
 #| fig-cap: "Number of calls for service by discipline."
+#| cache: true
 # ggplot2
 agency_counts <- df |>
   count(Agency, sort = TRUE)
@@ -640,6 +693,7 @@ percent of the total number of calls. This is fairly consistent with previous an
 ```{r call-reception}
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
+#| cache: true
 
 # ggplot2
 cr_counts <- df |>
@@ -685,6 +739,7 @@ The following is a chart of the top 10 call types. The data is limited to ensure
 ```{r call-type}
 #| echo: false
 #| fig-cap: "Number of calls for service by call type."
+#| cache: true
 # ggplot2
 ct_counts <- df |>
   count(Problem, sort = TRUE)
@@ -738,6 +793,7 @@ We can also look at the number of calls taken by telecommunicators. Again, like 
 ```{r telecommunicator}
 #| echo: false
 #| fig-cap: "Number of calls for service by telecommunicator."
+#| cache: true
 # ggplot2
 tc_counts <- df |>
   count(Call_Taker, sort = TRUE)
@@ -780,6 +836,7 @@ It is interesting to note that the top "call taker" is `r busiest_tc` again this
 #| message: false
 #| warning: false
 #| fig-cap: "Total Time on Phone for Top 10 calltakers"
+#| cache: true
 
 # Two tables: top 10 Call_Taker by cumulative Time_To_Queue and Phone_Time
 
@@ -869,6 +926,7 @@ The following visualization shows the distribution of calls throughout the day (
 #| message: false
 #| warning: false
 #| fig-cap: "Call Volume by Hour and Day of Week"
+#| cache: true
 
 # Create summary data
 hourly_dow_summary <- df |>
@@ -912,6 +970,7 @@ hour_dow_plot
 #| message: false
 #| warning: false
 #| fig-cap: "Ridge Plot Alternative - Calls per Hour by Day of Week"
+#| cache: true
 
 # Try to create actual ridge plot if ggridges is available
 tryCatch({
@@ -956,6 +1015,7 @@ tryCatch({
 #| echo: false
 #| message: false
 #| warning: false
+#| cache: true
 
 # Summary statistics for calls by hour and DOW
 hourly_summary <- df |>
@@ -1014,6 +1074,7 @@ In this section, we will analyse the continuous variables that represent the ela
 #| echo: false
 #| message: false
 #| warning: false
+#| cache: true
 
 # Initialize variables
 summary_table <- NULL
@@ -1136,7 +1197,7 @@ tryCatch({
     median_time_to_dispatch_overall <- median_time_to_dispatch
 
     median_processing_time <- summary_table |>
-      filter(Variable == "Processing_Time") |>
+      filter(Variable == "Processing Time") |>
       pull(Median)
     median_processing_time_ca <- median_processing_time
     median_processing_time_ems <- median_processing_time
@@ -1145,13 +1206,16 @@ tryCatch({
     median_processing_time_overall <- median_processing_time
 
     median_phone_time <- summary_table |>
-      filter(Variable == "Phone_Time") |>
+      filter(Variable == "Phone Time") |>
       pull(Median)
     median_phone_time_ca <- median_phone_time
     median_phone_time_ems <- median_phone_time
     median_phone_time_afd <- median_phone_time
     # Preserve overall median for reuse later
     median_phone_time_overall <- median_phone_time
+
+    # Save overall summary table for later comparison
+    summary_table_overall <<- summary_table
 
     to_ft(
       summary_table,
@@ -1181,6 +1245,7 @@ The values from this table describe operations for the week being analyzed. In t
 #| echo: false
 #| message: false
 #| warning: false
+#| cache: true
 
 # Helper to format seconds as mm:ss or h:mm:ss
 sec_label <- function(x) {
@@ -1271,6 +1336,7 @@ These combined histogram and density plots are designed to show the distribution
 #| echo: false
 #| message: false
 #| warning: false
+#| cache: true
 
 # Reusable plot helper: histogram normalized to density with density overlay and markers
 plot_time_hist_dens <- function(data, var, title_text) {
@@ -1365,6 +1431,7 @@ if (!is.null(p_processing)) print(p_processing)
 #| echo: false
 #| message: false
 #| warning: false
+#| cache: true
 
 # Short-title versions for grid
 p_dispatch_grid   <- plot_time_hist_dens(df, "Time_To_Dispatch",  "Time to Dispatch")
@@ -1415,6 +1482,7 @@ As discussed earlier, we can create additional subsets from this data to look at
 #| echo: false
 #| message: false
 #| warning: false
+#| cache: true
 
 df_hp <- df |>
   filter((Agency == "POLICE" & Priority_Number < 2) | (Agency %in% c("FIRE", "EMS") & Priority_Number < 3))
@@ -1448,6 +1516,56 @@ df_non_e <- df |> dplyr::filter(!is.na(Call_Reception) & Call_Reception != "E-91
 df_nrr <- df |> dplyr::filter(!is.na(Call_Reception) & Call_Reception == "NOT RECORDED")
 ```
 
+```{r precomputed-summaries}
+#| label: precomputed-summaries
+#| echo: false
+#| message: false
+#| warning: false
+#| cache: true
+
+# Overall
+dow_counts <- df |> count(DOW, sort = TRUE)
+hour_counts <- df |> count(Hour, sort = TRUE)
+cr_counts <- df |> count(Call_Reception, sort = TRUE)
+pri_counts <- df |> count(Priority_Number, sort = TRUE)
+
+# APD / Law
+dow_counts_law <- df_law |> count(DOW, sort = TRUE)
+hour_counts_law <- df_law |> count(Hour, sort = TRUE)
+cr_counts_law <- df_law |> count(Call_Reception, sort = TRUE)
+pri_counts_law <- df_law |> count(Priority_Number, sort = TRUE)
+
+# AFD / Fire
+dow_counts_fire <- df_fire |> count(DOW, sort = TRUE)
+hour_counts_fire <- df_fire |> count(Hour, sort = TRUE)
+cr_counts_fire <- df_fire |> count(Call_Reception, sort = TRUE)
+pri_counts_fire <- df_fire |> count(Priority_Number, sort = TRUE)
+
+# EMS
+dow_counts_ems <- df_ems |> count(DOW, sort = TRUE)
+hour_counts_ems <- df_ems |> count(Hour, sort = TRUE)
+cr_counts_ems <- df_ems |> count(Call_Reception, sort = TRUE)
+pri_counts_ems <- df_ems |> count(Priority_Number, sort = TRUE)
+
+# E-911 / Non-911
+dow_counts_911 <- df_911 |> count(DOW, sort = TRUE)
+hour_counts_911 <- df_911 |> count(Hour, sort = TRUE)
+cr_counts_911 <- df_911 |> count(Call_Reception, sort = TRUE)
+
+dow_counts_non911 <- df_non_e |> count(DOW, sort = TRUE)
+hour_counts_non911 <- df_non_e |> count(Hour, sort = TRUE)
+cr_counts_non911 <- df_non_e |> count(Call_Reception, sort = TRUE)
+
+# Mental Health subset
+dow_counts_mh <- df_mh |> count(DOW, sort = TRUE)
+hour_counts_mh <- df_mh |> count(Hour, sort = TRUE)
+cr_counts_mh <- df_mh |> count(Call_Reception, sort = TRUE)
+pri_counts_mh <- df_mh |> count(Priority_Number, sort = TRUE)
+
+# High-priority subset
+pri_counts_hp <- df_hp |> count(Priority_Number, sort = TRUE)
+```
+
 By defining these datasets, we can now add to our analyses. For example, we can reuse the same information from above to drill down into APD and AFD calls. Starting with APD calls for service, we can examine everything as we did above.
 
 ### APD Analyses
@@ -1455,9 +1573,8 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 ```{r apd-day-of-week}
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
-# ggplot2
-dow_counts_law <- df_law |>
-  count(DOW, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+dow_counts_law <- dow_counts_law
 
 max_dow_info_law <- dow_counts_law |> filter(n == max(n))
 busiest_day_abbr_law <- max_dow_info_law |> slice(1) |> pull(DOW)
@@ -1514,9 +1631,9 @@ This week, `r busiest_day_law` was the busiest day of the week for APD service c
 ```{r apd-hour-of-day}
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
-# ggplot2
-hour_counts_law <- df_law |>
-  count(Hour, sort = TRUE)
+#| cache: true
+# ggplot2 (precomputed in precomputed-summaries)
+hour_counts_law <- hour_counts_law
 
 max_hour_info_law <- hour_counts_law |> filter(n == max(n))
 busiest_hour_law <- sprintf("%02d", max_hour_info_law |> slice(1) |> pull(Hour))
@@ -1528,18 +1645,8 @@ slowest_hour_count_law <- min_hour_info_law |> slice(1) |> pull(n)
 
 barHour_APD <- df_law |> ggplot(aes(x = Hour, fill = Hour)) +
     geom_bar() +
-    # Build a robust APD blue palette: prefer cartography::blue.pal via paletteer, fallback to a blue ramp
-    {
-        apd_base_cols <- tryCatch(
-            {
-                as.character(paletteer::paletteer_d("cartography::blue.pal"))
-            },
-            error = function(e) {
-                c("#08306B", "#08519C", "#2171B5", "#4292C6", "#6BAED6", "#9ECAE1", "#C6DBEF", "#DEEBF7")
-            }
-        )
-        scale_fill_manual(values = grDevices::colorRampPalette(apd_base_cols)(nlevels(df_law$Hour)))
-    } +
+  # Use precomputed blue palette to avoid repeated paletteer calls
+  scale_fill_manual(values = palette_blue_24) +
     labs(
         title = "Number of Calls for Service for APD by Hour of the Day",
         x = "Hour of the Day",
@@ -1569,9 +1676,8 @@ The busiest hours for the week were 1000 and 1700 hours. There is still a consis
 ```{r apd-call-reception}
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
-# ggplot2
-cr_counts_law <- df_law |>
-  count(Call_Reception, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+cr_counts_law <- cr_counts_law
 
 max_cr_info_law <- cr_counts_law |> filter(n == max(n))
 busiest_cr_law <- max_cr_info_law |> slice(1) |> pull(Call_Reception)
@@ -1919,9 +2025,8 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 ```{r afd-day-of-week}
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
-# ggplot2
-dow_counts_fire <- df_fire |>
-  count(DOW, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+dow_counts_fire <- dow_counts_fire
 
 max_dow_info_fire <- dow_counts_fire |> filter(n == max(n))
 busiest_day_abbr_fire <- max_dow_info_fire |> slice(1) |> pull(DOW)
@@ -1978,9 +2083,9 @@ This week, the busiest day for fire-related calls was `r busiest_day_fire` with 
 ```{r afd-hour-of-day}
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
-# ggplot2
-hour_counts_fire <- df_fire |>
-  count(Hour, sort = TRUE)
+#| cache: true
+# ggplot2 (precomputed in precomputed-summaries)
+hour_counts_fire <- hour_counts_fire
 
 max_hour_info_fire <- hour_counts_fire |> filter(n == max(n))
 busiest_hour_fire <- sprintf("%02d", max_hour_info_fire |> slice(1) |> pull(Hour))
@@ -1992,14 +2097,8 @@ slowest_hour_count_fire <- min_hour_info_fire |> slice(1) |> pull(n)
 
 barHour_AFD <- df_fire |> ggplot(aes(x = Hour, fill = Hour)) +
     geom_bar() +
-    {
-        afd_base_cols <- tryCatch({
-            as.character(paletteer::paletteer_d("cartography::red.pal"))
-        }, error = function(e) {
-            c("#67000D", "#A50F15", "#CB181D", "#EF3B2C", "#FB6A4A", "#FC9272", "#FCBBA1", "#FEE0D2")
-        })
-        scale_fill_manual(values = grDevices::colorRampPalette(afd_base_cols)(nlevels(df_fire$Hour)))
-    } +
+  # Use precomputed red palette to avoid repeated paletteer calls
+  scale_fill_manual(values = palette_red_24) +
     labs(
         title = "Number of Calls for Service for AFD by Hour of the Day",
         x = "Hour of the Day",
@@ -2029,9 +2128,8 @@ Fire-related calls are much more spread out through the day as can be seen in th
 ```{r afd-call-reception}
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
-# ggplot2
-cr_counts_fire <- df_fire |>
-  count(Call_Reception, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+cr_counts_fire <- cr_counts_fire
 
 max_cr_info_fire <- cr_counts_fire |> filter(n == max(n))
 busiest_cr_fire <- max_cr_info_fire |> slice(1) |> pull(Call_Reception)
@@ -2333,7 +2431,7 @@ Overall, DECC operations appear to be very efficient at getting fire-related ser
 
 : SLA Compliance for AFD Fire Calls (P1 & P2) {.striped .hover}
 
-These numbers show that we are meeting and exceeding our SLAs with the AFD. 
+These numbers show that we are meeting and exceeding our SLAs with the AFD.
 
 ### AFD EMS Analyses
 
@@ -2342,9 +2440,8 @@ Because AFD calls for service can be split into two distinct disciplines, fire-r
 ```{r ems-day-of-week}
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
-# ggplot2
-dow_counts_ems <- df_ems |>
-  count(DOW, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+dow_counts_ems <- dow_counts_ems
 
 max_dow_info_ems <- dow_counts_ems |> filter(n == max(n))
 busiest_day_abbr_ems <- max_dow_info_ems |> slice(1) |> pull(DOW)
@@ -2401,9 +2498,8 @@ barDOW_EMS
 ```{r ems-hour-of-day}
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
-# ggplot2
-hour_counts_ems <- df_ems |>
-  count(Hour, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+hour_counts_ems <- hour_counts_ems
 
 max_hour_info_ems <- hour_counts_ems |> filter(n == max(n))
 busiest_hour_ems <- sprintf("%02d", max_hour_info_ems |> slice(1) |> pull(Hour))
@@ -2452,9 +2548,8 @@ This week, the busiest hour was `r busiest_hour_ems` hours. The afternoon to eve
 ```{r ems-call-reception}
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
-# ggplot2
-cr_counts_ems <- df_ems |>
-  count(Call_Reception, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+cr_counts_ems <- cr_counts_ems
 
 max_cr_info_ems <- cr_counts_ems |> filter(n == max(n))
 busiest_cr_ems <- max_cr_info_ems |> slice(1) |> pull(Call_Reception)
@@ -3006,7 +3101,7 @@ tryCatch({
 
 ## E-911 Service Call Analyses
 
-This section will analyze calls that arrived to DECC via E-911 trunk lines. Last wee, the median processing time for high-priority calls was `r median_processing_time_hp` seconds. 
+This section will analyze calls that arrived to DECC via E-911 trunk lines. Last week, the median processing time for high-priority calls was `r median_processing_time_hp` seconds.
 
 ### E-911 Call Response Summary
 
@@ -3182,10 +3277,7 @@ if (exists("median_phone_time_overall")) median_phone_time <- median_phone_time_
 #| label: 911-call-day
 #| echo: false
 #| fig-cap: "E-911 Call Volume by Day of the Week"
-# ggpl0t2
-
-dow_counts_911 <- df_911 |>
-  count(DOW, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
 
 max_dow_info_911 <- dow_counts_911 |> filter(n == max(n))
 busiest_day_abbr_911 <- max_dow_info_911 |> slice(1) |> pull(DOW)
@@ -3244,10 +3336,9 @@ As can be seen `r busiest_day_911` was the busiest day for E-911 calls this week
 #| echo: false
 #| fig-cap: "E-911 Call Volume by Hour of the Day"
 #| warning: false
-# ggplot2
+# ggplot2 (precomputed in precomputed-summaries)
 
-hour_counts_911 <- df_911 |>
-  count(Hour, sort = TRUE)
+hour_counts_911 <- hour_counts_911
 
 max_hour_info_911 <- hour_counts_911 |> filter(n == max(n))
 busiest_hour_numeric_911 <- max_hour_info_911 |> 
@@ -3459,10 +3550,7 @@ It is interesting to note that the median processing time, `r median_processing_
 #| label: non-911-call-day
 #| echo: false
 #| fig-cap: "Non E-911 Call Volume by Day of the Week"
-# ggpl0t2
-
-dow_counts_non911 <- df_non_e |>
-  count(DOW, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
 
 max_dow_info_non911 <- dow_counts_non911 |> filter(n == max(n))
 busiest_day_abbr_non911 <- max_dow_info_non911 |> slice(1) |> pull(DOW)
@@ -3521,10 +3609,9 @@ As can be seen `r busiest_day_non911` was the busiest day for Non-E-911 calls th
 #| echo: false
 #| fig-cap: "Non-E-911 Call Volume by Hour of the Day"
 #| warning: false
-# ggplot2
+# ggplot2 (precomputed in precomputed-summaries)
 
-hour_counts_non911 <- df_non_e |>
-  count(Hour, sort = TRUE)
+hour_counts_non911 <- hour_counts_non911
 
 max_hour_info_non911 <- hour_counts_non911 |> filter(n == max(n))
 busiest_hour_numeric_non911 <- max_hour_info_non911 |> 
@@ -3772,9 +3859,8 @@ With the advent of Marcus' Law in Virginia, there has been an emphasis on how me
 ```{r mh-day-of-week}
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
-# ggplot2
-dow_counts_mh <- df_mh |>
-  count(DOW, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+dow_counts_mh <- dow_counts_mh
 
 max_dow_info_mh <- dow_counts_mh |> filter(n == max(n))
 busiest_day_abbr_mh <- max_dow_info_mh |> slice(1) |> pull(DOW)
@@ -3827,9 +3913,8 @@ The busiest day of the week for mental health calls was `r busiest_day_mh` with 
 ```{r mh-hour-of-day}
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
-# ggplot2
-hour_counts_mh <- df_mh |>
-  count(Hour, sort = TRUE)
+# ggplot2 (precomputed in precomputed-summaries)
+hour_counts_mh <- hour_counts_mh
 
 max_hour_info_mh <- hour_counts_mh |> filter(n == max(n))
 busiest_day_mh <- max_hour_info_mh |> slice(1) |> pull(Hour)
@@ -4267,13 +4352,66 @@ outlier_df <- df %>%
     TTQ_Outlier_All
   )
 
+ttd_outliers <- df %>% 
+  mutate(
+    TTD_Z_Score = (as.numeric(Time_To_Dispatch) - mean(as.numeric(Time_To_Dispatch), na.rm = TRUE)) / sd(as.numeric(Time_To_Dispatch), na.rm = TRUE),
+    TTD_Outlier_Z = ifelse(abs(TTD_Z_Score) > 3, TRUE, FALSE),
+    TTD_Outlier_IQR = ifelse(Time_To_Dispatch < ttd_iql | Time_To_Dispatch > ttd_iqu, TRUE, FALSE),
+    TTD_Outlier_Percentile = ifelse(Time_To_Dispatch < ttd_lbq | Time_To_Dispatch > ttd_ubq, TRUE, FALSE),
+    TTD_Hampel = ifelse(Time_To_Dispatch < ttd_hampl | Time_To_Dispatch > ttd_hampu, TRUE, FALSE)
+  ) %>%
+  mutate(
+    TTD_Outlier_All = TTD_Outlier_Z & TTD_Outlier_IQR & TTD_Outlier_Percentile & TTD_Hampel
+  ) %>%
+  filter (
+    TTD_Outlier_All
+  )
+
+phone_outliers <- df %>% 
+  mutate(
+    Phone_Z_Score = (as.numeric(Phone_Time) - mean(as.numeric(Phone_Time), na.rm = TRUE)) / sd(as.numeric(Phone_Time), na.rm = TRUE),
+    Phone_Outlier_Z = ifelse(abs(Phone_Z_Score) > 3, TRUE, FALSE),
+    Phone_Outlier_IQR = ifelse(Phone_Time < phone_iql | Phone_Time > phone_iqu, TRUE, FALSE),
+    Phone_Outlier_Percentile = ifelse(Phone_Time < phone_lbq | Phone_Time > phone_ubq, TRUE, FALSE),
+    Phone_Hampel = ifelse(Phone_Time < phone_hampl | Phone_Time > phone_hampu, TRUE, FALSE)
+  ) %>% 
+    mutate(
+        Phone_Outlier_All = Phone_Outlier_Z & Phone_Outlier_IQR & Phone_Outlier_Percentile & Phone_Hampel
+    ) %>%
+    filter (
+        Phone_Outlier_All
+    )
+
+proc_outliers <- df %>% 
+  mutate(
+    Proc_Z_Score = (as.numeric(Processing_Time) - mean(as.numeric(Processing_Time), na.rm = TRUE)) / sd(as.numeric(Processing_Time), na.rm = TRUE),
+    Proc_Outlier_Z = ifelse(abs(Proc_Z_Score) > 3, TRUE, FALSE),
+    Proc_Outlier_IQR = ifelse(Processing_Time < proc_iql | Processing_Time > proc_iqu, TRUE, FALSE),
+    Proc_Outlier_Percentile = ifelse(Processing_Time < proc_lbq | Processing_Time > proc_ubq, TRUE, FALSE),
+    Proc_Hampel = ifelse(Processing_Time < proc_hampl | Processing_Time > proc_hampu, TRUE, FALSE)
+  ) %>%
+  mutate(
+    Proc_Outlier_All = Proc_Outlier_Z & Proc_Outlier_IQR & Proc_Outlier_Percentile & Proc_Hampel
+  ) %>%
+  filter (
+    Proc_Outlier_All
+  )
 ```
 
-This filter identified `r nrow(outlier_df)` rows that should be investigated as outliers. We can now look at those calls specifically and examine them in detail to see why these have been collected in our outlier set. If we wish to separate out each of the different metrics, we can separate out each of the four elapsed time measures and look at their specific details. For example, there are `r nrow(ttq_outliers)` rows where the Time To Queue value was considered an extereme value by all four tests.
+This filter identified `r nrow(outlier_df)` rows that should be investigated as outliers. We can now look at those calls specifically and examine them in detail to see why these have been collected in our outlier set. If we wish to separate out each of the different metrics, we can separate out each of the four elapsed time measures and look at their specific details. This table shows the number of outliers in each category. Please note that the individual categories may total more than the number of outliers reported in the combined dataset. A call may be considered an outlier in more than one category.
+
+| Category | Outlier Count |
+| :------: | :-----------: |
+| Time To Queue | `r nrow(ttq_outliers)` |
+| Time To Dispatch | `r nrow(ttd_outliers)` |
+| Phone Time | `r nrow(phone_outliers)` |
+| Processing Time | `r nrow(proc_outliers)` |
+
+The volumes for each category are interesting and future analyses may give insights into different factors. Further analyses of these calls wil occur below to enhance our understanding of the information contained in these datasets.
 
 ### Outlier Impact
 
-Below is an illustration of the impact that the outliers that we've identified have on the overall numbers we've reported. 
+Below is an illustration of the impact that the outliers that we've identified have on the overall numbers we've reported.
 
 ```{r outlier-summary}
 #| label: outlier-summary
@@ -4437,6 +4575,37 @@ tryCatch({
 })
 ```
 
+### Comparison: Overall vs. Non-Outlier Statistics
+
+For comparison purposes, here is the overall summary table again:
+
+```{r overall-summary-comparison}
+#| label: overall-summary-comparison
+#| echo: false
+#| message: false
+#| warning: false
+
+# Display the overall summary table preserved from earlier
+if (exists("summary_table_overall")) {
+  to_ft(
+    summary_table_overall,
+    caption = "Overall Elapsed Time Summary — Statistical summary of all call processing times",
+    header_map = list(
+      Variable = "Time Metric",
+      Minimum = "Min",
+      Mean = "Mean",
+      Median = "Median",
+      Std_Dev = "Std Dev",
+      Skewness = "Skew",
+      Kurtosis = "Kurt"
+    ),
+    digits = 2
+  )
+}
+```
+
+It is interesting to see that removing the outliers had the opposite effect and seems to show that they do not have a significant impact on our summary statistics. This is likely because we have only removed `r nrow(outlier_df)` rows from the dataset when recalculating
+
 After this summary table, we can measure the difference between the original medians and the medians after the `r nrow(outlier_df)` outlier rows were removed. This table shows that impact.
 
 | Time Point | Overall Median | Post-Outlier Median | Impact in Seconds |
@@ -4446,7 +4615,7 @@ After this summary table, we can measure the difference between the original med
 | Phone Time | `r median_phone_time_overall` | `r median_phone_time_nout` | `r median_phone_time_overall - median_phone_time_nout` |
 | Processing Time | `r median_processing_time_overall` | `r median_processing_time_nout` | `r median_processing_time_overall - median_processing_time_nout` |
 
-As you can see, the outliers have a considerable impact on the median values that we use. That impact is even greater when using the means since there are larger variances in the means and standard deviations compared to the medians and the median absolute deviations.
+There is little impact on the median times because the median value is less sensitive to the impact of outliers. 
 
 ## Conclusion
 
