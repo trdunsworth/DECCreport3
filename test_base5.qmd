@@ -36,6 +36,7 @@ execute:
   - [E-911 Call Breakdowns](#e-911-call-breakdowns)
 - **[Cardiac Arrest Calls Analysis](#cardiac-arrest-calls-analysis)**
 - **[Mental Health Analyses](#mental-health-analyses)**
+- **[Call Source Unrecorded](#call-source-unrecorded)**
 - **[Outlier Identification](#outlier-identification)**
 - **[Conclusion](#conclusion)**
 
@@ -129,7 +130,7 @@ if(WEEK_NUMBER == 41) {
   # January 1, 2025 was a Wednesday
   # First Sunday is the Sunday before or on Jan 1
   first_sunday_2025 <- jan_1_2025 - days(wday(jan_1_2025) - 1)  # Dec 29, 2024
-  
+
   # Calculate the start date for the specified week
   WEEK_START_DATE <- first_sunday_2025 + weeks(WEEK_NUMBER - 1)
   WEEK_END_DATE <- WEEK_START_DATE + days(6)
@@ -272,7 +273,7 @@ if(nrow(parsing_problems) > 0) {
 
 cat("Successfully loaded", nrow(df), "rows from", data_file, "\n")
 cat("Call_Reception column check:", "Call_Reception" %in% names(df), "\n")
- 
+
 # Use lubridate and across() to efficiently parse all date-time columns
 df <- df |>
   mutate(across(c(Response_Date,
@@ -325,8 +326,6 @@ For this week, there were a total of `r nrow(df)` calls for service. The column 
 
 colnames(df)
 ```
-
- 
 
 ## Data Cleaning
 
@@ -452,7 +451,6 @@ barDOW
 
 From this chart, we can see that `r busiest_day` was the busiest day of the week with `r busiest_day_count` service calls, and the slowest day was `r slowest_day` with `r slowest_day_count` service calls. There is some consistency throughout the week, with `r busiest_day_count - slowest_day_count` calls difference between the busiest and slowest days.
 
-
 ```{r hour-of-day}
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
@@ -466,20 +464,20 @@ max_count <- max(hour_counts$n)
 max_hour_info <- hour_counts |> filter(n == max_count)
 
 # Convert factor levels back to numeric for proper comparison, then back to formatted string
-busiest_hour_numeric <- max_hour_info |> 
-  slice(1) |> 
-  pull(Hour) |> 
-  as.character() |> 
+busiest_hour_numeric <- max_hour_info |>
+  slice(1) |>
+  pull(Hour) |>
+  as.character() |>
   as.numeric()
 busiest_hour <- sprintf("%02d", busiest_hour_numeric)
 busiest_hour_count <- max_hour_info |> slice(1) |> pull(n)
 
 min_hour_info <- hour_counts |> filter(n == min(n))
-# Convert factor levels back to numeric for proper comparison, then back to formatted string  
-slowest_hour_numeric <- min_hour_info |> 
-  slice(1) |> 
-  pull(Hour) |> 
-  as.character() |> 
+# Convert factor levels back to numeric for proper comparison, then back to formatted string
+slowest_hour_numeric <- min_hour_info |>
+  slice(1) |>
+  pull(Hour) |>
+  as.character() |>
   as.numeric()
 slowest_hour <- sprintf("%02d", slowest_hour_numeric)
 slowest_hour_count <- min_hour_info |> slice(1) |> pull(n)
@@ -628,7 +626,7 @@ barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=6
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=18),
@@ -658,7 +656,7 @@ busiest_agency_count <- max_agency_info |> slice(1) |> pull(n)
 police_percentage <- round((sum(df$Agency == "POLICE", na.rm = TRUE) / nrow(df)) * 100, 1)
 
 barDiscipline <- df |> ggplot(aes(x=Agency, fill=Agency)) +
-  geom_bar() + 
+  geom_bar() +
   scale_fill_manual(
     values = c(POLICE = "#1f77b4", FIRE = "#d62728", EMS = "#2ca02c"),
     name = "Agency"
@@ -673,7 +671,7 @@ barDiscipline <- df |> ggplot(aes(x=Agency, fill=Agency)) +
     size=6,
     color = "white",
     fontface = "bold"
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="right",
         plot.title = element_text(hjust = 0.5, size=18),
@@ -710,7 +708,7 @@ e911_percentage <- round((e911_count / nrow(df)) * 100, 2)
 not_captured_percentage <- round((not_captured_count / nrow(df)) * 100, 1)
 
 barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
-  geom_bar() + 
+  geom_bar() +
   paletteer::scale_fill_paletteer_d("ggsci::cyan_material") +
   labs(title="Number of Calls for Service by Call Reception",
        x="Call Reception",
@@ -720,7 +718,7 @@ barReception <- df |> ggplot(aes(x=Call_Reception, fill=Call_Reception)) +
     aes(label = after_stat(count)),
     vjust = -0.5,
     size=6
-  ) + 
+  ) +
   theme_minimal() +
   theme(legend.position="none",
         plot.title = element_text(hjust = 0.5, size=18),
@@ -773,7 +771,7 @@ barProblem <- problem_counts |>
        y="Number of Calls") +
   geom_text(
     aes(label = n),
-    vjust = -0.5, 
+    vjust = -0.5,
     size = 6) +
   theme_minimal() +
   theme(legend.position="none",
@@ -802,7 +800,7 @@ max_tc_info <- tc_counts |> filter(n == max(n))
 busiest_tc <- max_tc_info |> slice(1) |> pull(Call_Taker)
 busiest_tc_count <- max_tc_info |> slice(1) |> pull(n)
 
-tc_counts <- df |> 
+tc_counts <- df |>
   count(Call_Taker, sort = TRUE) |>
   slice_head(n = 10)
 
@@ -976,7 +974,7 @@ hour_dow_plot
 tryCatch({
   if (requireNamespace("ggridges", quietly = TRUE)) {
     library(ggridges)
-    
+
     # Create ridge plot using the raw data for a density estimate
     ridge_plot <- ggplot(df, aes(x = as.numeric(as.character(Hour)), y = DOW, fill = DOW)) +
       ggridges::geom_density_ridges(
@@ -1512,8 +1510,13 @@ df_911 <- df |> dplyr::filter(!is.na(Call_Reception) & Call_Reception == "E-911"
 df_non_e <- df |> dplyr::filter(!is.na(Call_Reception) & Call_Reception != "E-911")
 
 # Call Reception Not Recorded subset
-# - Filters rows where `Call_Reception` was not recorded
-df_nrr <- df |> dplyr::filter(!is.na(Call_Reception) & Call_Reception == "NOT RECORDED")
+# - Filters rows where `Call_Reception` was not recorded/captured or is NA
+# - Normalize values for robust matching
+df_nrr <- df |>
+  dplyr::filter(
+    is.na(Call_Reception) |
+      toupper(trimws(Call_Reception)) %in% c("NOT RECORDED", "NOT CAPTURED")
+  )
 ```
 
 ```{r precomputed-summaries}
@@ -1816,16 +1819,16 @@ median_processing_time <- NA_real_
 # Create a summary table of elapsed time variables
 tryCatch({
   # Define the columns we want to analyze
-  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time", 
+  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_law)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df_law %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -1862,7 +1865,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -1879,12 +1882,12 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
-                    
+
                     # Calculate fourth moment
                     fourth_moment <- mean((clean_vals - mean_val)^4)
                     # Calculate kurtosis (excess kurtosis = kurtosis - 3)
@@ -1892,7 +1895,7 @@ tryCatch({
                     kurt_val
                   })
                 })
-                
+
                 round(result, 2)
               }, error = function(e) {
                 # Final fallback
@@ -1908,16 +1911,16 @@ tryCatch({
       separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-    
+
     # Extract key metrics for use in text
-    median_time_to_queue <- summary_table |> 
-      filter(Variable == "Time To Queue") |> 
+    median_time_to_queue <- summary_table |>
+      filter(Variable == "Time To Queue") |>
       pull(Median)
   # Keep a namespaced copy for APD section
   median_time_to_queue_apd <- median_time_to_queue
-      
-    median_time_to_dispatch <- summary_table |> 
-      filter(Variable == "Time To Dispatch") |> 
+
+    median_time_to_dispatch <- summary_table |>
+      filter(Variable == "Time To Dispatch") |>
       pull(Median)
   # Keep a namespaced copy for APD section
   median_time_to_dispatch_apd <- median_time_to_dispatch
@@ -2005,7 +2008,6 @@ p4_percentage_apd <- round((sum(df_law$Priority_Number == "4", na.rm = TRUE) / n
 ```
 
 This table shows that overall, we have a median time on the phones of about `r median_phone_time` seconds and it takes about double that for a call to start and be dispatched, `r median_processing_time` seconds. Some of that difference is going to be due to having to hold Priority 4 and above calls until there is a unit available. Since the P4 calls are `r p4_percentage_apd` percent of APD calls, this could have a measureable impact on service times for DECC staff.
-
 
 | Priority | Dispatched in SLA | Total Calls | Pct in SLA |
 |:--------:|:--------:|:--------:|:--------:|
@@ -2274,14 +2276,14 @@ tryCatch({
   # Define the columns we want to analyze
   time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_fire)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df_fire %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -2318,7 +2320,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -2335,12 +2337,12 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
-                    
+
                     # Calculate fourth moment
                     fourth_moment <- mean((clean_vals - mean_val)^4)
                     # Calculate kurtosis (excess kurtosis = kurtosis - 3)
@@ -2348,7 +2350,7 @@ tryCatch({
                     kurt_val
                   })
                 })
-                
+
                 round(result, 2)
               }, error = function(e) {
                 # Final fallback
@@ -2364,14 +2366,14 @@ tryCatch({
       separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-    
+
     # Extract key metrics for use in text
-    median_time_to_queue <- summary_table |> 
-      filter(Variable == "Time To Queue") |> 
+    median_time_to_queue <- summary_table |>
+      filter(Variable == "Time To Queue") |>
       pull(Median)
-      
-    median_time_to_dispatch <- summary_table |> 
-      filter(Variable == "Time To Dispatch") |> 
+
+    median_time_to_dispatch <- summary_table |>
+      filter(Variable == "Time To Dispatch") |>
       pull(Median)
     median_time_to_dispatch_afd <- median_time_to_dispatch
 
@@ -2696,14 +2698,14 @@ tryCatch({
   # Define the columns we want to analyze
   time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_ems)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df_ems %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -2740,7 +2742,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -2757,12 +2759,12 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
-                    
+
                     # Calculate fourth moment
                     fourth_moment <- mean((clean_vals - mean_val)^4)
                     # Calculate kurtosis (excess kurtosis = kurtosis - 3)
@@ -2770,7 +2772,7 @@ tryCatch({
                     kurt_val
                   })
                 })
-                
+
                 round(result, 2)
               }, error = function(e) {
                 # Final fallback
@@ -2786,15 +2788,15 @@ tryCatch({
       separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-    
+
     # Extract key metrics for use in text
-    median_time_to_queue <- summary_table |> 
-      filter(Variable == "Time To Queue") |> 
+    median_time_to_queue <- summary_table |>
+      filter(Variable == "Time To Queue") |>
       pull(Median)
     median_time_to_queue_ems <- median_time_to_queue
-      
-    median_time_to_dispatch <- summary_table |> 
-      filter(Variable == "Time To Dispatch") |> 
+
+    median_time_to_dispatch <- summary_table |>
+      filter(Variable == "Time To Dispatch") |>
       pull(Median)
     median_time_to_dispatch_ems <- median_time_to_dispatch
 
@@ -2957,14 +2959,14 @@ tryCatch({
   # Define the columns we want to analyze
   time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_hp)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df_hp %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -3001,7 +3003,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -3018,12 +3020,12 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
-                    
+
                     # Calculate fourth moment
                     fourth_moment <- mean((clean_vals - mean_val)^4)
                     # Calculate kurtosis (excess kurtosis = kurtosis - 3)
@@ -3031,7 +3033,7 @@ tryCatch({
                     kurt_val
                   })
                 })
-                
+
                 round(result, 2)
               }, error = function(e) {
                 # Final fallback
@@ -3047,12 +3049,12 @@ tryCatch({
       separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-    
+
     # Extract key metrics for use in text
   median_time_to_queue <- summary_table |>
   filter(Variable == "Time To Queue") |>
       pull(Median)
-      
+
   median_time_to_dispatch <- summary_table |>
   filter(Variable == "Time To Dispatch") |>
       pull(Median)
@@ -3122,14 +3124,14 @@ tryCatch({
   # Define the columns we want to analyze
   time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_911)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <- df_911 %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -3166,7 +3168,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -3183,12 +3185,12 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
-                    
+
                     # Calculate fourth moment
                     fourth_moment <- mean((clean_vals - mean_val)^4)
                     # Calculate kurtosis (excess kurtosis = kurtosis - 3)
@@ -3196,7 +3198,7 @@ tryCatch({
                     kurt_val
                   })
                 })
-                
+
                 round(result, 2)
               }, error = function(e) {
                 # Final fallback
@@ -3212,12 +3214,12 @@ tryCatch({
       separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-    
+
     # Extract key metrics for use in text
   median_time_to_queue <- summary_table |>
   filter(Variable == "Time To Queue") |>
       pull(Median)
-      
+
   median_time_to_dispatch <- summary_table |>
   filter(Variable == "Time To Dispatch") |>
       pull(Median)
@@ -3341,19 +3343,19 @@ As can be seen `r busiest_day_911` was the busiest day for E-911 calls this week
 hour_counts_911 <- hour_counts_911
 
 max_hour_info_911 <- hour_counts_911 |> filter(n == max(n))
-busiest_hour_numeric_911 <- max_hour_info_911 |> 
-  slice(1) |> 
-  pull(Hour) |> 
-  as.character() |> 
+busiest_hour_numeric_911 <- max_hour_info_911 |>
+  slice(1) |>
+  pull(Hour) |>
+  as.character() |>
   as.numeric()
 busiest_hour_911 <- sprintf("%02d", busiest_hour_numeric_911)
 busiest_hour_count_911 <- max_hour_info_911 |> slice(1) |> pull(n)
 
 min_hour_info_911 <- hour_counts_911 |> filter(n == min(n))
-slowest_hour_numeric_911 <- min_hour_info_911 |> 
-  slice(1) |> 
-  pull(Hour) |> 
-  as.character() |> 
+slowest_hour_numeric_911 <- min_hour_info_911 |>
+  slice(1) |>
+  pull(Hour) |>
+  as.character() |>
   as.numeric()
 slowest_hour_911 <- sprintf("%02d", slowest_hour_numeric_911)
 slowest_hour_count_911 <- min_hour_info_911 |> slice(1) |> pull(n)
@@ -3415,14 +3417,14 @@ tryCatch({
   # Define the columns we want to analyze
   time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
                     "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
-  
+
   # Check which columns actually exist in the data
   existing_columns <- time_columns[time_columns %in% names(df_non_e)]
-  
+
   if (length(existing_columns) == 0) {
     cat("No time columns found in the data.\n")
   } else {
-    
+
     summary_table <<- df_non_e %>%
       # 1. Select only the columns that exist
       dplyr::select(all_of(existing_columns)) %>%
@@ -3459,7 +3461,7 @@ tryCatch({
               tryCatch({
                 # Remove NA values first
                 clean_vals <- vals[!is.na(vals)]
-                
+
                 # Try multiple approaches for kurtosis calculation
                 result <- tryCatch({
                   # Method 1: Use psych::kurtosis with explicit namespace
@@ -3476,12 +3478,12 @@ tryCatch({
                     # Method 3: Manual calculation
                     n <- length(clean_vals)
                     if (n < 4) return(NA_real_)
-                    
+
                     mean_val <- mean(clean_vals)
                     var_val <- var(clean_vals)
-                    
+
                     if (var_val == 0) return(NA_real_)
-                    
+
                     # Calculate fourth moment
                     fourth_moment <- mean((clean_vals - mean_val)^4)
                     # Calculate kurtosis (excess kurtosis = kurtosis - 3)
@@ -3489,7 +3491,7 @@ tryCatch({
                     kurt_val
                   })
                 })
-                
+
                 round(result, 2)
               }, error = function(e) {
                 # Final fallback
@@ -3505,12 +3507,12 @@ tryCatch({
       separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
       pivot_wider(names_from = Statistic, values_from = Value) %>%
       mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-    
+
     # Extract key metrics for use in text (use <<- to assign to parent environment)
     median_time_to_queue_non911 <<- summary_table |>
       filter(Variable == "Time To Queue") |>
       pull(Median)
-      
+
     median_time_to_dispatch_non911 <<- summary_table |>
       filter(Variable == "Time To Dispatch") |>
       pull(Median)
@@ -3614,19 +3616,19 @@ As can be seen `r busiest_day_non911` was the busiest day for Non-E-911 calls th
 hour_counts_non911 <- hour_counts_non911
 
 max_hour_info_non911 <- hour_counts_non911 |> filter(n == max(n))
-busiest_hour_numeric_non911 <- max_hour_info_non911 |> 
-  slice(1) |> 
-  pull(Hour) |> 
-  as.character() |> 
+busiest_hour_numeric_non911 <- max_hour_info_non911 |>
+  slice(1) |>
+  pull(Hour) |>
+  as.character() |>
   as.numeric()
 busiest_hour_non911 <- sprintf("%02d", busiest_hour_numeric_non911)
 busiest_hour_count_non911 <- max_hour_info_non911 |> slice(1) |> pull(n)
 
 min_hour_info_non911 <- hour_counts_non911 |> filter(n == min(n))
-slowest_hour_numeric_non911 <- min_hour_info_non911 |> 
-  slice(1) |> 
-  pull(Hour) |> 
-  as.character() |> 
+slowest_hour_numeric_non911 <- min_hour_info_non911 |>
+  slice(1) |>
+  pull(Hour) |>
+  as.character() |>
   as.numeric()
 slowest_hour_non911 <- sprintf("%02d", slowest_hour_numeric_non911)
 slowest_hour_count_non911 <- min_hour_info_non911 |> slice(1) |> pull(n)
@@ -3807,7 +3809,7 @@ tryCatch({
   median_time_to_queue <- summary_table |>
   filter(Variable == "Time To Queue") |>
       pull(Median)
-      
+
   median_time_to_dispatch <- summary_table |>
   filter(Variable == "Time To Dispatch") |>
       pull(Median)
@@ -4194,7 +4196,7 @@ tryCatch({
   median_time_to_queue <- summary_table |>
   filter(Variable == "Time To Queue") |>
       pull(Median)
-      
+
   median_time_to_dispatch <- summary_table |>
   filter(Variable == "Time To Dispatch") |>
       pull(Median)
@@ -4248,7 +4250,103 @@ As discussed earlier in the document, there are `r nrow(df_nrr)` calls where the
 #| echo: false
 #| message: false
 #| warning: false
+
+#| fig.width: 8
+#| fig.height: 5
+
+if (nrow(df_nrr) == 0) {
+  cat("No calls with unrecorded or uncaptured call source this week.\n")
+} else {
+  nrr_tc_counts <- df_nrr |>
+    count(Call_Taker, sort = TRUE) |>
+    mutate(color_id = dplyr::row_number())
+
+  # Guard in case Call_Taker is all NA
+  if (nrow(nrr_tc_counts) == 0 || all(is.na(nrr_tc_counts$Call_Taker))) {
+    cat("No call taker information available for unrecorded call sources.\n")
+  } else {
+    nrr_max_tc_info <- nrr_tc_counts |> dplyr::filter(n == max(n))
+    nrr_busiest_tc <- nrr_max_tc_info |> dplyr::slice(1) |> dplyr::pull(Call_Taker)
+    nrr_busiest_tc_count <- nrr_max_tc_info |> dplyr::slice(1) |> dplyr::pull(n)
+
+    # Get number of call takers for proper color scaling
+    n_takers <- nrow(nrr_tc_counts)
+
+    nrr_barCallTaker <- nrr_tc_counts |>
+      ggplot(aes(x=reorder(Call_Taker, -n), y=n, fill=factor(color_id))) +
+      geom_bar(stat="identity") +
+      scale_fill_manual(values = grDevices::colorRampPalette(
+        paletteer::paletteer_d("ggsci::teal_material", n = 10))(n_takers)) +
+      labs(title="Call Source Not Recorded by Call Taker",
+           x="Call Taker",
+           y="Number of Call Source Not Recorded Calls") +
+      geom_text(
+        aes(label = n),
+        vjust = -0.5,
+        size = 3.5) +
+      theme_minimal() +
+      theme(legend.position="none",
+            plot.title = element_text(hjust = 0.5, size=14),
+            axis.text.x = element_text(angle=45, hjust=1, size=8),
+            axis.text.y = element_text(size=8),
+            axis.title.x = element_text(size=10),
+            axis.title.y = element_text(size=10),
+            plot.margin = margin(5, 5, 5, 5))
+
+    nrr_barCallTaker
+  }
+}
 ```
+
+There are a few calltakers with more than one call where the call source went unrecorded. `r nrr_busiest_tc` had the most calls without recording the source with `r nrr_busiest_tc_count` calls. We should look into those calls to see what additional factors exist that caused this to occur and work to address those.
+
+```{r source-known-discipline}
+#| label: source-unknown-discipline
+#| echo: false
+#| message: false
+#| warning: false
+# ggplot2
+nrr_agency_counts <- df_nrr |>
+  count(Agency, sort = TRUE)
+
+nrr_max_agency_info <- nrr_agency_counts |> filter(n == max(n))
+nrr_busiest_agency <- nrr_max_agency_info |> slice(1) |> pull(Agency)
+nrr_busiest_agency_count <- nrr_max_agency_info |> slice(1) |> pull(n)
+
+# Calculate percentage for Police calls
+nrr_police_percentage <- round((sum(df_nrr$Agency == "POLICE", na.rm = TRUE) / nrow(df_nrr)) * 100, 1)
+
+nrr_barDiscipline <- df_nrr |> ggplot(aes(x=Agency, fill=Agency)) +
+  geom_bar() +
+  scale_fill_manual(
+    values = c(POLICE = "#1f77b4", FIRE = "#d62728", EMS = "#2ca02c"),
+    name = "Agency"
+  ) +
+  labs(title="Number of Calls for Service by Discipline with no source",
+       x="Discipline",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    position = position_stack(vjust = 0.5),
+    size=6,
+    color = "white",
+    fontface = "bold"
+  ) +
+  theme_minimal() +
+  theme(legend.position="right",
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=14),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.title = element_text(size=14),
+        legend.text = element_text(size=12))
+
+nrr_barDiscipline
+```
+
+The majority of calls with no source were for `r nrr_busiest_agency` with `r nrr_busiest_agency_count` calls for service. This week, that is substatially higher than the other two agencies combined.
 
 ## Outlier Identification
 
@@ -4337,7 +4435,7 @@ outlier_df <- df %>%
     TTQ_Outlier_All | TTD_Outlier_All | Phone_Outlier_All | Proc_Outlier_All
   )
 
-  ttq_outliers <- df %>% 
+  ttq_outliers <- df %>%
   mutate(
     TTQ_Z_Score = (as.numeric(Time_To_Queue) - mean(as.numeric(Time_To_Queue), na.rm = TRUE)) / sd(as.numeric(Time_To_Queue), na.rm = TRUE),
     TTQ_Outlier_Z = ifelse(abs(TTQ_Z_Score) > 3, TRUE, FALSE),
@@ -4352,7 +4450,7 @@ outlier_df <- df %>%
     TTQ_Outlier_All
   )
 
-ttd_outliers <- df %>% 
+ttd_outliers <- df %>%
   mutate(
     TTD_Z_Score = (as.numeric(Time_To_Dispatch) - mean(as.numeric(Time_To_Dispatch), na.rm = TRUE)) / sd(as.numeric(Time_To_Dispatch), na.rm = TRUE),
     TTD_Outlier_Z = ifelse(abs(TTD_Z_Score) > 3, TRUE, FALSE),
@@ -4367,14 +4465,14 @@ ttd_outliers <- df %>%
     TTD_Outlier_All
   )
 
-phone_outliers <- df %>% 
+phone_outliers <- df %>%
   mutate(
     Phone_Z_Score = (as.numeric(Phone_Time) - mean(as.numeric(Phone_Time), na.rm = TRUE)) / sd(as.numeric(Phone_Time), na.rm = TRUE),
     Phone_Outlier_Z = ifelse(abs(Phone_Z_Score) > 3, TRUE, FALSE),
     Phone_Outlier_IQR = ifelse(Phone_Time < phone_iql | Phone_Time > phone_iqu, TRUE, FALSE),
     Phone_Outlier_Percentile = ifelse(Phone_Time < phone_lbq | Phone_Time > phone_ubq, TRUE, FALSE),
     Phone_Hampel = ifelse(Phone_Time < phone_hampl | Phone_Time > phone_hampu, TRUE, FALSE)
-  ) %>% 
+  ) %>%
     mutate(
         Phone_Outlier_All = Phone_Outlier_Z & Phone_Outlier_IQR & Phone_Outlier_Percentile & Phone_Hampel
     ) %>%
@@ -4382,7 +4480,7 @@ phone_outliers <- df %>%
         Phone_Outlier_All
     )
 
-proc_outliers <- df %>% 
+proc_outliers <- df %>%
   mutate(
     Proc_Z_Score = (as.numeric(Processing_Time) - mean(as.numeric(Processing_Time), na.rm = TRUE)) / sd(as.numeric(Processing_Time), na.rm = TRUE),
     Proc_Outlier_Z = ifelse(abs(Proc_Z_Score) > 3, TRUE, FALSE),
@@ -4408,6 +4506,149 @@ This filter identified `r nrow(outlier_df)` rows that should be investigated as 
 | Processing Time | `r nrow(proc_outliers)` |
 
 The volumes for each category are interesting and future analyses may give insights into different factors. Further analyses of these calls wil occur below to enhance our understanding of the information contained in these datasets.
+
+### Detailed Outliers Information
+
+```{r ttq-outlier-graphs}
+#| label: ttq_outlier-graphs
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.width: 8
+#| fig.height: 5
+
+ttq_out_tc_counts <- ttq_outliers |>
+  count(Call_Taker, sort = TRUE) |>
+  mutate(color_id = row_number())
+
+ttq_out_max_tc_info <- ttq_out_tc_counts |> filter(n == max(n))
+ttq_out_busiest_tc <- ttq_out_max_tc_info |> slice(1) |> pull(Call_Taker)
+ttq_out_busiest_tc_count <- ttq_out_max_tc_info |> slice(1) |> pull(n)
+
+# Get number of call takers for proper color scaling
+n_takers <- nrow(ttq_out_tc_counts)
+
+ttq_out_barCallTaker <- ttq_out_tc_counts |>
+  ggplot(aes(x=reorder(Call_Taker, -n), y=n, fill=factor(color_id))) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values = colorRampPalette(
+    paletteer::paletteer_d("ggsci::blue_grey_material", n = 10))(n_takers)) +
+  labs(title="Time To Queue Outliers by Call Taker",
+       x="Call Taker",
+       y="Number of Outlier Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5,
+    size = 3.5) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=8),
+        axis.text.y = element_text(size=8),
+        axis.title.x = element_text(size=10),
+        axis.title.y = element_text(size=10),
+        plot.margin = margin(5, 5, 5, 5))
+
+ttq_out_barCallTaker
+
+```
+
+The graph shows that `r ttq_out_busiest_tc` had the most outlier calls with `r ttq_out_busiest_tc_count` calls. Overall there were a small number of call takers that had outlier values in getting a call sent for dispatch.
+
+```{r ttd-outlier-graphs}
+#| label: ttd_outlier-graphs
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.width: 8
+#| fig.height: 5
+
+ttd_out_disp_counts <- ttd_outliers |>
+  count(Dispatcher, sort = TRUE) |>
+  mutate(color_id = row_number())
+
+ttd_out_max_disp_info <- ttd_out_disp_counts |> filter(n == max(n))
+ttd_out_busiest_disp <- ttd_out_max_disp_info |> slice(1) |> pull(Dispatcher)
+ttd_out_busiest_disp_count <- ttd_out_max_disp_info |> slice(1) |> pull(n)
+
+# Get number of dispatchers for proper color scaling
+n_dispatchers <- nrow(ttd_out_disp_counts)
+
+ttd_out_barDispatcher <- ttd_out_disp_counts |>
+  ggplot(aes(x=reorder(Dispatcher, -n), y=n, fill=factor(color_id))) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values = colorRampPalette(
+    paletteer::paletteer_d("ggsci::blue_grey_material", n = 10))(n_dispatchers)) +
+  labs(title="Time To Dispatch Outliers by Dispatcher",
+       x="Dispatcher",
+       y="Number of Outlier Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5,
+    size = 3.5) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=14),
+        axis.text.x = element_text(angle=45, hjust=1, size=8),
+        axis.text.y = element_text(size=8),
+        axis.title.x = element_text(size=10),
+        axis.title.y = element_text(size=10),
+        plot.margin = margin(5, 5, 5, 5))
+
+ttd_out_barDispatcher
+
+```
+
+This graph shows the distribution of calls where the time to dispatch the first unit was considered to be an outlier value. It is interesting to note that `r ttd_out_busiest_disp` has the most outlier values. We should carefully examine those calls to see how this has happened, so those calls do not fall through the cracks.
+
+```{r ttd-outlier-agency}
+#| label: ttd_outlier_agency
+#| echo: false
+#| message: false
+#| warning: false
+# ggplot2
+ttd_out_agency_counts <- ttd_outliers |>
+  count(Agency, sort = TRUE)
+
+ttd_out_max_agency_info <- ttd_out_agency_counts |> filter(n == max(n))
+ttd_out_busiest_agency <- ttd_out_max_agency_info |> slice(1) |> pull(Agency)
+ttd_out_busiest_agency_count <- ttd_out_max_agency_info |> slice(1) |> pull(n)
+
+# Calculate percentage for Police calls
+ttd_out_police_percentage <- round((sum(ttd_outliers$Agency == "POLICE", na.rm = TRUE) / nrow(ttd_outliers)) * 100, 1)
+
+ttd_out_barDiscipline <- ttd_outliers |> ggplot(aes(x=Agency, fill=Agency)) +
+  geom_bar() +
+  scale_fill_manual(
+    values = c(POLICE = "#1f77b4", FIRE = "#d62728", EMS = "#2ca02c"),
+    name = "Agency"
+  ) +
+  labs(title="Number of Calls for Service by Agency with Large Dispatch Times",
+       x="Discipline",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    position = position_stack(vjust = 0.5),
+    size=6,
+    color = "white",
+    fontface = "bold"
+  ) +
+  theme_minimal() +
+  theme(legend.position="right",
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=14),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.title = element_text(size=14),
+        legend.text = element_text(size=12))
+
+ttd_out_barDiscipline
+
+```
+
+As expected, all of the calls that have an outlier in the time to dispatch the calls belonged to `r ttd_out_busiest_agency`. This was expected because AFD FIRE and EMS calls use auto-dispatch and rarely wait for more than a few seconds.
 
 ### Outlier Impact
 
@@ -4538,7 +4779,7 @@ tryCatch({
     median_time_to_queue_nout <<- summary_table |>
       filter(Variable == "Time To Queue") |>
       pull(Median)
-      
+
     median_time_to_dispatch_nout <<- summary_table |>
       filter(Variable == "Time To Dispatch") |>
       pull(Median)
@@ -4575,7 +4816,7 @@ tryCatch({
 })
 ```
 
-### Comparison: Overall vs. Non-Outlier Statistics
+### Comparison: Overall vs. Outlier Statistics
 
 For comparison purposes, here is the overall summary table again:
 
@@ -4615,7 +4856,7 @@ After this summary table, we can measure the difference between the original med
 | Phone Time | `r median_phone_time_overall` | `r median_phone_time_nout` | `r median_phone_time_overall - median_phone_time_nout` |
 | Processing Time | `r median_processing_time_overall` | `r median_processing_time_nout` | `r median_processing_time_overall - median_processing_time_nout` |
 
-There is little impact on the median times because the median value is less sensitive to the impact of outliers. 
+There is little impact on the median times because the median value is less sensitive to the impact of outliers.
 
 ## Conclusion
 
