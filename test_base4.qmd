@@ -4271,170 +4271,45 @@ outlier_df <- df %>%
 
 This filter identified `r nrow(outlier_df)` rows that should be investigated as outliers. We can now look at those calls specifically and examine them in detail to see why these have been collected in our outlier set. If we wish to separate out each of the different metrics, we can separate out each of the four elapsed time measures and look at their specific details. For example, there are `r nrow(ttq_outliers)` rows where the Time To Queue value was considered an extereme value by all four tests.
 
-### Outlier Impact
-
-Below is an illustration of the impact that the outliers that we've identified have on the overall numbers we've reported. 
-
-```{r outlier-summary}
-#| label: outlier-summary
+```{r ttq-outliers}
+#| label: ttq-outliers
 #| echo: false
 #| message: false
 #| warning: false
 
-# Create row index column for joining
-df_indexed <- df %>% mutate(.row_id = row_number())
-outlier_df_indexed <- outlier_df %>% mutate(.row_id = row_number())
+### Outlier Information
 
-# Get the original row numbers from df that are in outlier_df
-outlier_rows <- which(seq_len(nrow(df)) %in% as.integer(rownames(outlier_df)))
+ttw_out_tc_counts <- df |>
+  count(Call_Taker, sort = TRUE)
 
-# Create non-outlier dataframe by excluding those rows
-nonoutlier_df <- df[-outlier_rows, ]
+max_tc_info <- tc_counts |> filter(n == max(n))
+busiest_tc <- max_tc_info |> slice(1) |> pull(Call_Taker)
+busiest_tc_count <- max_tc_info |> slice(1) |> pull(n)
 
-# Initialize variables outside tryCatch so they're always available
-summary_table <- NULL
-median_processing_time_nout <- NA_real_
-median_phone_time_nout <- NA_real_
-median_time_to_queue_nout <- NA_real_
-median_time_to_dispatch_nout <- NA_real_
-median_ttq_nout <- NA_real_
-median_ttd_nout <- NA_real_
+tc_counts <- df |> 
+  count(Call_Taker, sort = TRUE) |>
+  slice_head(n = 10)
 
-# Create a summary table of elapsed time variables
-tryCatch({
-  # Define the columns we want to analyze
-  time_columns <- c("Time_To_Queue", "Time_To_Dispatch", "Phone_Time",
-                    "Processing_Time", "Rollout_Time", "Transit_Time", "Total_Call_Time")
+barCallTaker <- tc_counts |>
+  ggplot(aes(x=reorder(Call_Taker, -n), y=n, fill=Call_Taker)) +
+  geom_bar(stat="identity") +
+  paletteer::scale_fill_paletteer_d("ggsci::cyan_material") +
+  labs(title="Number of Calls for Service by Call Taker",
+       x="Call Taker",
+       y="Number of Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5,
+    size = 6) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size=18),
+        axis.text.x = element_text(angle=45, hjust=1, size=14),
+        axis.text.y = element_text(size=14),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16))
 
-  # Check which columns actually exist in the data
-  existing_columns <- time_columns[time_columns %in% names(nonoutlier_df)]
-
-  if (length(existing_columns) == 0) {
-    cat("No time columns found in the data.\n")
-  } else {
-
-    summary_table <- nonoutlier_df %>%
-      # 1. Select only the columns that exist
-      dplyr::select(all_of(existing_columns)) %>%
-      # 2. Summarize across all selected columns, converting difftime to numeric safely
-      summarise(across(everything(),
-        list(
-          Minimum  = ~ {
-            vals <- as.numeric(.)
-            if (all(is.na(vals))) NA_real_ else round(min(vals, na.rm = TRUE), 2)
-          },
-          Mean     = ~ {
-            vals <- as.numeric(.)
-            if (all(is.na(vals))) NA_real_ else round(mean(vals, na.rm = TRUE), 2)
-          },
-          Median   = ~ {
-            vals <- as.numeric(.)
-            if (all(is.na(vals))) NA_real_ else round(median(vals, na.rm = TRUE), 2)
-          },
-          Std_Dev  = ~ {
-            vals <- as.numeric(.)
-            if (all(is.na(vals))) NA_real_ else round(sd(vals, na.rm = TRUE), 2)
-          },
-          Skewness = ~ {
-            vals <- as.numeric(.)
-            if (all(is.na(vals))) NA_real_ else {
-              tryCatch(round(psych::skew(vals, na.rm = TRUE), 2), error = function(e) NA_real_)
-            }
-          },
-          Kurtosis = ~ {
-            vals <- as.numeric(.)
-            if (all(is.na(vals)) || length(vals[!is.na(vals)]) < 4) {
-              NA_real_
-            } else {
-              tryCatch({
-                # Remove NA values first
-                clean_vals <- vals[!is.na(vals)]
-
-                # Try multiple approaches for kurtosis calculation
-                result <- tryCatch({
-                  # Method 1: Use psych::kurtosis with explicit namespace
-                  psych::kurtosis(clean_vals)
-                }, error = function(e1) {
-                  tryCatch({
-                    # Method 2: Use moments package if available
-                    if (requireNamespace("moments", quietly = TRUE)) {
-                      moments::kurtosis(clean_vals) - 3  # Convert to excess kurtosis
-                    } else {
-                      stop("moments not available")
-                    }
-                  }, error = function(e2) {
-                    # Method 3: Manual calculation
-                    n <- length(clean_vals)
-                    if (n < 4) return(NA_real_)
-
-                    mean_val <- mean(clean_vals)
-                    var_val <- var(clean_vals)
-
-                    if (var_val == 0) return(NA_real_)
-
-                    # Calculate fourth moment
-                    fourth_moment <- mean((clean_vals - mean_val)^4)
-                    # Calculate kurtosis (excess kurtosis = kurtosis - 3)
-                    kurt_val <- (fourth_moment / (var_val^2)) - 3
-                    kurt_val
-                  })
-                })
-
-                round(result, 2)
-              }, error = function(e) {
-                # Final fallback
-                NA_real_
-              })
-            }
-          }
-        ),
-        .names = "{.col}---{.fn}" # Use a unique separator
-      )) %>%
-      # 3. Reshape the data to a long format, then back to a clean wide format
-      pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
-      separate(Variable, into = c("Variable", "Statistic"), sep = "---") %>%
-      pivot_wider(names_from = Statistic, values_from = Value) %>%
-      mutate(Variable = str_replace_all(Variable, "_", " ")) # Clean up names for display
-
-    # Extract key metrics for use in text (use <<- to assign to parent environment)
-    median_time_to_queue_nout <<- summary_table |>
-      filter(Variable == "Time To Queue") |>
-      pull(Median)
-      
-    median_time_to_dispatch_nout <<- summary_table |>
-      filter(Variable == "Time To Dispatch") |>
-      pull(Median)
-
-    median_processing_time_nout <<- summary_table |>
-      filter(Variable == "Processing Time") |>
-      pull(Median)
-
-    median_phone_time_nout <<- summary_table |>
-      filter(Variable == "Phone Time") |>
-      pull(Median)
-
-    median_ttq_nout <<- median_time_to_queue_nout
-    median_ttd_nout <<- median_time_to_dispatch_nout
-
-    to_ft(
-      summary_table,
-      caption = "Non-Outlier Elapsed Time Summary — Statistical summary of call processing times excluding outliers",
-      header_map = list(
-        Variable = "Time Metric",
-        Minimum = "Min",
-        Mean = "Mean",
-        Median = "Median",
-        Std_Dev = "Std Dev",
-        Skewness = "Skew",
-        Kurtosis = "Kurt"
-      ),
-      digits = 2
-    )
-  }
-}, error = function(e) {
-  cat("Error creating summary table:", e$message, "\n")
-  cat("Available columns in nonoutlier_df:", paste(names(nonoutlier_df), collapse = ", "), "\n")
-})
+barCallTaker
 ```
 
 After this summary table, we can measure the difference between the original medians and the medians after the `r nrow(outlier_df)` outlier rows were removed. This table shows that impact.
@@ -4450,4 +4325,4 @@ As you can see, the outliers have a considerable impact on the median values tha
 
 ## Conclusion
 
-This report has covered various aspects of the calls for service during week `r WEEK_NUMBER`. We have analyzed the data for completeness and accuracy, explored it for insights into call patterns and trends, and focused on specific areas of interest such as high-priority calls and cardiac arrest incidents. The findings will assist in making informed decisions to improve service delivery and operational efficiency.
+This report has covered various aspects of the calls for service during week `r WEEK_NUMBER`. We have analyzed the data for completeness and accuracy, explored it for insights into call patterns and trends, and focused on specific areas of interest such as high-priority calls and cardiac arrest incidents. The findings will assist in making informed decisions to improve service delivery and operational efficiency. This report is under construction to be converted into a web access format.
