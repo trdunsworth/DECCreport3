@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-10-15"
+date: "2025-10-29"
 format:
     html:
         toc: true
@@ -9,7 +9,7 @@ format:
         toc-location: left
 ---
 
-## Week 41 from 05 October through 11 October 2025.
+## Week 43 from 19 October through 25 October 2025.
 
 ## Table of Contents
 
@@ -109,16 +109,16 @@ suppressWarnings({
 #}
 
 # Define week number for dynamic title generation
-WEEK_NUMBER <- 41
+WEEK_NUMBER <- 43
 
 # Calculate week dates properly for 2025
 # Week 41 should be Oct 05-11, 2025 (Sunday to Saturday)
 # Sunday-first week calculation
 
 # Method 1: Direct date specification for week 41
-if(WEEK_NUMBER == 41) {
-  WEEK_START_DATE <- as.Date("2025-10-05")  # Sunday Oct 05
-  WEEK_END_DATE <- as.Date("2025-10-11")    # Saturday Oct 11
+if(WEEK_NUMBER == 43) {
+  WEEK_START_DATE <- as.Date("2025-10-19")  # Sunday Oct 05
+  WEEK_END_DATE <- as.Date("2025-10-25")    # Saturday Oct 11
 } else {
   # For other weeks, we can use a more general calculation
   # Find the first Sunday of 2025 (which is actually Dec 29, 2024)
@@ -1852,10 +1852,10 @@ tryCatch({
   apd_p4_spec <- df_law |>
     dplyr::filter(Priority_Number == 4 & Time_To_Dispatch <= 3600)
 
-  apd_p1_compliance_pct <- round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 2)
-  apd_p2_compliance_pct <- round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 2)
-  apd_p3_compliance_pct <- round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 2)
-  apd_p4_compliance_pct <- round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 2)
+  apd_p1_compliance_pct <- if (nrow(apd_p1_calls) > 0) round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 2) else 0
+  apd_p2_compliance_pct <- if (nrow(apd_p2_calls) > 0) round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 2) else 0
+  apd_p3_compliance_pct <- if (nrow(apd_p3_calls) > 0) round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 2) else 0
+  apd_p4_compliance_pct <- if (nrow(apd_p4_calls) > 0) round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 2) else 0
 
     to_ft(
       summary_table,
@@ -2301,8 +2301,8 @@ tryCatch({
     fire_106_calls <- df_fire |>
       dplyr::filter(Priority_Number <= 2 & Time_To_Dispatch <= 106)
 
-    fire_64_compliance_pct <- round((nrow(fire_64_calls) / nrow(fire_hp_calls)) * 100, 3)
-    fire_106_compliance_pct <- round((nrow(fire_106_calls) / nrow(fire_hp_calls)) * 100, 3)
+    fire_64_compliance_pct <- if (nrow(fire_hp_calls) > 0) round((nrow(fire_64_calls) / nrow(fire_hp_calls)) * 100, 2) else 0
+    fire_106_compliance_pct <- if (nrow(fire_hp_calls) > 0) round((nrow(fire_106_calls) / nrow(fire_hp_calls)) * 100, 2) else 0
 
     to_ft(
       summary_table,
@@ -2722,8 +2722,8 @@ tryCatch({
     ems_106_calls <- df_ems |>
       dplyr::filter(Priority_Number <= 2 & Processing_Time <= 106)
 
-    ems_64_compliance_pct <- round((nrow(ems_64_calls) / nrow(ems_hp_calls)) * 100, 1)
-    ems_106_compliance_pct <- round((nrow(ems_106_calls) / nrow(ems_hp_calls)) * 100, 1)
+    ems_64_compliance_pct <- if (nrow(ems_hp_calls) > 0) round((nrow(ems_64_calls) / nrow(ems_hp_calls)) * 100, 2) else 0
+    ems_106_compliance_pct <- if (nrow(ems_hp_calls) > 0) round((nrow(ems_106_calls) / nrow(ems_hp_calls)) * 100, 2) else 0
 
     to_ft(
       summary_table,

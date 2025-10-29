@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-10-15"
+date: "2025-10-29"
 format:
     html:
         toc: true
@@ -11,7 +11,7 @@ execute:
   freeze: auto
 ---
 
-## Week 41 from 05 October through 11 October 2025
+## Week 43 from 19 October through 25 October 2025
 
 ## Table of Contents
 
@@ -113,16 +113,16 @@ suppressWarnings({
 #}
 
 # Define week number for dynamic title generation
-WEEK_NUMBER <- 41
+WEEK_NUMBER <- 43
 
 # Calculate week dates properly for 2025
 # Week 41 should be Oct 05-11, 2025 (Sunday to Saturday)
 # Sunday-first week calculation
 
 # Method 1: Direct date specification for week 41
-if(WEEK_NUMBER == 41) {
-  WEEK_START_DATE <- as.Date("2025-10-05")  # Sunday Oct 05
-  WEEK_END_DATE <- as.Date("2025-10-11")    # Saturday Oct 11
+if(WEEK_NUMBER == 43) {
+  WEEK_START_DATE <- as.Date("2025-10-19")  # Sunday Oct 05
+  WEEK_END_DATE <- as.Date("2025-10-25")    # Saturday Oct 11
 } else {
   # For other weeks, we can use a more general calculation
   # Find the first Sunday of 2025 (which is actually Dec 29, 2024)

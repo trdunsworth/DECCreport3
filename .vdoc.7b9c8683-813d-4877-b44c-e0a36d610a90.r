@@ -1833,10 +1833,10 @@ tryCatch({
   apd_p4_spec <- df_law |>
     dplyr::filter(Priority_Number == 4 & Time_To_Dispatch <= 3600)
 
-  apd_p1_compliance_pct <- round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 3)
-  apd_p2_compliance_pct <- round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 3)
-  apd_p3_compliance_pct <- round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 3)
-  apd_p4_compliance_pct <- round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 3)
+  apd_p1_compliance_pct <- if (nrow(apd_p1_calls) > 0) round((nrow(apd_p1_spec) / nrow(apd_p1_calls)) * 100, 2) else 0
+  apd_p2_compliance_pct <- if (nrow(apd_p2_calls) > 0) round((nrow(apd_p2_spec) / nrow(apd_p2_calls)) * 100, 2) else 0
+  apd_p3_compliance_pct <- if (nrow(apd_p3_calls) > 0) round((nrow(apd_p3_spec) / nrow(apd_p3_calls)) * 100, 2) else 0
+  apd_p4_compliance_pct <- if (nrow(apd_p4_calls) > 0) round((nrow(apd_p4_spec) / nrow(apd_p4_calls)) * 100, 2) else 0
 
     to_ft(
       summary_table,
