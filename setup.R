@@ -8,7 +8,7 @@ required_packages <- c(
   "ggridges", "multcomp", "emmeans", "RVAideMemoire", "FactoMineR", "DescTools", "nlme",
   "funModeling", "inspectdf", "dlookr", "viridis", "merTools", "factoextra", "nortest", "MASS",
   "randtests", "summarytools", "report", "knitr", "kableExtra", "dbus",
-  "modelbased", "parameters", "performance", "insight", "paletteer", "flextable", "officer", "outliers"
+  "modelbased", "parameters", "performance", "insight", "paletteer", "flextable", "officer", "outliers", "rmarkdown","shiny"
 )
 
 is_windows <- identical(tolower(Sys.info()[["sysname"]]), "windows")
