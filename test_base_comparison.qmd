@@ -1561,10 +1561,20 @@ As discussed earlier, we can create additional subsets from this data to look at
 #| cache: true
 
 df_hp <- df |>
-  filter((Agency == "POLICE" & Priority_Number < 2) | (Agency %in% c("FIRE", "EMS") & Priority_Number < 3))
+  filter((Agency == "POLICE" & as.numeric(Priority_Number) < 2) |
+         (Agency %in% c("FIRE", "EMS") & as.numeric(Priority_Number) < 3))
+
+lw_hp <- df_last |>
+  filter((Agency == "POLICE" & as.numeric(Priority_Number) < 2) |
+         (Agency %in% c("FIRE", "EMS") & as.numeric(Priority_Number) < 3))
 
 df_lp <- df |>
-  filter((Agency == "POLICE" & Priority_Number >= 2) | (Agency %in% c("FIRE", "EMS") & Priority_Number >= 3))
+  filter((Agency == "POLICE" & as.numeric(Priority_Number) >= 2) |
+         (Agency %in% c("FIRE", "EMS") & as.numeric(Priority_Number) >= 3))
+
+lw_lp <- df_last |>
+  filter((Agency == "POLICE" & as.numeric(Priority_Number) >= 2) |
+         (Agency %in% c("FIRE", "EMS") & as.numeric(Priority_Number) >= 3))
 
 df_law <- df |> filter(Agency == "POLICE")
 df_fire <- df |> filter(Agency == "FIRE")
@@ -1573,6 +1583,13 @@ df_ttq_delay <- df_hp |> filter(Time_To_Queue > 60)
 df_ttd_delay <- df_hp |> filter(Time_To_Dispatch > 60)
 df_ca <- df |> filter(Problem == "CARDIAC ARREST ALS 2- SUPV")
 
+lw_law <- df_last |> filter(Agency == "POLICE")
+lw_fire <- df_last |> filter(Agency == "FIRE")
+lw_ems <- df_last |> filter(Agency == "EMS")
+lw_ttq_delay <- last_week |> filter(Time_To_Queue > 60)
+lw_ttd_delay <- last_week |> filter(Time_To_Dispatch > 60)
+lw_cs <- df_last |> filter(Problem == "CARDIAC ARREST ALS 2- SUPV")
+
 mental_health <- c("MUTUAL PSYCHOLOGICAL EMERGENCY", "PSYCHIATRIC EMERGENCY ALS 1", "PSYCHIATRIC EMERGENCY VIOLENT", "WELFARE CHECK", "JUMPER FROM WWB", "MENTAL HEALTH CASE", "SUICIDE DELAY", "SUICIDE IN PROG NO INJ", "SUICIDE IN PROG INJ/PILLS", "SUICIDE IN PROG TRAUMA")
 
 # Mental health related calls subset
@@ -1580,12 +1597,15 @@ mental_health <- c("MUTUAL PSYCHOLOGICAL EMERGENCY", "PSYCHIATRIC EMERGENCY ALS 
 # - Uses `%in%` and handles potential NA values safely with `is.na()` check
 # - Creates a new dataset `df_mh` for downstream analysis
 df_mh <- df |> dplyr::filter(!is.na(Problem) & Problem %in% mental_health)
+lw_mh <- df_last |> dplyr::filter(!is.na(Problem) & Problem %in% mental_health)
 
 # E-911 Calls subset
 # - Filters rows where `Call_Reception` is `E-911`
 # - Creates a new dataset `df_911` for downstream analysis
 df_911 <- df |> dplyr::filter(!is.na(Call_Reception) & Call_Reception == "E-911")
 df_non_e <- df |> dplyr::filter(!is.na(Call_Reception) & Call_Reception != "E-911")
+lw_911 <- df_last |> dplyr::filter(!is.na(Call_Reception) & Call_Reception == "E-911")
+lw_non_e <- df_last |> dplyr::filter(!is.na(Call_Reception) & Call_Reception != "E-911")
 
 # Call Reception Not Recorded subset
 # - Filters rows where `Call_Reception` was not recorded/captured or is NA
@@ -1594,6 +1614,12 @@ df_nrr <- df |>
   dplyr::filter(
     is.na(Call_Reception) |
       toupper(trimws(Call_Reception)) %in% c("NOT RECORDED", "NOT CAPTURED")
+  )
+
+lw_nrr <- df_last |>
+  dplyr::filter(
+    is.na(Call_Reception) |
+    toupper(trimws(Call_Reception)) %in% c("NOT RECORDED", "NOT CAPTURED")
   )
 ```
 
@@ -1610,11 +1636,21 @@ hour_counts <- df |> count(Hour, sort = TRUE)
 cr_counts <- df |> count(Call_Reception, sort = TRUE)
 pri_counts <- df |> count(Priority_Number, sort = TRUE)
 
+lw_dow_counts <- df_last |> count(DOW, sort = TRUE)
+lw_hour_counts <- df_last |> count(Hour, sort = TRUE)
+lw_cr_counts <- df_last |> count(Call_Reception, sort = TRUE)
+lw_pri_counts <- df_last |> count(Priority_Number, sort = TRUE)
+
 # APD / Law
 dow_counts_law <- df_law |> count(DOW, sort = TRUE)
 hour_counts_law <- df_law |> count(Hour, sort = TRUE)
 cr_counts_law <- df_law |> count(Call_Reception, sort = TRUE)
 pri_counts_law <- df_law |> count(Priority_Number, sort = TRUE)
+
+lw_dow_counts_law <- lw_law |> count(DOW, sort = TRUE)
+lw_hour_counts_law <- lw_law |> count(Hour, sort = TRUE)
+lw_cr_counts_law <- lw_law |> count(Call_Reception, sort = TRUE)
+lw_pri_counts_law <- lw_law |> count(Priority_Number, sort = TRUE)
 
 # AFD / Fire
 dow_counts_fire <- df_fire |> count(DOW, sort = TRUE)
@@ -1622,20 +1658,38 @@ hour_counts_fire <- df_fire |> count(Hour, sort = TRUE)
 cr_counts_fire <- df_fire |> count(Call_Reception, sort = TRUE)
 pri_counts_fire <- df_fire |> count(Priority_Number, sort = TRUE)
 
+lw_dow_counts_fire <- lw_fire |> count(DOW, sort = TRUE)
+lw_hour_counts_fire <- lw_fire |> count(Hour, sort = TRUE)
+lw_cr_counts_fire <- lw_fire |> count(Call_Reception, sort = TRUE)
+lw_pri_counts_fire <- lw_fire |> count(Priority_Number, sort = TRUE)
+
 # EMS
 dow_counts_ems <- df_ems |> count(DOW, sort = TRUE)
 hour_counts_ems <- df_ems |> count(Hour, sort = TRUE)
 cr_counts_ems <- df_ems |> count(Call_Reception, sort = TRUE)
 pri_counts_ems <- df_ems |> count(Priority_Number, sort = TRUE)
 
+lw_dow_counts_ems <- lw_ems |> count(DOW, sort = TRUE)
+lw_hour_counts_ems <- lw_ems |> count(Hour, sort = TRUE)
+lw_cr_counts_ems <- lw_ems |> count(Call_Reception, sort = TRUE)
+lw_pri_counts_ems <- lw_ems |> count(Priority_Number, sort = TRUE)
+
 # E-911 / Non-911
 dow_counts_911 <- df_911 |> count(DOW, sort = TRUE)
 hour_counts_911 <- df_911 |> count(Hour, sort = TRUE)
 cr_counts_911 <- df_911 |> count(Call_Reception, sort = TRUE)
 
+lw_dow_counts_911 <- lw_911 |> count(DOW, sort = TRUE)
+lw_hour_counts_911 <- lw_911 |> count(Hour, sort = TRUE)
+lw_cr_counts_911 <- lw_911 |> count(Call_Reception, sort = TRUE)
+
 dow_counts_non911 <- df_non_e |> count(DOW, sort = TRUE)
 hour_counts_non911 <- df_non_e |> count(Hour, sort = TRUE)
 cr_counts_non911 <- df_non_e |> count(Call_Reception, sort = TRUE)
+
+lw_dow_counts_non911 <- lw_non_e |> count(DOW, sort = TRUE)
+lw_hour_counts_non911 <- lw_non_e |> count(Hour, sort = TRUE)
+lw_cr_counts_non911 <- lw_non_e |> count(Call_Reception, sort = TRUE)
 
 # Mental Health subset
 dow_counts_mh <- df_mh |> count(DOW, sort = TRUE)
@@ -1643,8 +1697,15 @@ hour_counts_mh <- df_mh |> count(Hour, sort = TRUE)
 cr_counts_mh <- df_mh |> count(Call_Reception, sort = TRUE)
 pri_counts_mh <- df_mh |> count(Priority_Number, sort = TRUE)
 
+lw_dow_counts_mh <- lw_mh |> count(DOW, sort = TRUE)
+lw_hour_counts_mh <- lw_mh |> count(Hour, sort = TRUE)
+lw_cr_counts_mh <- lw_mh |> count(Call_Reception, sort = TRUE)
+lw_pri_counts_mh <- lw_mh |> count(Priority_Number, sort = TRUE)
+
 # High-priority subset
 pri_counts_hp <- df_hp |> count(Priority_Number, sort = TRUE)
+
+lw_pri_counts_hp <- lw_hp |> count(Priority_Number, sort = TRUE)
 ```
 
 By defining these datasets, we can now add to our analyses. For example, we can reuse the same information from above to drill down into APD and AFD calls. Starting with APD calls for service, we can examine everything as we did above.
@@ -4378,7 +4439,7 @@ if (nrow(df_nrr) == 0) {
 
 There are a few calltakers with more than one call where the call source went unrecorded. `r nrr_busiest_tc` had the most calls without recording the source with `r nrr_busiest_tc_count` calls. We should look into those calls to see what additional factors exist that caused this to occur and work to address those.
 
-```{r source-known-discipline}
+```{r source-unknown-discipline}
 #| label: source-unknown-discipline
 #| echo: false
 #| message: false
@@ -4425,6 +4486,43 @@ nrr_barDiscipline
 ```
 
 The majority of calls with no source were for `r nrr_busiest_agency` with `r nrr_busiest_agency_count` calls for service. This week, that is substatially higher than the other two agencies combined.
+
+```{r source-unknown-problem}
+#| label: source-unknown-problem
+#| echo: false
+#| message: false
+#| warning: false
+# ggplot2
+
+nrr_problem_counts <- df_nrr |>
+  count(Problem, sort = TRUE) |>
+  mutate(color_id = row_number())
+
+# Get number of problem types for proper color scaling
+n_problems <- nrow(nrr_problem_counts)
+
+nrr_barProblem <- nrr_problem_counts |> 
+  ggplot(aes(x=reorder(Problem, -n), y=n, fill=factor(color_id))) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values = grDevices::colorRampPalette(
+    paletteer::paletteer_d("ggsci::teal_material", n = 10))(n_problems)) +
+  labs(title="Number of Unrecorded calls by Call Type",
+       x="Call Type",
+       y="Number of Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5,
+    size = 3.5) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size = 12),
+        axis.text.x = element_text(angle=45, hjust=1, size = 9),
+        axis.text.y = element_text(size = 9),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+
+nrr_barProblem
+```
 
 ## Outlier Identification
 
@@ -4720,6 +4818,19 @@ This filter identified `r nrow(outlier_df)` rows that should be investigated as 
 | Processing Time | `r nrow(proc_outliers)` |
 
 The volumes for each category are interesting and future analyses may give insights into different factors. Further analyses of these calls wil occur below to enhance our understanding of the information contained in these datasets.
+
+This table will show the ranges that are used to determine which calls are considered outliers and which are not. Please note that calls that appear in the count and analyses have been identified as outliers have been identified as such in four separate tests. The only one that will not be reflected in the table below is the Z-score. That score measures the number of standard deviations from the mean for the value. All calls with a Z-score > 3 are considered possible outliers, since 99% of data should be within 3 standard deviations of the mean.
+
+The three measures included in this table are the Percentile Tests which measures the most extreme values by identifying the calls below the 2.5th percentile or above the 97.5th percentile, the Interquartile Range which uses the 25th and 75th percentiles to calculate the range, then identifies values that are less than 1.5 times that range from the 25th percentile or greater than 1.5 times that range from the 75th percentile, and finally the Hampel Metric. This measure sets bounds at 3 times the median absolute deviation from the median, so it's similar to the Z-score.  
+
+| Category | Percentile Lower | Percentile Upper | IQR Lower | IQR Upper | Hampel Lower | Hampel Upper |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Time To Queue | `r format(round(ttq_lbq, 0), scientific = FALSE)` | `r format(round(ttq_ubq, 0), scientific = FALSE)` | `r format(round(ttq_iql, 0), scientific = FALSE)` | `r format(round(ttq_iqu, 0), scientific = FALSE)` | `r format(round(ttq_hampl, 0), scientific = FALSE)` | `r format(round(ttq_hampu, 0), scientific = FALSE)` |
+| Time To Dispatch | `r format(round(ttd_lbq, 0), scientific = FALSE)` | `r format(round(ttd_ubq, 0), scientific = FALSE)` | `r format(round(ttd_iql, 0), scientific = FALSE)` | `r format(round(ttd_iqu, 0), scientific = FALSE)` | `r format(round(ttd_hampl, 0), scientific = FALSE)` | `r format(round(ttd_hampu, 0), scientific = FALSE)` |
+| Phone Time | `r format(round(phone_lbq, 0), scientific = FALSE)` | `r format(round(phone_ubq, 0), scientific = FALSE)` | `r format(round(phone_iql, 0), scientific = FALSE)` | `r format(round(phone_iqu, 0), scientific = FALSE)` | `r format(round(phone_hampl, 0), scientific = FALSE)` | `r format(round(phone_hampu, 0), scientific = FALSE)` |
+| Processing Time | `r format(round(proc_lbq, 0), scientific = FALSE)` | `r format(round(proc_ubq, 0), scientific = FALSE)` | `r format(round(proc_iql, 0), scientific = FALSE)` | `r format(round(proc_iqu, 0), scientific = FALSE)` | `r format(round(proc_hampl, 0), scientific = FALSE)` | `r format(round(proc_hampu, 0), scientific = FALSE)` |
+
+Based on the information in the table above, all of the outlier data will come at the upper bounds of values, since the lower bounds for the interquartile range and Hampel filters are both less than zero. The largest upper bound value uses the 97.5th percentile to identify potential outliers. If we want ot change this filter in the future, it may create an increase in the number of outliers reported.
 
 ### Detailed Outliers Information
 
@@ -5096,9 +5207,12 @@ This table will show the differences in the numbers of likely outlier values fro
 | Statistic | Report Week | Previous Week | Delta | Pct. Change |
 | :-------: | :---------: | :-----------: | :---: | :---------: |
 | Time To Queue | `r nrow(ttq_outliers)` | `r nrow(lw_ttq_outliers)` | `r nrow(ttq_outliers) - nrow(lw_ttq_outliers)` | `r round((nrow(ttq_outliers) - nrow(lw_ttq_outliers))/nrow(lw_ttq_outliers) * 100, 2)`% |
+| Time To Dispatch | `r nrow(ttd_outliers)` | `r nrow(lw_ttd_outliers)` | `r nrow(ttd_outliers) - nrow(lw_ttd_outliers)` | `r round((nrow(ttd_outliers) - nrow(lw_ttd_outliers))/nrow(lw_ttd_outliers) * 100, 2)`% |
+| Phone Time | `r nrow(phone_outliers)` | `r nrow(lw_phone_outliers)` | `r nrow(phone_outliers) - nrow(lw_phone_outliers)` | `r round((nrow(phone_outliers) - nrow(lw_phone_outliers))/nrow(lw_phone_outliers) * 100, 2)`% |
+| Processing Time | `r nrow(proc_outliers)` | `r nrow(lw_proc_outliers)` | `r nrow(proc_outliers) - nrow(lw_proc_outliers)` | `r round((nrow(proc_outliers) - nrow(lw_proc_outliers))/nrow(lw_proc_outliers) * 100, 2)`% |
 
+From this table, we can see that the number of calls where we've identified a potential outlier value have come down significantly last week from the week prior. The largest decline was in the time taken from phone pickup to dispatch ready. There are, possibly, several reasons behind this and this could be a study in trend analysis in the future.
 
 ## Conclusion
 
 This report has covered various aspects of the calls for service during week `r WEEK_NUMBER`. We have analyzed the data for completeness and accuracy, explored it for insights into call patterns and trends, and focused on specific areas of interest such as high-priority calls and cardiac arrest incidents. The findings will assist in making informed decisions to improve service delivery and operational efficiency.
-

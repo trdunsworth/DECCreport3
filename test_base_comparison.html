@@ -1028,6 +1028,15 @@ The total time from the start of the call to the time the call was closed. If th
 </div>
 </div>
 <p>The majority of calls with no source were for EMS with 23 calls for service. This week, that is substatially higher than the other two agencies combined.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="test_base_comparison_files/figure-html/source-unknown-problem-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="outlier-identification" class="level2">
@@ -1061,6 +1070,69 @@ The total time from the start of the call to the time the call was closed. If th
 </tbody>
 </table>
 <p>The volumes for each category are interesting and future analyses may give insights into different factors. Further analyses of these calls wil occur below to enhance our understanding of the information contained in these datasets.</p>
+<p>This table will show the ranges that are used to determine which calls are considered outliers and which are not. Please note that calls that appear in the count and analyses have been identified as outliers have been identified as such in four separate tests. The only one that will not be reflected in the table below is the Z-score. That score measures the number of standard deviations from the mean for the value. All calls with a Z-score &gt; 3 are considered possible outliers, since 99% of data should be within 3 standard deviations of the mean.</p>
+<p>The three measures included in this table are the Percentile Tests which measures the most extreme values by identifying the calls below the 2.5th percentile or above the 97.5th percentile, the Interquartile Range which uses the 25th and 75th percentiles to calculate the range, then identifies values that are less than 1.5 times that range from the 25th percentile or greater than 1.5 times that range from the 75th percentile, and finally the Hampel Metric. This measure sets bounds at 3 times the median absolute deviation from the median, so it’s similar to the Z-score.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Category</th>
+<th style="text-align: left;">Percentile Lower</th>
+<th style="text-align: left;">Percentile Upper</th>
+<th style="text-align: left;">IQR Lower</th>
+<th style="text-align: left;">IQR Upper</th>
+<th style="text-align: left;">Hampel Lower</th>
+<th style="text-align: left;">Hampel Upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Time To Queue</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">287</td>
+<td style="text-align: left;">-120</td>
+<td style="text-align: left;">200</td>
+<td style="text-align: left;">-80</td>
+<td style="text-align: left;">160</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Time To Dispatch</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">12001</td>
+<td style="text-align: left;">-772</td>
+<td style="text-align: left;">1292</td>
+<td style="text-align: left;">-42</td>
+<td style="text-align: left;">84</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Phone Time</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">855</td>
+<td style="text-align: left;">-344</td>
+<td style="text-align: left;">620</td>
+<td style="text-align: left;">-248</td>
+<td style="text-align: left;">496</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Processing Time</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">12111</td>
+<td style="text-align: left;">-908</td>
+<td style="text-align: left;">1520</td>
+<td style="text-align: left;">-190</td>
+<td style="text-align: left;">380</td>
+</tr>
+</tbody>
+</table>
+<p>Based on the information in the table above, all of the outlier data will come at the upper bounds of values, since the lower bounds for the interquartile range and Hampel filters are both less than zero. The largest upper bound value uses the 97.5th percentile to identify potential outliers. If we want ot change this filter in the future, it may create an increase in the number of outliers reported.</p>
 <section id="detailed-outliers-information" class="level3">
 <h3 class="anchored" data-anchor-id="detailed-outliers-information">Detailed Outliers Information</h3>
 <div class="cell">
@@ -1228,8 +1300,30 @@ The total time from the start of the call to the time the call was closed. If th
 <td style="text-align: center;">-16</td>
 <td style="text-align: center;">-43.24%</td>
 </tr>
+<tr class="even">
+<td style="text-align: center;">Time To Dispatch</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Phone Time</td>
+<td style="text-align: center;">33</td>
+<td style="text-align: center;">29</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">13.79%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Processing Time</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0%</td>
+</tr>
 </tbody>
 </table>
+<p>From this table, we can see that the number of calls where we’ve identified a potential outlier value have come down significantly last week from the week prior. The largest decline was in the time taken from phone pickup to dispatch ready. There are, possibly, several reasons behind this and this could be a study in trend analysis in the future.</p>
 </section>
 </section>
 <section id="conclusion" class="level2">
