@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-10-30"
+date: "2025-11-03"
 format:
     html:
         toc: true
@@ -11,7 +11,7 @@ execute:
   freeze: auto
 ---
 
-## Week 43 from 19 October through 25 October 2025
+## Week 44 from 26 October through 01 November 2025
 
 ## Table of Contents
 
@@ -37,6 +37,7 @@ execute:
 - **[Cardiac Arrest Calls Analysis](#cardiac-arrest-calls-analysis)**
 - **[Mental Health Analyses](#mental-health-analyses)**
 - **[Call Source Unrecorded](#call-source-unrecorded)**
+- **[Hybrid Call Takers](#hybrid-call-takers)**
 - **[Outlier Identification](#outlier-identification)**
 - **[Comparisons](#comparisons)**
 - **[Conclusion](#conclusion)**
@@ -1592,12 +1593,22 @@ lw_cs <- df_last |> filter(Problem == "CARDIAC ARREST ALS 2- SUPV")
 
 mental_health <- c("MUTUAL PSYCHOLOGICAL EMERGENCY", "PSYCHIATRIC EMERGENCY ALS 1", "PSYCHIATRIC EMERGENCY VIOLENT", "WELFARE CHECK", "JUMPER FROM WWB", "MENTAL HEALTH CASE", "SUICIDE DELAY", "SUICIDE IN PROG NO INJ", "SUICIDE IN PROG INJ/PILLS", "SUICIDE IN PROG TRAUMA")
 
+hybrids <- c("PICKERAL, LAUREN", "VALENTIN, EMERITA", "FARRI, ANGELINE", "PATTERSON, JAHAIRA", "MAIOBELLO, BERMARI")
+
 # Mental health related calls subset
 # - Filters rows where `Problem` is one of the values in `mental_health`
 # - Uses `%in%` and handles potential NA values safely with `is.na()` check
 # - Creates a new dataset `df_mh` for downstream analysis
 df_mh <- df |> dplyr::filter(!is.na(Problem) & Problem %in% mental_health)
 lw_mh <- df_last |> dplyr::filter(!is.na(Problem) & Problem %in% mental_health)
+
+# Hybrid call taker subset
+# - Filters rows where the Call_Taker is one of the Hybrid call takers
+df_hybrid <- df |> dplyr::filter(!is.na(Call_Taker) & Call_Taker %in% hybrids)
+lw_hybrid <- df_last |> dplyr::filter(!is.na(Call_Taker) & Call_Taker %in% hybrids)
+
+df_nonhybrid <- df |> dplyr::filter(!is.na(Call_Taker) & !(Call_Taker %in% hybrids))
+lw_nonhybrid <- df_last |> dplyr::filter(!is.na(Call_Taker) & !(Call_Taker %in% hybrids))
 
 # E-911 Calls subset
 # - Filters rows where `Call_Reception` is `E-911`
@@ -4523,6 +4534,10 @@ nrr_barProblem <- nrr_problem_counts |>
 
 nrr_barProblem
 ```
+
+### Hybrid Call Takers
+
+This week, the hybrid call takers took `r nrow(df_hybrid)` calls compared to `r nrow(lw_hybrid)` calls last week.
 
 ## Outlier Identification
 
