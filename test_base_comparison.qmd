@@ -9,6 +9,7 @@ format:
         toc-location: left
 execute:
   freeze: auto
+  echo: false
 ---
 
 ## Week 44 from 26 October through 01 November 2025
@@ -811,6 +812,56 @@ barReception
 
 Most of the calls arrived by `r busiest_cr`. 911 trunk line calls were `r e911_percentage` percent of all calls. There were `r not_captured_count` calls where we did not indicate how the service call was received. This is `r not_captured_percentage` percent of the total number of calls. These calls should be investigated to determine why call origination is not being tracked.
 
+The following is a chart of the disposition codes that have been used this week.
+
+```{r disposition-codes}
+#| label: disposition-codes
+#| echo: false
+#| fig-cap: "Number of calls for service by disposition code."
+#| cache: true
+# ggplot2
+
+dispo_counts <- df |>
+  count(Disposition, sort = TRUE)
+
+max_dispo_info <- dispo_counts |> filter(n == max(n))
+mostused_dispo <- max_dispo_info |> slice(1) |> pull(Disposition)
+mostused_dispo_count <- max_dispo_info |> slice(1) |> pull(n)
+
+# Calculate statistics for inline use
+not_captured_count <- sum(df$Disposition == "UNDEFINED", na.rm = TRUE)
+not_captured_percentage <- round((not_captured_count / nrow(df)) * 100, 1)
+
+## Use the precomputed cyan base palette and expand it to the number of disposition levels
+df_dispo_plot <- df |> droplevels()
+n_dispo <- max(1, n_distinct(df_dispo_plot$Disposition))
+dispo_pal <- grDevices::colorRampPalette(palette_cyan_base)(n_dispo)
+
+barDisposition <- df_dispo_plot |> ggplot(aes(x=Disposition, fill=Disposition)) +
+  geom_bar() +
+  scale_fill_manual(values = dispo_pal, na.value = "grey80") +
+  labs(title="Number of Calls for Service by Call Disposition",
+       x="Call Disposition Code",
+       y="Number of Calls") +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.5,
+    size = 3.5
+  ) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size = 12),
+        axis.text.x = element_text(angle=45, hjust=1, size = 9),
+        axis.text.y = element_text(size = 9),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+
+barDisposition
+```
+
+As can be seen from the bar chart, `r mostused_dispo` was the most common disposition code used with `r mostused_dispo_count` calls coded that way. It is interesting to note that no calls, this week, have been closed without a disposition.
+
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
 ```{r call-type}
@@ -1017,7 +1068,8 @@ hour_dow_plot <- ggplot(hourly_dow_summary, aes(x = Hour_numeric, y = DOW, fill 
   scale_x_continuous(name = "Hour of Day",
                      breaks = seq(0, 23, 2),
                      labels = sprintf("%02d:00", seq(0, 23, 2))) +
-  scale_y_discrete(name = "Day of Week", limits = rev) +
+  # Reverse the factor levels so the plot reads in the natural top-to-bottom order
+  scale_y_discrete(name = "Day of Week", limits = rev(levels(df$DOW))) +
   scale_fill_gradient2(name = "Calls",
                        low = "lightblue",
                        mid = "yellow",
@@ -4537,7 +4589,90 @@ nrr_barProblem
 
 ### Hybrid Call Takers
 
-This week, the hybrid call takers took `r nrow(df_hybrid)` calls compared to `r nrow(lw_hybrid)` calls last week.
+This week, the hybrid call takers took `r nrow(df_hybrid)` calls compared to `r nrow(lw_hybrid)` calls last week. The following bar chart shows the distribution of calls taken by the hybrid call takers.
+
+```{r hybrid-calls-taken}
+#| label: hybrid-calls-taken
+#| echo: false
+#| message: false
+#| warning: false
+
+
+hct_counts <- df_hybrid |>
+  count(Call_Taker, sort = TRUE)
+
+max_hct_info <- hct_counts |> filter(n == max(n))
+busiest_hct <- max_hct_info |> slice(1) |> pull(Call_Taker)
+busiest_hct_count <- max_hct_info |> slice(1) |> pull(n)
+
+barHybridCallTaker <- hct_counts |>
+  ggplot(aes(x=Call_Taker, y=n, fill=Call_Taker)) +
+  geom_bar(stat="identity") +
+  paletteer::scale_fill_paletteer_d("ggsci::light_green_material") +
+  labs(title="Number of Calls for Service by Hybrid Call Taker",
+       x="Call Taker",
+       y="Number of Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5,
+    size = 3.5) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size = 12),
+        axis.text.x = element_text(angle=45, hjust=1, size = 9),
+        axis.text.y = element_text(size = 9),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+
+barHybridCallTaker
+```
+
+From this we can see that `r busiest_hct` took the most calls among the hybrid call takers with `r busiest_hct_count` calls for service. 
+
+This chart will show the number of calls taken by call reception type. There should be very few E-911 calls present in this bar chart.
+
+```{r hybrid-call-reception}
+#| label: hybrid-call-reception
+#| echo: false
+#| message: false
+#| warning: false
+# ggplot2
+
+hct_received <- df_hybrid |>
+  count(Call_Reception, sort = TRUE)
+
+max_hct_recd_info <- hct_received |> filter(n == max(n))
+most_used_hct_recd <- max_hct_recd_info |> slice(1) |> pull(Call_Reception)
+most_used_hct_recd_count <- max_hct_recd_info |> slice(1) |> pull(n)
+
+hct_911_count <- sum(df_hybrid$Call_Reception == "E-911", na.rm = TRUE)
+hct_lw_911_count <- sum(lw_hybrid$Call_Reception == "E-911", na.rm = TRUE)
+
+barHybridRecd <- hct_received |>
+  ggplot(aes(x=Call_Reception, y=n, fill=Call_Reception)) +
+  geom_bar(stat="identity") +
+  paletteer::scale_fill_paletteer_d("ggsci::light_green_material") +
+  labs(title="Call Reception Avenues by Hybrid Call Taker",
+       x="Method of Call Reception",
+       y="Number of Calls") +
+  geom_text(
+    aes(label = n),
+    vjust = -0.5,
+    size = 3.5) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(hjust = 0.5, size = 12),
+        axis.text.x = element_text(angle=45, hjust=1, size = 9),
+        axis.text.y = element_text(size = 9),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11))
+
+barHybridRecd
+```
+
+This chart shows that `r most_used_hct_recd` was the method by which the Hybrid Call Takers received the most calls with `r most_used_hct_recd_count` calls for service. This represents `r round(most_used_hct_recd_count / nrow(df_hybrid) * 100, 2)`% of calls received by the hybrid call takers. 
+
+The hybrid call takers answered `r hct_911_count` 911 trunk line calls this week, compared to `r hct_lw_911_count` calls last week.
 
 ## Outlier Identification
 
