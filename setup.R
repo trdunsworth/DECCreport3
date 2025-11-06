@@ -7,7 +7,7 @@ required_packages <- c(
   "janitor", "Hmisc", "psych", "corrr", "ggcorrplot", "ggthemes", "lubridate",
   "ggridges", "multcomp", "emmeans", "RVAideMemoire", "FactoMineR", "DescTools", "nlme",
   "funModeling", "inspectdf", "dlookr", "viridis", "merTools", "factoextra", "nortest", "MASS",
-  "randtests", "summarytools", "report", "knitr", "kableExtra", "dbus",
+  "randtests", "summarytools", "report", "knitr", "kableExtra", "dbus", "reticulate",
   "modelbased", "parameters", "performance", "insight", "paletteer", "flextable", "officer", "outliers", "rmarkdown","shiny"
 )
 

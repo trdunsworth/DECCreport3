@@ -105,6 +105,7 @@ suppressWarnings({
     library(flextable)
     library(officer)
     library(outliers)
+    library(reticulate)
   })
 })
 ```
@@ -4673,6 +4674,69 @@ barHybridRecd
 This chart shows that `r most_used_hct_recd` was the method by which the Hybrid Call Takers received the most calls with `r most_used_hct_recd_count` calls for service. This represents `r round(most_used_hct_recd_count / nrow(df_hybrid) * 100, 2)`% of calls received by the hybrid call takers. 
 
 The hybrid call takers answered `r hct_911_count` 911 trunk line calls this week, compared to `r hct_lw_911_count` calls last week.
+
+The summary table below shows the number of calls with the mean and median times to get a call to queue and the times on the phone for the hybrid call takers.
+
+```{r hybrid-summary}
+#| label: hybrid-summary
+#| echo: false
+#| message: false
+#| warning: false
+
+# Create summary statistics by Call_Taker for hybrid call takers
+hybrid_summary_table <- df_hybrid %>%
+  group_by(Call_Taker) %>%
+  summarise(
+    Calls = n(),
+    Mean_TTQ = round(mean(Time_To_Queue, na.rm = TRUE), 2),
+    Median_TTQ = round(median(Time_To_Queue, na.rm = TRUE), 2),
+    Mean_Phone = round(mean(Phone_Time, na.rm = TRUE), 2),
+    Median_Phone = round(median(Phone_Time, na.rm = TRUE), 2),
+    .groups = 'drop'
+  )
+
+# Identify call takers with highest values for each metric
+hct_most_calls <- hybrid_summary_table %>%
+  filter(Calls == max(Calls, na.rm = TRUE)) %>%
+  pull(Call_Taker)
+
+hct_highest_mean_ttq <- hybrid_summary_table %>%
+  filter(Mean_TTQ == max(Mean_TTQ, na.rm = TRUE)) %>%
+  pull(Call_Taker)
+
+hct_highest_median_ttq <- hybrid_summary_table %>%
+  filter(Median_TTQ == max(Median_TTQ, na.rm = TRUE)) %>%
+  pull(Call_Taker)
+
+hct_highest_mean_phone <- hybrid_summary_table %>%
+  filter(Mean_Phone == max(Mean_Phone, na.rm = TRUE)) %>%
+  pull(Call_Taker)
+
+hct_highest_median_phone <- hybrid_summary_table %>%
+  filter(Median_Phone == max(Median_Phone, na.rm = TRUE)) %>%
+  pull(Call_Taker)
+
+hct_lowest_volume <- hybrid_summary_table %>%
+  filter(Calls == min(Calls, na.rm = TRUE)) %>%
+  pull(Call_Taker)
+
+to_ft(
+  hybrid_summary_table,
+  caption = "Hybrid Call Taker Summary — Call counts and time metrics by hybrid call taker",
+  header_map = list(
+    Call_Taker = "Call_Taker",
+    Calls = "Calls",
+    Mean_TTQ = "Mean TTQ (sec)",
+    Median_TTQ = "Median TTQ (sec)",
+    Mean_Phone = "Mean Phone (sec)",
+    Median_Phone = "Median Phone (sec)"
+  ),
+  digits = 2
+)
+
+```
+
+This shows, from this information, that `r hct_highest_median_ttq` had the largest median time to get a call into queue at `r max(hybrid_summary_table$Median_TTQ, na.rm = TRUE)` seconds and `r hct_highest_median_phone` had the largest median time on the phone at `r max(hybrid_summary_table$Median_Phone, na.rm = TRUE)` seconds. In this case, the same hybrid call taker took the least number of calls for the week. This could be something that the supervisors will want to monitor.
 
 ## Outlier Identification
 
