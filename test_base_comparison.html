@@ -63,6 +63,8 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#exploratory-analysis" id="toc-exploratory-analysis" class="nav-link" data-scroll-target="#exploratory-analysis">Exploratory Analysis</a>
   <ul class="collapse">
   <li><a href="#call-distribution-hour-by-day-of-week" id="toc-call-distribution-hour-by-day-of-week" class="nav-link" data-scroll-target="#call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</a></li>
+  <li><a href="#distribution-of-service-calls-by-shift" id="toc-distribution-of-service-calls-by-shift" class="nav-link" data-scroll-target="#distribution-of-service-calls-by-shift">Distribution of Service Calls by Shift</a></li>
+  <li><a href="#cad-centric-analyses" id="toc-cad-centric-analyses" class="nav-link" data-scroll-target="#cad-centric-analyses">CAD-centric Analyses</a></li>
   <li><a href="#summary-statsitcs-and-analyses" id="toc-summary-statsitcs-and-analyses" class="nav-link" data-scroll-target="#summary-statsitcs-and-analyses">Summary statsitcs and analyses</a></li>
   </ul></li>
   <li><a href="#discipline-analyses" id="toc-discipline-analyses" class="nav-link" data-scroll-target="#discipline-analyses">Discipline Analyses</a>
@@ -156,6 +158,8 @@ ul.task-list li input[type="checkbox"] {
 <li><strong><a href="#exploratory-analysis">Exploratory Analysis</a></strong>
 <ul>
 <li><a href="#call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</a></li>
+<li><a href="#distribution-of-service-calls-by-shift">Distribution of Service Calls by Shift</a></li>
+<li><a href="#cad-centric-analyses">CAD-centric Analyses</a></li>
 <li><a href="#summary-statsitcs-and-analyses">Summary Statistics and Analyses</a></li>
 </ul></li>
 <li><strong><a href="#discipline-analyses">Discipline Analyses</a></strong>
@@ -240,7 +244,10 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="exploratory-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-analysis">Exploratory Analysis</h2>
-<p>One of the first analyses is to break down different factor elements to see what we have in the dataset. Starting with the day of the week, the barchart below shows the number of calls for service by day of the week.</p>
+<p>One of the first analyses is to break down different factor elements to see what we have in the dataset. Since the data source for this report is the CAD system, the counts of service calls may not correlate to phone volumes. We will have to, in future, find good methods to integrate the phone date into the reports.</p>
+<section id="call-distribution-hour-by-day-of-week" class="level3">
+<h3 class="anchored" data-anchor-id="call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</h3>
+<p>The following visualization shows the distribution of service calls throughout the day (by hour) for each day of the week. This helps identify patterns in service call volume across different days and times.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -251,7 +258,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>From this chart, we can see that Thursday was the busiest day of the week with 284 service calls, and the slowest day was Sunday with 199 service calls. There is some consistency throughout the week, with 85 calls difference between the busiest and slowest days.</p>
+<p>From this chart, we can see that Thursday was the busiest day of the week with 284 service calls created, and the slowest day was Sunday with 199 service calls. There is some consistency throughout the week, with 85 calls difference between the busiest and slowest days.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -263,6 +270,21 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p>This week, the busiest hour of the day was 1000 hours, with 128 calls for service. 0500 hours was the slowest hour of the day with 31 calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="test_base_comparison_files/figure-html/hour-dow-analysis-1.png" class="img-fluid figure-img"></p>
+<figcaption>Call Volume by Hour and Day of Week</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The heat map shows one intense spike on Tuesday at 1000 hours. There is an additional spike on Wednesday at 1000 hours. Overall, since 1000 hours was the busiest hour of the week, the heatmap shows that it was reasonably consistent throughout the week.</p>
+</section>
+<section id="distribution-of-service-calls-by-shift" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-of-service-calls-by-shift">Distribution of Service Calls by Shift</h3>
+<p>These analyses show the distribution of service calls as created through both day and night shifts and specific shifts in general. Each shift was split into three four-hour blocks for future analyses in order to determine how fatigue may be expressed during the course of the shift.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -282,6 +304,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p>As expected, day shifts are busier than night shifts by a considerable margin. As expected, the call volumes throughout the shift for day shift are fairly consistent and on night shift, the longer the shifts go, fewer calls are received. These are both expected from prior work.</p>
+</section>
+<section id="cad-centric-analyses" class="level3">
+<h3 class="anchored" data-anchor-id="cad-centric-analyses">CAD-centric Analyses</h3>
+<p>The following bar charts break down the volume of service calls using various other CAD-centric breakdowns that may be useful for various supplemental analyses. The first of those below shows the distribution pattern of service calls by priority number. This is overall for the center in all disciplines. Specific breakdowns for each discipline will be reflected in later sections.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -358,35 +384,6 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p>This table shows the call takers with the highest cumulative time on the phone. This week, VALENTIN, EMERITA had the largest average time on the phone with an average of 523 seconds per call. This could be due to a number of factors, including the complexity of the calls faced.</p>
-<section id="call-distribution-hour-by-day-of-week" class="level3">
-<h3 class="anchored" data-anchor-id="call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</h3>
-<p>The following visualization shows the distribution of calls throughout the day (by hour) for each day of the week. This helps identify patterns in call volume across different days and times.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="test_base_comparison_files/figure-html/hour-dow-analysis-1.png" class="img-fluid figure-img"></p>
-<figcaption>Call Volume by Hour and Day of Week</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="test_base_comparison_files/figure-html/alternative-ridge-plot-1.png" class="img-fluid figure-img"></p>
-<figcaption>Ridge Plot Alternative - Calls per Hour by Day of Week</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<div class="tabwid"><style>.cl-66d17434{}.cl-66c5a8ac{font-family:'Arial';font-size:9pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-66c5a8c0{font-family:'Arial';font-size:9pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-66caee3e{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:3pt;padding-top:3pt;padding-left:3pt;padding-right:3pt;line-height: 1;background-color:transparent;}.cl-66caee52{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:3pt;padding-top:3pt;padding-left:3pt;padding-right:3pt;line-height: 1;background-color:transparent;}.cl-66cb2e6c{width:0.954in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e76{width:0.843in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e77{width:0.829in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e80{width:1.107in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e8a{width:0.954in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e8b{width:0.843in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e8c{width:0.829in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e8d{width:1.107in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e94{width:0.954in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e95{width:0.843in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e9e{width:0.829in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2e9f{width:1.107in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ea8{width:0.954in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ea9{width:0.843in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2eb2{width:0.829in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2eb3{width:1.107in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ebc{width:0.954in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ebd{width:0.843in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ebe{width:0.829in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ec6{width:1.107in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ec7{width:0.954in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ec8{width:0.843in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ec9{width:0.829in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-66cb2ed0{width:1.107in;background-color:rgba(245, 245, 245, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-66d17434"><thead><tr style="overflow-wrap:break-word;"><th class="cl-66cb2e6c"><p class="cl-66caee3e"><span class="cl-66c5a8ac">Day of Week</span></p></th><th class="cl-66cb2e76"><p class="cl-66caee52"><span class="cl-66c5a8ac">Total Calls</span></p></th><th class="cl-66cb2e77"><p class="cl-66caee3e"><span class="cl-66c5a8ac">Peak Hour</span></p></th><th class="cl-66cb2e80"><p class="cl-66caee52"><span class="cl-66c5a8ac">Avg Calls/Hour</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-66cb2e8a"><p class="cl-66caee3e"><span class="cl-66c5a8c0">THU</span></p></td><td class="cl-66cb2e8b"><p class="cl-66caee52"><span class="cl-66c5a8c0">284</span></p></td><td class="cl-66cb2e8c"><p class="cl-66caee3e"><span class="cl-66c5a8c0">15</span></p></td><td class="cl-66cb2e8d"><p class="cl-66caee52"><span class="cl-66c5a8c0">11.8</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-66cb2e94"><p class="cl-66caee3e"><span class="cl-66c5a8c0">FRI</span></p></td><td class="cl-66cb2e95"><p class="cl-66caee52"><span class="cl-66c5a8c0">281</span></p></td><td class="cl-66cb2e9e"><p class="cl-66caee3e"><span class="cl-66c5a8c0">9</span></p></td><td class="cl-66cb2e9f"><p class="cl-66caee52"><span class="cl-66c5a8c0">11.7</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-66cb2ea8"><p class="cl-66caee3e"><span class="cl-66c5a8c0">MON</span></p></td><td class="cl-66cb2ea9"><p class="cl-66caee52"><span class="cl-66c5a8c0">277</span></p></td><td class="cl-66cb2eb2"><p class="cl-66caee3e"><span class="cl-66c5a8c0">9</span></p></td><td class="cl-66cb2eb3"><p class="cl-66caee52"><span class="cl-66c5a8c0">11.5</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-66cb2e94"><p class="cl-66caee3e"><span class="cl-66c5a8c0">TUE</span></p></td><td class="cl-66cb2e95"><p class="cl-66caee52"><span class="cl-66c5a8c0">275</span></p></td><td class="cl-66cb2e9e"><p class="cl-66caee3e"><span class="cl-66c5a8c0">10</span></p></td><td class="cl-66cb2e9f"><p class="cl-66caee52"><span class="cl-66c5a8c0">11.5</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-66cb2e8a"><p class="cl-66caee3e"><span class="cl-66c5a8c0">WED</span></p></td><td class="cl-66cb2e8b"><p class="cl-66caee52"><span class="cl-66c5a8c0">269</span></p></td><td class="cl-66cb2e8c"><p class="cl-66caee3e"><span class="cl-66c5a8c0">10</span></p></td><td class="cl-66cb2e8d"><p class="cl-66caee52"><span class="cl-66c5a8c0">11.2</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-66cb2ebc"><p class="cl-66caee3e"><span class="cl-66c5a8c0">SAT</span></p></td><td class="cl-66cb2ebd"><p class="cl-66caee52"><span class="cl-66c5a8c0">264</span></p></td><td class="cl-66cb2ebe"><p class="cl-66caee3e"><span class="cl-66c5a8c0">10</span></p></td><td class="cl-66cb2ec6"><p class="cl-66caee52"><span class="cl-66c5a8c0">11.0</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-66cb2ec7"><p class="cl-66caee3e"><span class="cl-66c5a8c0">SUN</span></p></td><td class="cl-66cb2ec8"><p class="cl-66caee52"><span class="cl-66c5a8c0">199</span></p></td><td class="cl-66cb2ec9"><p class="cl-66caee3e"><span class="cl-66c5a8c0">15</span></p></td><td class="cl-66cb2ed0"><p class="cl-66caee52"><span class="cl-66c5a8c0">8.3</span></p></td></tr></tbody></table></div>
-</div>
-</div>
-<p>The ridgeline plot shows there is a consistency throughout the week for the middle of the day to receive the most calls. The heat map shows one intense spike on Tuesday at 1000 hours. There are spikes at 1200 and 1900 hours. Overall, since 1000 hours was the busiest hour of the week, the heatmap shows that it was reasonably consistent throughout the week. Equally, the heatmap shows that Friday, the second busiest day of the week, was consistent through the day and shared the same mean calls per hour as found on Thursday.</p>
 </section>
 <section id="summary-statsitcs-and-analyses" class="level3">
 <h3 class="anchored" data-anchor-id="summary-statsitcs-and-analyses">Summary statsitcs and analyses</h3>

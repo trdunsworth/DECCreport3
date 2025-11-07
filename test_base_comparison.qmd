@@ -22,6 +22,8 @@ execute:
 - **[Data Cleaning](#data-cleaning)**
 - **[Exploratory Analysis](#exploratory-analysis)**
   - [Call Distribution: Hour by Day of Week](#call-distribution-hour-by-day-of-week)
+  - [Distribution of Service Calls by Shift](#distribution-of-service-calls-by-shift)
+  - [CAD-centric Analyses](#cad-centric-analyses)
   - [Summary Statistics and Analyses](#summary-statsitcs-and-analyses)
 - **[Discipline Analyses](#discipline-analyses)**
   - [APD Analyses](#apd-analyses)
@@ -474,7 +476,11 @@ From this plot, we can see that there are only `r missing_cols_count` columns wi
 
 ## Exploratory Analysis
 
-One of the first analyses is to break down different factor elements to see what we have in the dataset. Starting with the day of the week, the barchart below shows the number of calls for service by day of the week.
+One of the first analyses is to break down different factor elements to see what we have in the dataset. Since the data source for this report is the CAD system, the counts of service calls may not correlate to phone volumes. We will have to, in future, find good methods to integrate the phone date into the reports.
+
+### Call Distribution: Hour by Day of Week
+
+The following visualization shows the distribution of service calls throughout the day (by hour) for each day of the week. This helps identify patterns in service call volume across different days and times.
 
 ```{r day-of-week}
 #| echo: false
@@ -530,7 +536,7 @@ barDOW <- df |> ggplot(aes(x=DOW, fill=DOW)) +
 barDOW
 ```
 
-From this chart, we can see that `r busiest_day` was the busiest day of the week with `r busiest_day_count` service calls, and the slowest day was `r slowest_day` with `r slowest_day_count` service calls. There is some consistency throughout the week, with `r busiest_day_count - slowest_day_count` calls difference between the busiest and slowest days.
+From this chart, we can see that `r busiest_day` was the busiest day of the week with `r busiest_day_count` service calls created, and the slowest day was `r slowest_day` with `r slowest_day_count` service calls. There is some consistency throughout the week, with `r busiest_day_count - slowest_day_count` calls difference between the busiest and slowest days.
 
 ```{r hour-of-day}
 #| echo: false
@@ -588,6 +594,64 @@ barHour
 ```
 
 This week, the busiest hour of the day was `r busiest_hour`00 hours, with `r busiest_hour_count` calls for service. `r slowest_hour`00 hours was the slowest hour of the day with `r slowest_hour_count` calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.
+
+```{r hour-dow-analysis}
+#| label: hour-dow-analysis
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Call Volume by Hour and Day of Week"
+#| cache: true
+
+# Create summary data
+hourly_dow_summary <- df |>
+  group_by(DOW, Hour) |>
+  summarise(call_count = n(), .groups = 'drop') |>
+  mutate(
+    Hour_numeric = as.numeric(as.character(Hour)),
+    # Choose a contrasting text color based on relative intensity
+    text_color = ifelse(call_count >= median(call_count), "black", "black")
+  )
+
+# Create a heatmap showing call patterns
+hour_dow_plot <- ggplot(hourly_dow_summary, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+  geom_tile(color = "white", linewidth = 0.1) +
+  # Overlay counts per cell
+  geom_text(aes(label = call_count, color = text_color), size = 3) +
+  scale_color_identity() +
+  scale_x_continuous(name = "Hour of Day",
+                     breaks = seq(0, 23, 2),
+                     labels = sprintf("%02d:00", seq(0, 23, 2))) +
+  # Reverse the factor levels so the plot reads in the natural top-to-bottom order
+  scale_y_discrete(name = "Day of Week", limits = rev(levels(df$DOW))) +
+  scale_fill_gradient2(name = "Calls",
+                       low = "lightblue",
+                       mid = "yellow",
+                       high = "red",
+                       midpoint = median(hourly_dow_summary$call_count)) +
+  labs(title = "Call Volume Heatmap by Hour and Day of Week",
+       subtitle = "Darker colors indicate higher call volumes") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 9, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 9),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    axis.text.y = element_text(size = 9),
+    axis.title = element_text(size = 9),
+    legend.position = "right",
+    legend.title = element_text(size = 9),
+    legend.text = element_text(size = 9),
+    panel.grid = element_blank()
+  )
+
+hour_dow_plot
+```
+
+The heat map shows one intense spike on Tuesday at 1000 hours. There is an additional spike on Wednesday at 1000 hours. Overall, since `r busiest_hour`00 hours was the busiest hour of the week, the heatmap shows that it was reasonably consistent throughout the week. 
+
+### Distribution of Service Calls by Shift
+
+These analyses show the distribution of service calls as created through both day and night shifts and specific shifts in general. Each shift was split into three four-hour blocks for future analyses in order to determine how fatigue may be expressed during the course of the shift.
 
 ```{r shifts}
 #| echo: false
@@ -678,6 +742,10 @@ barDN
 ```
 
 As expected, day shifts are busier than night shifts by a considerable margin. As expected, the call volumes throughout the shift for day shift are fairly consistent and on night shift, the longer the shifts go, fewer calls are received. These are both expected from prior work.
+
+### CAD-centric Analyses
+
+The following bar charts break down the volume of service calls using various other CAD-centric breakdowns that may be useful for various supplemental analyses. The first of those below shows the distribution pattern of service calls by priority number. This is overall for the center in all disciplines. Specific breakdowns for each discipline will be reflected in later sections.
 
 ```{r priority-level}
 #| echo: false
@@ -1044,135 +1112,6 @@ to_ft(
 ```
 
 This table shows the call takers with the highest cumulative time on the phone. This week, `r longest_phone_ct` had the largest average time on the phone with an average of `r longest_phone_ct_mean` seconds per call. This could be due to a number of factors, including the complexity of the calls faced.
-
-### Call Distribution: Hour by Day of Week
-
-The following visualization shows the distribution of calls throughout the day (by hour) for each day of the week. This helps identify patterns in call volume across different days and times.
-
-```{r hour-dow-analysis}
-#| label: hour-dow-analysis
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-cap: "Call Volume by Hour and Day of Week"
-#| cache: true
-
-# Create summary data
-hourly_dow_summary <- df |>
-  group_by(DOW, Hour) |>
-  summarise(call_count = n(), .groups = 'drop') |>
-  mutate(Hour_numeric = as.numeric(as.character(Hour)))
-
-# Create a heatmap showing call patterns
-hour_dow_plot <- ggplot(hourly_dow_summary, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
-  geom_tile(color = "white", linewidth = 0.1) +
-  scale_x_continuous(name = "Hour of Day",
-                     breaks = seq(0, 23, 2),
-                     labels = sprintf("%02d:00", seq(0, 23, 2))) +
-  # Reverse the factor levels so the plot reads in the natural top-to-bottom order
-  scale_y_discrete(name = "Day of Week", limits = rev(levels(df$DOW))) +
-  scale_fill_gradient2(name = "Calls",
-                       low = "lightblue",
-                       mid = "yellow",
-                       high = "red",
-                       midpoint = median(hourly_dow_summary$call_count)) +
-  labs(title = "Call Volume Heatmap by Hour and Day of Week",
-       subtitle = "Darker colors indicate higher call volumes") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 9, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 9),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
-    axis.text.y = element_text(size = 9),
-    axis.title = element_text(size = 9),
-    legend.position = "right",
-    legend.title = element_text(size = 9),
-    legend.text = element_text(size = 9),
-    panel.grid = element_blank()
-  )
-
-hour_dow_plot
-```
-
-```{r alternative-ridge-plot}
-#| label: alternative-ridge-plot
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-cap: "Ridge Plot Alternative - Calls per Hour by Day of Week"
-#| cache: true
-
-# Try to create actual ridge plot if ggridges is available
-tryCatch({
-  if (requireNamespace("ggridges", quietly = TRUE)) {
-    library(ggridges)
-
-    # Create ridge plot using the raw data for a density estimate
-    ridge_plot <- ggplot(df, aes(x = as.numeric(as.character(Hour)), y = DOW, fill = DOW)) +
-      ggridges::geom_density_ridges(
-  alpha = 0.7,
-        scale = 1.2, # Adjust scale for better separation
-        rel_min_height = 0.01 # Removes trailing tails
-      ) +
-      scale_x_continuous(name = "Hour of Day",
-                         breaks = seq(0, 23, 4),
-                         labels = sprintf("%02d:00", seq(0, 23, 4))) +
-      scale_y_discrete(name = "Day of Week", limits = rev) +
-      scale_fill_brewer(name = "Day", palette = "Set3") +
-      labs(title = "Ridge Plot: Call Volume Distribution by Hour and Day of Week",
-           subtitle = "Each ridge shows the hourly distribution for one day") +
-      theme_minimal() +
-      theme(
-        plot.title = element_text(hjust = 0.5, size = 9, face = "bold"),
-        plot.subtitle = element_text(hjust = 0.5, size = 9),
-        axis.text = element_text(size = 9),
-        axis.title = element_text(size = 9),
-        legend.position = "none"
-      )
-
-    print(ridge_plot)
-  } else {
-    cat("ggridges package not available. Using heatmap above instead.\n")
-  }
-}, error = function(e) {
-  cat("Could not create ridge plot. Error:", e$message, "\n")
-  cat("The heatmap above provides similar insights.\n")
-})
-```
-
-```{r ridge-plot-summary-stats}
-#| label: ridge-plot-summary-stats
-#| echo: false
-#| message: false
-#| warning: false
-#| cache: true
-
-# Summary statistics for calls by hour and DOW
-hourly_summary <- df |>
-  group_by(DOW) |>
-  summarise(
-    total_calls = n(),
-    peak_hour = names(sort(table(Hour), decreasing = TRUE))[1],
-    avg_calls_per_hour = round(n() / 24, 1),
-    .groups = 'drop'
-  ) |>
-  arrange(desc(total_calls))
-
-# Display summary table
-to_ft(
-  hourly_summary,
-  caption = "Call Volume Summary by Day of Week — Peak hours and average calls per hour",
-  header_map = list(
-    DOW = "Day of Week",
-    total_calls = "Total Calls",
-    peak_hour = "Peak Hour",
-    avg_calls_per_hour = "Avg Calls/Hour"
-  ),
-  digits = 0
-)
-```
-
-The ridgeline plot shows there is a consistency throughout the week for the middle of the day to receive the most calls. The heat map shows one intense spike on Tuesday at 1000 hours. There are spikes at 1200 and 1900 hours. Overall, since `r busiest_hour`00 hours was the busiest hour of the week, the heatmap shows that it was reasonably consistent throughout the week. Equally, the heatmap shows that Friday, the second busiest day of the week, was consistent through the day and shared the same mean calls per hour as found on `r busiest_day`.
 
 ### Summary statsitcs and analyses
 
