@@ -12,7 +12,7 @@ execute:
   echo: false
 ---
 
-## Week 44 from 26 October through 01 November 2025
+## Week 45 from 02 November through 08 November 2025
 
 ## Table of Contents
 
