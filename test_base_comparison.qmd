@@ -95,6 +95,7 @@ suppressWarnings({
     library(report)
     library(knitr)
     library(kableExtra)
+    library(patchwork)
     library(modelbased)
     library(parameters)
     library(performance)
