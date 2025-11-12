@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-11-03"
+date: "2025-11-12"
 format:
     html:
         toc: true
@@ -408,6 +408,268 @@ For this week, there were a total of `r nrow(df)` calls for service. The column 
 #| cache: true
 
 colnames(df)
+```
+
+## Executive Summary
+
+```{r kpi-calculations}
+#| label: kpi-calculations
+#| echo: false
+#| message: false
+#| warning: false
+#| cache: true
+
+# Calculate KPIs for current and last week
+# SLA Compliance Calculations
+
+# LAW P1: ≤60s Time_To_Dispatch
+law_p1_current <- df %>% filter(Agency == "POLICE", Priority_Number == "1", !is.na(Time_To_Dispatch))
+law_p1_compliant_current <- law_p1_current %>% filter(Time_To_Dispatch <= 60)
+law_p1_sla_current <- ifelse(nrow(law_p1_current) > 0, 
+                              round((nrow(law_p1_compliant_current) / nrow(law_p1_current)) * 100, 1), 
+                              NA)
+
+law_p1_last <- df_last %>% filter(Agency == "POLICE", Priority_Number == "1", !is.na(Time_To_Dispatch))
+law_p1_compliant_last <- law_p1_last %>% filter(Time_To_Dispatch <= 60)
+law_p1_sla_last <- ifelse(nrow(law_p1_last) > 0, 
+                           round((nrow(law_p1_compliant_last) / nrow(law_p1_last)) * 100, 1), 
+                           NA)
+
+# LAW P2: ≤120s Time_To_Dispatch
+law_p2_current <- df %>% filter(Agency == "POLICE", Priority_Number == "2", !is.na(Time_To_Dispatch))
+law_p2_compliant_current <- law_p2_current %>% filter(Time_To_Dispatch <= 120)
+law_p2_sla_current <- ifelse(nrow(law_p2_current) > 0, 
+                              round((nrow(law_p2_compliant_current) / nrow(law_p2_current)) * 100, 1), 
+                              NA)
+
+law_p2_last <- df_last %>% filter(Agency == "POLICE", Priority_Number == "2", !is.na(Time_To_Dispatch))
+law_p2_compliant_last <- law_p2_last %>% filter(Time_To_Dispatch <= 120)
+law_p2_sla_last <- ifelse(nrow(law_p2_last) > 0, 
+                           round((nrow(law_p2_compliant_last) / nrow(law_p2_last)) * 100, 1), 
+                           NA)
+
+# FIRE/EMS: ≤64s and ≤106s Time_To_Queue
+fire_ems_current <- df %>% filter(Agency %in% c("FIRE", "EMS"), !is.na(Time_To_Queue))
+fire_ems_64_compliant_current <- fire_ems_current %>% filter(Time_To_Queue <= 64)
+fire_ems_106_compliant_current <- fire_ems_current %>% filter(Time_To_Queue <= 106)
+fire_ems_64_sla_current <- ifelse(nrow(fire_ems_current) > 0, 
+                                   round((nrow(fire_ems_64_compliant_current) / nrow(fire_ems_current)) * 100, 1), 
+                                   NA)
+fire_ems_106_sla_current <- ifelse(nrow(fire_ems_current) > 0, 
+                                    round((nrow(fire_ems_106_compliant_current) / nrow(fire_ems_current)) * 100, 1), 
+                                    NA)
+
+fire_ems_last <- df_last %>% filter(Agency %in% c("FIRE", "EMS"), !is.na(Time_To_Queue))
+fire_ems_64_compliant_last <- fire_ems_last %>% filter(Time_To_Queue <= 64)
+fire_ems_106_compliant_last <- fire_ems_last %>% filter(Time_To_Queue <= 106)
+fire_ems_64_sla_last <- ifelse(nrow(fire_ems_last) > 0, 
+                                round((nrow(fire_ems_64_compliant_last) / nrow(fire_ems_last)) * 100, 1), 
+                                NA)
+fire_ems_106_sla_last <- ifelse(nrow(fire_ems_last) > 0, 
+                                 round((nrow(fire_ems_106_compliant_last) / nrow(fire_ems_last)) * 100, 1), 
+                                 NA)
+
+# Overall metrics
+total_calls_current <- nrow(df)
+total_calls_last <- nrow(df_last)
+median_ttq_current <- median(df$Time_To_Queue, na.rm = TRUE)
+median_ttq_last <- median(df_last$Time_To_Queue, na.rm = TRUE)
+median_ttd_current <- median(df$Time_To_Dispatch, na.rm = TRUE)
+median_ttd_last <- median(df_last$Time_To_Dispatch, na.rm = TRUE)
+median_phone_current <- median(df$Phone_Time, na.rm = TRUE)
+median_phone_last <- median(df_last$Phone_Time, na.rm = TRUE)
+
+# Calculate changes
+call_volume_change <- total_calls_current - total_calls_last
+call_volume_pct <- round((call_volume_change / total_calls_last) * 100, 1)
+ttq_change <- median_ttq_current - median_ttq_last
+ttq_pct <- round((ttq_change / median_ttq_last) * 100, 1)
+ttd_change <- median_ttd_current - median_ttd_last
+ttd_pct <- round((ttd_change / median_ttd_last) * 100, 1)
+phone_change <- median_phone_current - median_phone_last
+phone_pct <- round((phone_change / median_phone_last) * 100, 1)
+
+# Helper function for trend indicators
+trend_indicator <- function(value, threshold_good = 0, threshold_warning = 5, lower_is_better = TRUE) {
+  if (is.na(value)) return("—")
+  if (lower_is_better) {
+    if (value <= threshold_good) return("✓")
+    if (value <= threshold_warning) return("⚠")
+    return("✗")
+  } else {
+    if (value >= threshold_good) return("✓")
+    if (value >= threshold_warning) return("⚠")
+    return("✗")
+  }
+}
+
+# SLA status indicators
+law_p1_status <- ifelse(!is.na(law_p1_sla_current), 
+                        ifelse(law_p1_sla_current >= 90, "✓", 
+                               ifelse(law_p1_sla_current >= 85, "⚠", "✗")), 
+                        "—")
+law_p2_status <- ifelse(!is.na(law_p2_sla_current), 
+                        ifelse(law_p2_sla_current >= 85, "✓", 
+                               ifelse(law_p2_sla_current >= 80, "⚠", "✗")), 
+                        "—")
+fire_ems_64_status <- ifelse(!is.na(fire_ems_64_sla_current), 
+                              ifelse(fire_ems_64_sla_current >= 90, "✓", 
+                                     ifelse(fire_ems_64_sla_current >= 85, "⚠", "✗")), 
+                              "—")
+fire_ems_106_status <- ifelse(!is.na(fire_ems_106_sla_current), 
+                               ifelse(fire_ems_106_sla_current >= 95, "✓", 
+                                      ifelse(fire_ems_106_sla_current >= 90, "⚠", "✗")), 
+                               "—")
+```
+
+### Weekly KPI Summary
+
+```{r kpi-summary-table}
+#| label: kpi-summary-table
+#| echo: false
+#| message: false
+#| warning: false
+
+kpi_summary <- tibble(
+  Metric = c(
+    "Total Call Volume",
+    "Median Time to Queue (s)",
+    "Median Time to Dispatch (s)",
+    "Median Phone Time (s)",
+    "LAW P1 SLA (≤60s)",
+    "LAW P2 SLA (≤120s)",
+    "FIRE/EMS SLA (≤64s)",
+    "FIRE/EMS SLA (≤106s)"
+  ),
+  Current_Week = c(
+    format(total_calls_current, big.mark = ","),
+    round(median_ttq_current, 1),
+    round(median_ttd_current, 1),
+    round(median_phone_current, 1),
+    paste0(law_p1_sla_current, "%"),
+    paste0(law_p2_sla_current, "%"),
+    paste0(fire_ems_64_sla_current, "%"),
+    paste0(fire_ems_106_sla_current, "%")
+  ),
+  Prior_Week = c(
+    format(total_calls_last, big.mark = ","),
+    round(median_ttq_last, 1),
+    round(median_ttd_last, 1),
+    round(median_phone_last, 1),
+    paste0(law_p2_sla_last, "%"),
+    paste0(law_p2_sla_last, "%"),
+    paste0(fire_ems_64_sla_last, "%"),
+    paste0(fire_ems_106_sla_last, "%")
+  ),
+  Change = c(
+    paste0(ifelse(call_volume_change >= 0, "+", ""), call_volume_change, " (", 
+           ifelse(call_volume_pct >= 0, "+", ""), call_volume_pct, "%)"),
+    paste0(ifelse(ttq_change >= 0, "+", ""), round(ttq_change, 1), " (", 
+           ifelse(ttq_pct >= 0, "+", ""), ttq_pct, "%)"),
+    paste0(ifelse(ttd_change >= 0, "+", ""), round(ttd_change, 1), " (", 
+           ifelse(ttd_pct >= 0, "+", ""), ttd_pct, "%)"),
+    paste0(ifelse(phone_change >= 0, "+", ""), round(phone_change, 1), " (", 
+           ifelse(phone_pct >= 0, "+", ""), phone_pct, "%)"),
+    paste0(ifelse(!is.na(law_p1_sla_current) && !is.na(law_p1_sla_last), 
+                  paste0(ifelse(law_p1_sla_current - law_p1_sla_last >= 0, "+", ""), 
+                         round(law_p1_sla_current - law_p1_sla_last, 1), "%"), "—")),
+    paste0(ifelse(!is.na(law_p2_sla_current) && !is.na(law_p2_sla_last), 
+                  paste0(ifelse(law_p2_sla_current - law_p2_sla_last >= 0, "+", ""), 
+                         round(law_p2_sla_current - law_p2_sla_last, 1), "%"), "—")),
+    paste0(ifelse(!is.na(fire_ems_64_sla_current) && !is.na(fire_ems_64_sla_last), 
+                  paste0(ifelse(fire_ems_64_sla_current - fire_ems_64_sla_last >= 0, "+", ""), 
+                         round(fire_ems_64_sla_current - fire_ems_64_sla_last, 1), "%"), "—")),
+    paste0(ifelse(!is.na(fire_ems_106_sla_current) && !is.na(fire_ems_106_sla_last), 
+                  paste0(ifelse(fire_ems_106_sla_current - fire_ems_106_sla_last >= 0, "+", ""), 
+                         round(fire_ems_106_sla_current - fire_ems_106_sla_last, 1), "%"), "—"))
+  ),
+  Status = c(
+    "—",
+    "—",
+    "—",
+    "—",
+    law_p1_status,
+    law_p2_status,
+    fire_ems_64_status,
+    fire_ems_106_status
+  )
+)
+
+to_ft(
+  kpi_summary,
+  caption = paste0("Weekly KPI Summary - Week ", WEEK_NUMBER, " vs Week ", LAST_WEEK_NUMBER),
+  header_map = list(
+    Metric = "Key Performance Indicator",
+    Current_Week = "This Week",
+    Prior_Week = "Last Week",
+    Change = "Change (Δ%)",
+    Status = "Status"
+  ),
+  digits = 1
+)
+```
+
+**Status Legend:** ✓ = Meets Target | ⚠ = Warning | ✗ = Below Target | — = Not Applicable
+
+### Key Insights
+
+```{r executive-insights}
+#| label: executive-insights
+#| echo: false
+#| results: asis
+
+insights <- list()
+
+# Call volume insight
+if (abs(call_volume_pct) >= 5) {
+  direction <- ifelse(call_volume_change > 0, "increased", "decreased")
+  insights <- append(insights, 
+    paste0("**Call Volume**: Total calls ", direction, " by ", abs(call_volume_change), 
+           " (", abs(call_volume_pct), "%) compared to last week."))
+}
+
+# Response time insights
+if (abs(ttd_pct) >= 10) {
+  direction <- ifelse(ttd_change > 0, "increased", "decreased")
+  insights <- append(insights,
+    paste0("**Response Time**: Median time to dispatch ", direction, " by ", 
+           abs(round(ttd_change, 1)), " seconds (", abs(ttd_pct), "%)."))
+}
+
+# SLA compliance insights
+sla_issues <- c()
+if (!is.na(law_p1_sla_current) && law_p1_sla_current < 90) {
+  sla_issues <- append(sla_issues, paste0("LAW P1 at ", law_p1_sla_current, "%"))
+}
+if (!is.na(law_p2_sla_current) && law_p2_sla_current < 85) {
+  sla_issues <- append(sla_issues, paste0("LAW P2 at ", law_p2_sla_current, "%"))
+}
+if (!is.na(fire_ems_64_sla_current) && fire_ems_64_sla_current < 90) {
+  sla_issues <- append(sla_issues, paste0("FIRE/EMS 64s at ", fire_ems_64_sla_current, "%"))
+}
+
+if (length(sla_issues) > 0) {
+  insights <- append(insights,
+    paste0("**SLA Compliance**: ", length(sla_issues), " metric(s) below target: ", 
+           paste(sla_issues, collapse = ", "), "."))
+}
+
+# Phone time insight
+if (median_phone_current > 120 && phone_pct > 5) {
+  insights <- append(insights,
+    paste0("**Call Complexity**: Median phone time at ", round(median_phone_current), 
+           " seconds, up ", abs(phone_pct), "%, suggesting more complex calls this week."))
+}
+
+# Output insights
+if (length(insights) > 0) {
+  cat("\n")
+  for (i in seq_along(insights)) {
+    cat(paste0(i, ". ", insights[[i]], "\n\n"))
+  }
+} else {
+  cat("\nOperational performance remains stable with no significant week-over-week changes.\n")
+}
 ```
 
 ## Data Cleaning
@@ -1112,6 +1374,294 @@ to_ft(
 ```
 
 This table shows the call takers with the highest cumulative time on the phone. This week, `r longest_phone_ct` had the largest average time on the phone with an average of `r longest_phone_ct_mean` seconds per call. This could be due to a number of factors, including the complexity of the calls faced.
+
+### Multi-Week Performance Trends
+
+```{r load-historical-weeks}
+#| label: load-historical-weeks
+#| echo: false
+#| message: false
+#| warning: false
+#| cache: true
+
+# Load last 4 weeks for trend analysis
+weeks_to_analyze <- 4
+historical_data <- list()
+
+for (i in 0:(weeks_to_analyze - 1)) {
+  week_to_load <- current_week_num - i
+  year_to_load <- current_year
+  
+  # Handle year boundary
+  if (week_to_load < 1) {
+    week_to_load <- week_to_load + 52
+    year_to_load <- year_to_load - 1
+  }
+  
+  data_file <- file.path("data", "current_year", paste0("week", week_to_load, ".csv"))
+  
+  if (file.exists(data_file)) {
+    week_df <- vroom::vroom(data_file, show_col_types = FALSE) %>%
+      mutate(
+        week_num = week_to_load,
+        week_year = year_to_load,
+        Time_To_Queue = suppressWarnings(as.numeric(Time_To_Queue)),
+        Time_To_Dispatch = suppressWarnings(as.numeric(Time_To_Dispatch)),
+        Phone_Time = suppressWarnings(as.numeric(Phone_Time)),
+        Processing_Time = suppressWarnings(as.numeric(Processing_Time))
+      )
+    historical_data[[length(historical_data) + 1]] <- week_df
+  }
+}
+
+# Combine all historical weeks
+df_historical <- bind_rows(historical_data)
+
+# Calculate weekly aggregates
+weekly_metrics <- df_historical %>%
+  group_by(week_num) %>%
+  summarise(
+    total_calls = n(),
+    median_ttq = median(Time_To_Queue, na.rm = TRUE),
+    median_ttd = median(Time_To_Dispatch, na.rm = TRUE),
+    median_phone = median(Phone_Time, na.rm = TRUE),
+    mean_ttq = mean(Time_To_Queue, na.rm = TRUE),
+    mean_ttd = mean(Time_To_Dispatch, na.rm = TRUE),
+    mean_phone = mean(Phone_Time, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(week_num)
+```
+
+```{r trend-charts}
+#| label: trend-charts
+#| echo: false
+#| fig-cap: "4-Week Performance Trends"
+#| fig-width: 12
+#| fig-height: 8
+
+# Create trend visualizations
+p_volume <- ggplot(weekly_metrics, aes(x = week_num, y = total_calls)) +
+  geom_line(linewidth = 1, color = "#2C3E50") +
+  geom_point(size = 2.5, color = "#2C3E50") +
+  geom_text(aes(label = scales::comma(total_calls)), vjust = -1, size = 3) +
+  labs(title = "Call Volume Trend", x = NULL, y = "Total Calls") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 11, face = "bold"),
+        axis.text = element_text(size = 9))
+
+p_ttq <- ggplot(weekly_metrics, aes(x = week_num, y = median_ttq)) +
+  geom_line(linewidth = 1, color = "#3498DB") +
+  geom_point(size = 2.5, color = "#3498DB") +
+  geom_text(aes(label = round(median_ttq, 1)), vjust = -1, size = 3) +
+  labs(title = "Median Time to Queue", x = NULL, y = "Seconds") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 11, face = "bold"),
+        axis.text = element_text(size = 9))
+
+p_ttd <- ggplot(weekly_metrics, aes(x = week_num, y = median_ttd)) +
+  geom_line(linewidth = 1, color = "#E74C3C") +
+  geom_point(size = 2.5, color = "#E74C3C") +
+  geom_text(aes(label = round(median_ttd, 1)), vjust = -1, size = 3) +
+  labs(title = "Median Time to Dispatch", x = "Week Number", y = "Seconds") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 11, face = "bold"),
+        axis.text = element_text(size = 9))
+
+p_phone <- ggplot(weekly_metrics, aes(x = week_num, y = median_phone)) +
+  geom_line(linewidth = 1, color = "#16A085") +
+  geom_point(size = 2.5, color = "#16A085") +
+  geom_text(aes(label = round(median_phone, 1)), vjust = -1, size = 3) +
+  labs(title = "Median Phone Time", x = "Week Number", y = "Seconds") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 11, face = "bold"),
+        axis.text = element_text(size = 9))
+
+# Combine plots using patchwork
+(p_volume + p_ttq) / (p_ttd + p_phone)
+```
+
+The trend charts above show performance metrics over the last 4 weeks, allowing identification of patterns and emerging issues. Week `r current_week_num` shows `r ifelse(call_volume_change > 0, "an increase", "a decrease")` of `r abs(call_volume_change)` calls compared to week `r last_week_num`.
+
+### Priority-Level Efficiency Analysis
+
+```{r priority-efficiency}
+#| label: priority-efficiency
+#| echo: false
+#| message: false
+#| warning: false
+
+# Analyze handling times by priority level
+priority_efficiency <- df %>%
+  filter(!is.na(Priority_Number), !is.na(Time_To_Dispatch)) %>%
+  group_by(Priority_Number) %>%
+  summarise(
+    Call_Count = n(),
+    Median_TTQ = round(median(Time_To_Queue, na.rm = TRUE), 1),
+    Mean_TTQ = round(mean(Time_To_Queue, na.rm = TRUE), 1),
+    Median_TTD = round(median(Time_To_Dispatch, na.rm = TRUE), 1),
+    Mean_TTD = round(mean(Time_To_Dispatch, na.rm = TRUE), 1),
+    Median_Phone = round(median(Phone_Time, na.rm = TRUE), 1),
+    Mean_Phone = round(mean(Phone_Time, na.rm = TRUE), 1),
+    Median_Processing = round(median(Processing_Time, na.rm = TRUE), 1),
+    SLA_Target = case_when(
+      Priority_Number == "1" ~ "60s",
+      Priority_Number == "2" ~ "120s",
+      Priority_Number == "3" ~ "600s",
+      Priority_Number == "4" ~ "3600s",
+      TRUE ~ "—"
+    ),
+    .groups = 'drop'
+  )
+
+to_ft(
+  priority_efficiency,
+  caption = "Call Handling Efficiency by Priority Level",
+  header_map = list(
+    Priority_Number = "Priority",
+    Call_Count = "Calls",
+    Median_TTQ = "Med TTQ (s)",
+    Median_TTD = "Med TTD (s)",
+    Median_Phone = "Med Phone (s)",
+    Median_Processing = "Med Process (s)",
+    SLA_Target = "SLA Target"
+  ),
+  digits = 1
+)
+```
+
+```{r priority-efficiency-viz}
+#| label: priority-efficiency-viz
+#| echo: false
+#| fig-cap: "Response Time Comparison by Priority Level"
+#| fig-width: 10
+#| fig-height: 6
+
+priority_efficiency_long <- priority_efficiency %>%
+  select(Priority_Number, Median_TTQ, Median_TTD, Median_Phone) %>%
+  pivot_longer(cols = c(Median_TTQ, Median_TTD, Median_Phone),
+               names_to = "Metric",
+               values_to = "Seconds") %>%
+  mutate(Metric = case_when(
+    Metric == "Median_TTQ" ~ "Time to Queue",
+    Metric == "Median_TTD" ~ "Time to Dispatch",
+    Metric == "Median_Phone" ~ "Phone Time"
+  ))
+
+ggplot(priority_efficiency_long, aes(x = Priority_Number, y = Seconds, fill = Metric)) +
+  geom_col(position = "dodge", width = 0.7) +
+  geom_text(aes(label = round(Seconds, 0)), 
+            position = position_dodge(width = 0.7),
+            vjust = -0.5, size = 3) +
+  scale_fill_manual(values = c("#3498DB", "#E74C3C", "#16A085")) +
+  labs(
+    title = "Response Time Metrics by Priority Level",
+    subtitle = "Lower priority calls show longer handling times",
+    x = "Priority Level",
+    y = "Median Time (seconds)",
+    fill = "Metric"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 13, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 10, hjust = 0.5),
+    legend.position = "right",
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 11, face = "bold")
+  )
+```
+
+Priority 1 calls have a median Time to Dispatch of `r priority_efficiency %>% filter(Priority_Number == "1") %>% pull(Median_TTD)` seconds, which is `r ifelse(priority_efficiency %>% filter(Priority_Number == "1") %>% pull(Median_TTD) <= 60, "within", "outside")` the SLA target of 60 seconds.
+
+### Call Type Complexity Analysis
+
+```{r call-complexity-scoring}
+#| label: call-complexity-scoring
+#| echo: false
+#| message: false
+#| warning: false
+
+# Calculate complexity scores based on handling duration
+call_complexity <- df %>%
+  filter(!is.na(Problem), !is.na(Processing_Time)) %>%
+  group_by(Problem, Agency) %>%
+  summarise(
+    Call_Count = n(),
+    Median_Processing = median(Processing_Time, na.rm = TRUE),
+    Mean_Processing = mean(Processing_Time, na.rm = TRUE),
+    Median_Phone = median(Phone_Time, na.rm = TRUE),
+    SD_Processing = sd(Processing_Time, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  filter(Call_Count >= 5) %>%  # Minimum threshold for reliability
+  mutate(
+    # Complexity score: normalized combination of duration and variability
+    Duration_Score = scales::rescale(Mean_Processing, to = c(0, 100)),
+    Variability_Score = scales::rescale(SD_Processing, to = c(0, 100)),
+    Complexity_Index = round((Duration_Score * 0.7 + Variability_Score * 0.3), 1),
+    Complexity_Category = case_when(
+      Complexity_Index >= 75 ~ "Very High",
+      Complexity_Index >= 50 ~ "High",
+      Complexity_Index >= 25 ~ "Moderate",
+      TRUE ~ "Low"
+    )
+  ) %>%
+  arrange(desc(Complexity_Index))
+
+# Top 10 most complex call types
+top_complex <- call_complexity %>%
+  slice_head(n = 10)
+
+to_ft(
+  top_complex %>% 
+    select(Problem, Agency, Call_Count, Median_Processing, Mean_Processing, Complexity_Index, Complexity_Category),
+  caption = "Top 10 Most Complex Call Types (by handling duration)",
+  header_map = list(
+    Problem = "Call Type",
+    Agency = "Agency",
+    Call_Count = "Calls",
+    Median_Processing = "Med Process (s)",
+    Mean_Processing = "Mean Process (s)",
+    Complexity_Index = "Complexity",
+    Complexity_Category = "Category"
+  ),
+  digits = 1
+)
+```
+
+```{r complexity-visualization}
+#| label: complexity-visualization
+#| echo: false
+#| fig-cap: "Call Type Complexity Distribution"
+#| fig-width: 10
+#| fig-height: 6
+
+ggplot(top_complex, aes(x = reorder(Problem, Complexity_Index), y = Complexity_Index, fill = Agency)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = round(Complexity_Index)), hjust = -0.2, size = 3) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(POLICE = "#1f77b4", FIRE = "#d62728", EMS = "#2ca02c"),
+    name = "Agency"
+  ) +
+  labs(
+    title = "Most Complex Call Types by Handling Duration",
+    subtitle = "Complexity Index: 0-100 scale based on processing time and variability",
+    x = "Call Type",
+    y = "Complexity Index"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 13, face = "bold"),
+    plot.subtitle = element_text(size = 10),
+    axis.text = element_text(size = 9),
+    axis.title = element_text(size = 11, face = "bold"),
+    legend.position = "right"
+  )
+```
+
+The most complex call type this week was **`r top_complex$Problem[1]`** with a complexity index of `r top_complex$Complexity_Index[1]`, requiring an average of `r round(top_complex$Mean_Processing[1])` seconds to process.
 
 ### Summary statsitcs and analyses
 
@@ -4681,6 +5231,90 @@ This shows, from this information, that `r hct_highest_median_ttq` had the large
 
 The calls in this set have been identified as outliers using four methods. The first is called the 'Z-score' method. This method calculates the number of standard deviations the observation is from the mean. When that number is greater than 3 or less than -3, the observation will be flagged as an outlier. The second method uses the Interquartile range (IQR), or the distance between the 25th and 75th percentiles. Each row is evaluated to see if the column in question contains a value that is greater than 1.5 times the IQR above the 75th percentile or less than 1.5 times the IQR below the 25th percentile.
 The third is called the Hampel identifier. This method uses the median and the median absolute deviation (MAD) to identify outliers. The MAD is multiplied by 3 and added to and subtracted from the median to create upper and lower bounds for the data. Any value outside of these bounds is flagged as an outlier. This method is more robust than the Z-score method as it is less affected by extreme values in the data. This method was included because this data is non-parametric and we are relying on the median values in our reports. A final test that is used occasionally is to identify the rows that are in the 1st and 99th percentiles for the column in question. Each of these methods has advantages and disadvantages in use. Additionally, the IQR can pre-suppose a normal distribution of data, which as can be seen above, does not exist in our datasets. The output of this test should identify rows with values larger than the target values and very few, if any, that are lower than the target values. This is also due to the distribution of the data.
+
+### Critical Priority Outlier Alerts
+
+```{r p1-p2-outlier-alerts}
+#| label: p1-p2-outlier-alerts
+#| echo: false
+#| message: false
+#| warning: false
+#| results: asis
+
+# Identify extreme outliers for Priority 1 and 2 calls
+p1_calls <- df %>%
+  filter(Priority_Number == "1", !is.na(Time_To_Queue), !is.na(Time_To_Dispatch))
+
+p2_calls <- df %>%
+  filter(Priority_Number == "2", !is.na(Time_To_Queue), !is.na(Time_To_Dispatch))
+
+# Find top 5 worst TTQ for P1
+p1_worst_ttq <- p1_calls %>%
+  arrange(desc(Time_To_Queue)) %>%
+  slice_head(n = 5) %>%
+  select(Incident_Number, Agency, Problem, Call_Taker, Time_To_Queue, Time_To_Dispatch)
+
+# Find top 5 worst TTD for P1
+p1_worst_ttd <- p1_calls %>%
+  arrange(desc(Time_To_Dispatch)) %>%
+  slice_head(n = 5) %>%
+  select(Incident_Number, Agency, Problem, Dispatcher, Time_To_Queue, Time_To_Dispatch)
+
+# Find top 5 worst TTQ for P2
+p2_worst_ttq <- p2_calls %>%
+  arrange(desc(Time_To_Queue)) %>%
+  slice_head(n = 5) %>%
+  select(Incident_Number, Agency, Problem, Call_Taker, Time_To_Queue, Time_To_Dispatch)
+
+# Find top 5 worst TTD for P2
+p2_worst_ttd <- p2_calls %>%
+  arrange(desc(Time_To_Dispatch)) %>%
+  slice_head(n = 5) %>%
+  select(Incident_Number, Agency, Problem, Dispatcher, Time_To_Queue, Time_To_Dispatch)
+
+# Generate alerts
+alerts_generated <- FALSE
+
+if (nrow(p1_worst_ttq) > 0 && max(p1_worst_ttq$Time_To_Queue) > 120) {
+  cat("\n⚠️ **CRITICAL ALERT - Priority 1 Time to Queue Outliers**\n\n")
+  cat("The following Priority 1 calls had exceptionally long Time to Queue values:\n\n")
+  print(kable(p1_worst_ttq, caption = "Top 5 P1 Calls by Time to Queue"))
+  cat("\n")
+  alerts_generated <- TRUE
+}
+
+if (nrow(p1_worst_ttd) > 0 && max(p1_worst_ttd$Time_To_Dispatch) > 180) {
+  cat("\n⚠️ **CRITICAL ALERT - Priority 1 Time to Dispatch Outliers**\n\n")
+  cat("The following Priority 1 calls had exceptionally long Time to Dispatch values:\n\n")
+  print(kable(p1_worst_ttd, caption = "Top 5 P1 Calls by Time to Dispatch"))
+  cat("\n")
+  alerts_generated <- TRUE
+}
+
+if (nrow(p2_worst_ttq) > 0 && max(p2_worst_ttq$Time_To_Queue) > 180) {
+  cat("\n⚠️ **WARNING - Priority 2 Time to Queue Outliers**\n\n")
+  cat("The following Priority 2 calls had exceptionally long Time to Queue values:\n\n")
+  print(kable(p2_worst_ttq, caption = "Top 5 P2 Calls by Time to Queue"))
+  cat("\n")
+  alerts_generated <- TRUE
+}
+
+if (nrow(p2_worst_ttd) > 0 && max(p2_worst_ttd$Time_To_Dispatch) > 240) {
+  cat("\n⚠️ **WARNING - Priority 2 Time to Dispatch Outliers**\n\n")
+  cat("The following Priority 2 calls had exceptionally long Time to Dispatch values:\n\n")
+  print(kable(p2_worst_ttd, caption = "Top 5 P2 Calls by Time to Dispatch"))
+  cat("\n")
+  alerts_generated <- TRUE
+}
+
+if (!alerts_generated) {
+  cat("\n✅ **No critical outliers detected for Priority 1 or Priority 2 calls**\n\n")
+}
+
+cat("\n**Recommendation:** Review these incidents to identify root causes and implement corrective actions to prevent recurrence.\n\n")
+```
+
+### General Outlier Analysis
 
 ```{r outliers}
 #| label: outliers

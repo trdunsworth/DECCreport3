@@ -1,0 +1,789 @@
+---
+title: "DECC Advanced Analytics Report"
+author: "Tony Dunsworth, PhD"
+date: "2025-11-12"
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        toc-location: left
+        code-fold: true
+execute:
+  freeze: auto
+  echo: false
+---
+
+## Advanced Analytics & Strategic Insights
+
+This report provides advanced analytics, trend analysis, and strategic insights to complement the weekly operational report. It includes multi-week trend analysis, staffing analytics, performance insights, and automated recommendations for operational improvements.
+
+---
+
+```{r libraries}
+#| label: setup
+#| echo: false
+#| message: false
+#| warning: false
+#| cache: false
+
+# Suppress warnings and load packages
+suppressWarnings({
+  suppressPackageStartupMessages({
+    library(tidyverse)
+    library(lubridate)
+    library(flextable)
+    library(officer)
+    library(paletteer)
+    library(knitr)
+    library(kableExtra)
+    library(scales)
+    library(ggridges)
+    library(patchwork)
+  })
+})
+```
+
+```{r historical-data-load}
+#| label: historical-data-load
+#| echo: false
+#| message: false
+#| warning: false
+#| cache: true
+
+# Load helper functions from base report
+source("R/plot_helpers.R", local = TRUE)
+
+# ============================================================================
+# LOAD CURRENT AND HISTORICAL WEEK DATA
+# ============================================================================
+# This chunk loads the current reporting week plus the prior 3 weeks for trend analysis
+
+REPORT_DATE <- Sys.Date()
+report_week_start <- floor_date(REPORT_DATE, "week", week_start = 7)
+
+# Current week (week being reported on)
+current_week_start <- report_week_start - weeks(1)
+current_week_num <- isoweek(current_week_start + days(3))
+current_year <- year(current_week_start)
+
+# Historical weeks (3 weeks prior to current week)
+weeks_to_load <- 4  # Current week + 3 historical
+
+# Initialize storage
+all_weeks_data <- list()
+week_metadata <- tibble(
+  week_num = integer(),
+  week_year = integer(),
+  week_start = as.Date(character()),
+  week_end = as.Date(character()),
+  week_label = character()
+)
+
+# Load data for each week
+for (i in 0:(weeks_to_load - 1)) {
+  week_start <- current_week_start - weeks(i)
+  week_end <- week_start + days(6)
+  week_num <- isoweek(week_start + days(3))
+  week_year <- year(week_start)
+  
+  # Construct file path
+  data_file <- file.path("data", "current_year", paste0("week", week_num, ".csv"))
+  
+  if (file.exists(data_file)) {
+    # Load and process data
+    week_data <- vroom::vroom(data_file, show_col_types = FALSE) %>%
+      mutate(
+        week_num = week_num,
+        week_year = week_year,
+        week_start = week_start,
+        week_label = paste0("Wk ", week_num)
+      )
+    
+    # Store data
+    all_weeks_data[[length(all_weeks_data) + 1]] <- week_data
+    
+    # Store metadata
+    week_metadata <- week_metadata %>%
+      add_row(
+        week_num = week_num,
+        week_year = week_year,
+        week_start = week_start,
+        week_end = week_end,
+        week_label = paste0("Week ", week_num)
+      )
+  }
+}
+
+# Combine all weeks into single dataframe
+df_all_weeks <- bind_rows(all_weeks_data)
+
+# Process combined data (convert time columns to numeric)
+df_all_weeks <- df_all_weeks %>%
+  mutate(
+    # Convert time columns to numeric (seconds)
+    Time_To_Queue = suppressWarnings(as.numeric(Time_To_Queue)),
+    Time_To_Dispatch = suppressWarnings(as.numeric(Time_To_Dispatch)),
+    Phone_Time = suppressWarnings(as.numeric(Phone_Time)),
+    Processing_Time = suppressWarnings(as.numeric(Processing_Time)),
+    # Factor columns
+    Priority_Number = factor(Priority_Number, 
+                            levels = c("1", "2", "3", "4", "5"),
+                            ordered = TRUE),
+    Agency = factor(Agency),
+    DOW = factor(DOW, 
+                levels = c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                          "Thursday", "Friday", "Saturday"),
+                ordered = TRUE)
+  )
+
+# Get current week data
+df_current <- df_all_weeks %>% filter(week_num == current_week_num)
+
+# Summary statistics by week
+weekly_summary <- df_all_weeks %>%
+  group_by(week_num, week_label, week_start) %>%
+  summarise(
+    total_calls = n(),
+    median_ttq = median(Time_To_Queue, na.rm = TRUE),
+    median_ttd = median(Time_To_Dispatch, na.rm = TRUE),
+    median_phone = median(Phone_Time, na.rm = TRUE),
+    mean_ttq = mean(Time_To_Queue, na.rm = TRUE),
+    mean_ttd = mean(Time_To_Dispatch, na.rm = TRUE),
+    mean_phone = mean(Phone_Time, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(week_start)
+
+# Calculate rolling averages
+weekly_summary <- weekly_summary %>%
+  mutate(
+    ma_ttq = zoo::rollmean(median_ttq, k = 3, fill = NA, align = "right"),
+    ma_ttd = zoo::rollmean(median_ttd, k = 3, fill = NA, align = "right"),
+    ma_phone = zoo::rollmean(median_phone, k = 3, fill = NA, align = "right")
+  )
+```
+
+## Multi-Week Trend Analysis
+
+This section examines performance trends over the past 4 weeks to identify patterns, improvements, or concerns requiring attention.
+
+### Call Volume Trends
+
+```{r call-volume-trends}
+#| label: call-volume-trends
+#| fig-cap: "Call Volume Trend - Last 4 Weeks"
+#| fig-width: 10
+#| fig-height: 5
+
+ggplot(weekly_summary, aes(x = week_start, y = total_calls)) +
+  geom_line(linewidth = 1.2, color = "#2C3E50") +
+  geom_point(size = 3, color = "#2C3E50") +
+  geom_text(aes(label = scales::comma(total_calls)), 
+            vjust = -1, size = 3.5, fontface = "bold") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Weekly Call Volume Trend",
+    subtitle = paste0("Weeks ", min(weekly_summary$week_num), "-", max(weekly_summary$week_num)),
+    x = "Week Starting",
+    y = "Total Calls"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 11, hjust = 0.5),
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 11, face = "bold")
+  )
+```
+
+### Response Time Trends
+
+```{r response-time-trends}
+#| label: response-time-trends
+#| fig-cap: "Response Time Trends - Last 4 Weeks"
+#| fig-width: 12
+#| fig-height: 8
+
+# Create individual plots
+p1 <- ggplot(weekly_summary, aes(x = week_start)) +
+  geom_line(aes(y = median_ttq), linewidth = 1, color = "#3498DB") +
+  geom_point(aes(y = median_ttq), size = 2.5, color = "#3498DB") +
+  geom_line(aes(y = ma_ttq), linewidth = 0.8, color = "#E74C3C", linetype = "dashed") +
+  geom_text(aes(y = median_ttq, label = round(median_ttq, 1)), 
+            vjust = -1, size = 3, fontface = "bold") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
+  labs(
+    title = "Time to Queue (Median)",
+    subtitle = "Blue: Actual | Red Dash: 3-Week Moving Avg",
+    x = NULL,
+    y = "Seconds"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    plot.subtitle = element_text(size = 9),
+    axis.text = element_text(size = 9)
+  )
+
+p2 <- ggplot(weekly_summary, aes(x = week_start)) +
+  geom_line(aes(y = median_ttd), linewidth = 1, color = "#3498DB") +
+  geom_point(aes(y = median_ttd), size = 2.5, color = "#3498DB") +
+  geom_line(aes(y = ma_ttd), linewidth = 0.8, color = "#E74C3C", linetype = "dashed") +
+  geom_text(aes(y = median_ttd, label = round(median_ttd, 1)), 
+            vjust = -1, size = 3, fontface = "bold") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
+  labs(
+    title = "Time to Dispatch (Median)",
+    subtitle = "Blue: Actual | Red Dash: 3-Week Moving Avg",
+    x = NULL,
+    y = "Seconds"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    plot.subtitle = element_text(size = 9),
+    axis.text = element_text(size = 9)
+  )
+
+p3 <- ggplot(weekly_summary, aes(x = week_start)) +
+  geom_line(aes(y = median_phone), linewidth = 1, color = "#3498DB") +
+  geom_point(aes(y = median_phone), size = 2.5, color = "#3498DB") +
+  geom_line(aes(y = ma_phone), linewidth = 0.8, color = "#E74C3C", linetype = "dashed") +
+  geom_text(aes(y = median_phone, label = round(median_phone, 1)), 
+            vjust = -1, size = 3, fontface = "bold") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
+  labs(
+    title = "Phone Time (Median)",
+    subtitle = "Blue: Actual | Red Dash: 3-Week Moving Avg",
+    x = "Week Starting",
+    y = "Seconds"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    plot.subtitle = element_text(size = 9),
+    axis.text = element_text(size = 9)
+  )
+
+# Combine plots
+p1 / p2 / p3
+```
+
+```{r trend-summary-text}
+#| label: trend-summary-text
+#| echo: false
+#| results: asis
+
+# Calculate week-over-week changes
+latest_week <- weekly_summary %>% filter(week_num == max(week_num))
+prior_week <- weekly_summary %>% filter(week_num == max(week_num) - 1)
+
+ttq_change <- latest_week$median_ttq - prior_week$median_ttq
+ttd_change <- latest_week$median_ttd - prior_week$median_ttd
+phone_change <- latest_week$median_phone - prior_week$median_phone
+volume_change <- latest_week$total_calls - prior_week$total_calls
+
+ttq_pct <- round((ttq_change / prior_week$median_ttq) * 100, 1)
+ttd_pct <- round((ttd_change / prior_week$median_ttd) * 100, 1)
+phone_pct <- round((phone_change / prior_week$median_phone) * 100, 1)
+volume_pct <- round((volume_change / prior_week$total_calls) * 100, 1)
+```
+
+**Week-over-Week Changes:**
+
+- **Call Volume:** `r ifelse(volume_change > 0, "↑", "↓")` `r abs(volume_change)` calls (`r volume_pct`%)
+- **Time to Queue:** `r ifelse(ttq_change > 0, "↑", "↓")` `r abs(round(ttq_change, 1))` seconds (`r abs(ttq_pct)`%)
+- **Time to Dispatch:** `r ifelse(ttd_change > 0, "↑", "↓")` `r abs(round(ttd_change, 1))` seconds (`r abs(ttd_pct)`%)
+- **Phone Time:** `r ifelse(phone_change > 0, "↑", "↓")` `r abs(round(phone_change, 1))` seconds (`r abs(phone_pct)`%)
+
+## All Dispatcher Performance Analysis
+
+This section analyzes performance across all dispatchers to identify workload distribution, efficiency patterns, and development opportunities.
+
+```{r all-dispatcher-performance}
+#| label: all-dispatcher-performance
+#| echo: false
+#| message: false
+#| warning: false
+
+# Comprehensive dispatcher analysis
+dispatcher_performance <- df_current %>%
+  filter(!is.na(Dispatcher)) %>%
+  group_by(Dispatcher) %>%
+  summarise(
+    Total_Calls = n(),
+    Median_TTD = round(median(Time_To_Dispatch, na.rm = TRUE), 1),
+    Mean_TTD = round(mean(Time_To_Dispatch, na.rm = TRUE), 1),
+    SD_TTD = round(sd(Time_To_Dispatch, na.rm = TRUE), 1),
+    P1_Calls = sum(Priority_Number == "1", na.rm = TRUE),
+    P2_Calls = sum(Priority_Number == "2", na.rm = TRUE),
+    High_Priority_Pct = round((sum(Priority_Number %in% c("1", "2"), na.rm = TRUE) / n()) * 100, 1),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(Total_Calls)) %>%
+  mutate(
+    Performance_Quartile = ntile(Median_TTD, 4),
+    Workload_Quartile = ntile(Total_Calls, 4)
+  )
+
+# Create performance table
+to_ft(
+  dispatcher_performance %>% 
+    select(Dispatcher, Total_Calls, Median_TTD, Mean_TTD, P1_Calls, P2_Calls, High_Priority_Pct),
+  caption = "Dispatcher Performance Summary - Current Week",
+  header_map = list(
+    Dispatcher = "Dispatcher",
+    Total_Calls = "Total Calls",
+    Median_TTD = "Median TTD (s)",
+    Mean_TTD = "Mean TTD (s)",
+    P1_Calls = "P1 Calls",
+    P2_Calls = "P2 Calls",
+    High_Priority_Pct = "High Priority %"
+  ),
+  digits = 1
+)
+```
+
+### Workload Distribution
+
+```{r workload-distribution}
+#| label: workload-distribution
+#| fig-cap: "Dispatcher Workload Distribution"
+#| fig-width: 10
+#| fig-height: 6
+
+# Top 15 dispatchers by call volume
+top_dispatchers <- dispatcher_performance %>%
+  slice_head(n = 15)
+
+ggplot(top_dispatchers, aes(x = reorder(Dispatcher, Total_Calls), y = Total_Calls)) +
+  geom_col(aes(fill = High_Priority_Pct), width = 0.7) +
+  geom_text(aes(label = Total_Calls), hjust = -0.2, size = 3) +
+  scale_fill_gradient2(
+    name = "High Priority %",
+    low = "#2ECC71",
+    mid = "#F39C12",
+    high = "#E74C3C",
+    midpoint = 30
+  ) +
+  coord_flip() +
+  labs(
+    title = "Top 15 Dispatchers by Call Volume",
+    subtitle = "Color indicates percentage of high-priority (P1/P2) calls",
+    x = "Dispatcher",
+    y = "Total Calls"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 13, face = "bold"),
+    plot.subtitle = element_text(size = 10),
+    axis.text = element_text(size = 9),
+    legend.position = "right"
+  )
+```
+
+## Staff Development Insights
+
+```{r performance-quartiles}
+#| label: performance-quartiles
+#| echo: false
+#| results: asis
+
+# Identify top and bottom performers
+top_performers <- dispatcher_performance %>%
+  filter(Total_Calls >= 10) %>%  # Minimum call threshold
+  arrange(Median_TTD) %>%
+  slice_head(n = 5)
+
+needs_support <- dispatcher_performance %>%
+  filter(Total_Calls >= 10) %>%
+  arrange(desc(Median_TTD)) %>%
+  slice_head(n = 5)
+```
+
+### Top Performers (Fastest Median TTD)
+
+```{r top-performers-table}
+#| label: top-performers-table
+
+to_ft(
+  top_performers %>% select(Dispatcher, Total_Calls, Median_TTD, High_Priority_Pct),
+  caption = "Top 5 Performers - Fastest Dispatch Times (min 10 calls)",
+  header_map = list(
+    Dispatcher = "Dispatcher",
+    Total_Calls = "Calls",
+    Median_TTD = "Median TTD (s)",
+    High_Priority_Pct = "High Priority %"
+  ),
+  digits = 1
+)
+```
+
+### Development Opportunities (Slowest Median TTD)
+
+```{r needs-support-table}
+#| label: needs-support-table
+
+to_ft(
+  needs_support %>% select(Dispatcher, Total_Calls, Median_TTD, High_Priority_Pct),
+  caption = "Dispatchers with Longest Dispatch Times (min 10 calls)",
+  header_map = list(
+    Dispatcher = "Dispatcher",
+    Total_Calls = "Calls",
+    Median_TTD = "Median TTD (s)",
+    High_Priority_Pct = "High Priority %"
+  ),
+  digits = 1
+)
+```
+
+**Coaching Recommendations:**
+
+- Consider pairing dispatchers from the development opportunities list with top performers for mentoring
+- Analyze call types handled by slower dispatchers - are they inherently more complex?
+- Review procedures and protocols with dispatchers showing high TTD variance
+
+## Advanced Visualizations
+
+### Performance Radar Chart - Top 5 Dispatchers
+
+```{r radar-chart-prep}
+#| label: radar-chart-prep
+#| echo: false
+#| message: false
+#| warning: false
+
+# Prepare data for radar chart (top 5 by volume)
+radar_data <- dispatcher_performance %>%
+  filter(Total_Calls >= 20) %>%
+  arrange(desc(Total_Calls)) %>%
+  slice_head(n = 5) %>%
+  mutate(
+    # Normalize metrics to 0-100 scale
+    Volume_Score = scales::rescale(Total_Calls, to = c(0, 100)),
+    Speed_Score = scales::rescale(-Median_TTD, to = c(0, 100)),  # Negative because lower is better
+    Consistency_Score = scales::rescale(-SD_TTD, to = c(0, 100)),  # Negative because lower is better
+    Priority_Score = High_Priority_Pct
+  ) %>%
+  select(Dispatcher, Volume_Score, Speed_Score, Consistency_Score, Priority_Score) %>%
+  pivot_longer(cols = -Dispatcher, names_to = "Metric", values_to = "Score")
+
+# Create radar/spider chart
+library(ggradar)
+radar_wide <- radar_data %>%
+  pivot_wider(names_from = Metric, values_from = Score) %>%
+  select(Dispatcher, Volume_Score, Speed_Score, Consistency_Score, Priority_Score)
+```
+
+```{r radar-chart}
+#| label: radar-chart
+#| fig-cap: "Multi-Dimensional Performance Comparison"
+#| fig-width: 10
+#| fig-height: 8
+#| eval: false
+
+# Note: Radar chart requires ggradar package
+# If not available, this chunk will be skipped
+if (requireNamespace("ggradar", quietly = TRUE)) {
+  ggradar::ggradar(
+    radar_wide,
+    grid.min = 0,
+    grid.max = 100,
+    values.radar = c("0", "50", "100"),
+    group.colours = paletteer_d("ggsci::category10_d3")[1:5],
+    gridline.mid.colour = "grey",
+    background.circle.colour = "white",
+    legend.position = "bottom"
+  )
+}
+```
+
+### Dual-Axis: Volume & Efficiency Over Time
+
+```{r dual-axis-trends}
+#| label: dual-axis-trends
+#| fig-cap: "Call Volume vs Median Response Time - 4 Week Trend"
+#| fig-width: 12
+#| fig-height: 6
+
+# Scale factor for secondary axis
+scale_factor <- max(weekly_summary$total_calls, na.rm = TRUE) / max(weekly_summary$median_ttd, na.rm = TRUE)
+
+ggplot(weekly_summary, aes(x = week_start)) +
+  # Volume bars
+  geom_col(aes(y = total_calls), fill = "#3498DB", alpha = 0.6, width = 5) +
+  # TTD line
+  geom_line(aes(y = median_ttd * scale_factor), color = "#E74C3C", linewidth = 1.5) +
+  geom_point(aes(y = median_ttd * scale_factor), color = "#E74C3C", size = 3) +
+  scale_y_continuous(
+    name = "Total Calls",
+    labels = scales::comma,
+    sec.axis = sec_axis(~ . / scale_factor, name = "Median TTD (seconds)")
+  ) +
+  scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
+  labs(
+    title = "Call Volume vs Response Time Efficiency",
+    subtitle = "Blue bars: Call volume | Red line: Median Time to Dispatch",
+    x = "Week Starting"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 11, hjust = 0.5),
+    axis.title.y.left = element_text(color = "#3498DB", face = "bold"),
+    axis.title.y.right = element_text(color = "#E74C3C", face = "bold"),
+    axis.text = element_text(size = 10)
+  )
+```
+
+## Compliance & Risk Alerts
+
+```{r compliance-alerts}
+#| label: compliance-alerts
+#| echo: false
+#| results: asis
+
+# Define SLA thresholds
+sla_thresholds <- tibble(
+  priority = c("1", "2", "3", "4"),
+  agency = c("LAW", "LAW", "LAW", "LAW"),
+  threshold = c(60, 120, 600, 3600)
+)
+
+fire_ems_threshold_64 <- 64
+fire_ems_threshold_106 <- 106
+
+# Check P1/P2 compliance for LAW
+law_p1_calls <- df_current %>%
+  filter(Agency == "POLICE", Priority_Number == "1", !is.na(Time_To_Dispatch))
+
+law_p1_compliant <- law_p1_calls %>%
+  filter(Time_To_Dispatch <= 60)
+
+law_p1_compliance_rate <- ifelse(nrow(law_p1_calls) > 0,
+                                  round((nrow(law_p1_compliant) / nrow(law_p1_calls)) * 100, 1),
+                                  NA)
+
+law_p2_calls <- df_current %>%
+  filter(Agency == "POLICE", Priority_Number == "2", !is.na(Time_To_Dispatch))
+
+law_p2_compliant <- law_p2_calls %>%
+  filter(Time_To_Dispatch <= 120)
+
+law_p2_compliance_rate <- ifelse(nrow(law_p2_calls) > 0,
+                                  round((nrow(law_p2_compliant) / nrow(law_p2_calls)) * 100, 1),
+                                  NA)
+
+# Check FIRE/EMS compliance
+fire_ems_calls <- df_current %>%
+  filter(Agency %in% c("FIRE", "EMS"), !is.na(Time_To_Queue))
+
+fire_ems_64_compliant <- fire_ems_calls %>%
+  filter(Time_To_Queue <= 64)
+
+fire_ems_106_compliant <- fire_ems_calls %>%
+  filter(Time_To_Queue <= 106)
+
+fire_ems_64_rate <- ifelse(nrow(fire_ems_calls) > 0,
+                            round((nrow(fire_ems_64_compliant) / nrow(fire_ems_calls)) * 100, 1),
+                            NA)
+
+fire_ems_106_rate <- ifelse(nrow(fire_ems_calls) > 0,
+                             round((nrow(fire_ems_106_compliant) / nrow(fire_ems_calls)) * 100, 1),
+                             NA)
+
+# Generate alert status
+alerts <- list()
+
+if (!is.na(law_p1_compliance_rate) && law_p1_compliance_rate < 90) {
+  alerts <- append(alerts, paste0("⚠️ **LAW P1 SLA Compliance LOW**: ", law_p1_compliance_rate, "% (Target: >90%)"))
+}
+
+if (!is.na(law_p2_compliance_rate) && law_p2_compliance_rate < 85) {
+  alerts <- append(alerts, paste0("⚠️ **LAW P2 SLA Compliance LOW**: ", law_p2_compliance_rate, "% (Target: >85%)"))
+}
+
+if (!is.na(fire_ems_64_rate) && fire_ems_64_rate < 90) {
+  alerts <- append(alerts, paste0("⚠️ **FIRE/EMS 64s SLA Compliance LOW**: ", fire_ems_64_rate, "% (Target: >90%)"))
+}
+
+if (!is.na(fire_ems_106_rate) && fire_ems_106_rate < 95) {
+  alerts <- append(alerts, paste0("⚠️ **FIRE/EMS 106s SLA Compliance LOW**: ", fire_ems_106_rate, "% (Target: >95%)"))
+}
+```
+
+### SLA Compliance Status
+
+```{r sla-compliance-table}
+#| label: sla-compliance-table
+
+compliance_summary <- tibble(
+  Metric = c(
+    "LAW Priority 1 (≤60s)",
+    "LAW Priority 2 (≤120s)",
+    "FIRE/EMS (≤64s)",
+    "FIRE/EMS (≤106s)"
+  ),
+  Compliant = c(
+    nrow(law_p1_compliant),
+    nrow(law_p2_compliant),
+    nrow(fire_ems_64_compliant),
+    nrow(fire_ems_106_compliant)
+  ),
+  Total = c(
+    nrow(law_p1_calls),
+    nrow(law_p2_calls),
+    nrow(fire_ems_calls),
+    nrow(fire_ems_calls)
+  ),
+  Compliance_Rate = c(
+    law_p1_compliance_rate,
+    law_p2_compliance_rate,
+    fire_ems_64_rate,
+    fire_ems_106_rate
+  ),
+  Status = case_when(
+    Compliance_Rate >= 95 ~ "✓ Excellent",
+    Compliance_Rate >= 90 ~ "✓ Good",
+    Compliance_Rate >= 85 ~ "⚠ Warning",
+    TRUE ~ "✗ Critical"
+  )
+)
+
+to_ft(
+  compliance_summary,
+  caption = "SLA Compliance Summary - Current Week",
+  header_map = list(
+    Metric = "Metric",
+    Compliant = "Compliant",
+    Total = "Total",
+    Compliance_Rate = "Rate (%)",
+    Status = "Status"
+  ),
+  digits = 1
+)
+```
+
+### Active Alerts
+
+```{r active-alerts-output}
+#| label: active-alerts-output
+#| echo: false
+#| results: asis
+
+if (length(alerts) > 0) {
+  cat("\n**Current Alerts:**\n\n")
+  for (alert in alerts) {
+    cat(paste0("- ", alert, "\n"))
+  }
+} else {
+  cat("\n✅ **All SLA targets met - No active alerts**\n")
+}
+```
+
+## Automated Recommendations
+
+```{r automated-recommendations}
+#| label: automated-recommendations
+#| echo: false
+#| results: asis
+
+recommendations <- list()
+
+# Staffing recommendations based on volume trends
+if (volume_change > 100) {
+  recommendations <- append(recommendations, 
+    paste0("📊 **Staffing**: Call volume increased by ", volume_change, " calls (", volume_pct, "%). Consider reviewing staffing levels for peak periods."))
+}
+
+# Performance recommendations
+if (ttq_change > 5) {
+  recommendations <- append(recommendations,
+    paste0("⏱️ **Efficiency**: Time to Queue increased by ", round(ttq_change, 1), " seconds. Review call intake procedures and staffing during peak hours."))
+}
+
+# Training recommendations based on dispatcher performance
+high_variance_dispatchers <- dispatcher_performance %>%
+  filter(Total_Calls >= 10, SD_TTD > 100) %>%
+  nrow()
+
+if (high_variance_dispatchers > 3) {
+  recommendations <- append(recommendations,
+    paste0("🎓 **Training**: ", high_variance_dispatchers, " dispatchers show high variability in dispatch times. Consider consistency training and standard operating procedure reviews."))
+}
+
+# SLA-based recommendations
+if (length(alerts) > 0) {
+  recommendations <- append(recommendations,
+    "🚨 **Compliance**: SLA compliance below target. See Compliance & Risk Alerts section for details. Immediate review recommended.")
+}
+
+# Trend-based recommendations
+if (!is.na(latest_week$ma_ttd) && latest_week$median_ttd > latest_week$ma_ttd * 1.1) {
+  recommendations <- append(recommendations,
+    "📈 **Trend Alert**: Current week TTD is 10%+ above 3-week moving average. Investigate contributing factors.")
+}
+```
+
+### Priority Action Items
+
+```{r recommendations-output}
+#| label: recommendations-output
+#| echo: false
+#| results: asis
+
+if (length(recommendations) > 0) {
+  cat("\n**Recommended Actions:**\n\n")
+  for (i in seq_along(recommendations)) {
+    cat(paste0(i, ". ", recommendations[[i]], "\n\n"))
+  }
+} else {
+  cat("\n✅ **No critical action items identified - Operations within normal parameters**\n")
+}
+```
+
+### Process Improvement Opportunities
+
+```{r process-improvements}
+#| label: process-improvements
+#| echo: false
+#| results: asis
+
+# Identify problem types with longest handling times
+complex_call_types <- df_current %>%
+  group_by(Problem) %>%
+  summarise(
+    call_count = n(),
+    median_phone = median(Phone_Time, na.rm = TRUE),
+    median_processing = median(Processing_Time, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  filter(call_count >= 5) %>%
+  arrange(desc(median_processing)) %>%
+  slice_head(n = 5)
+
+if (nrow(complex_call_types) > 0) {
+  cat("\n**Complex Call Types Requiring Extended Handling:**\n\n")
+  for (i in 1:nrow(complex_call_types)) {
+    cat(paste0("- **", complex_call_types$Problem[i], "**: ", 
+               round(complex_call_types$median_processing[i]), 
+               " seconds median processing time (", 
+               complex_call_types$call_count[i], " calls)\n"))
+  }
+  cat("\nConsider developing specialized protocols or additional training for these call types.\n")
+}
+```
+
+---
+
+## Conclusion
+
+This advanced analytics report provides strategic insights to complement operational metrics. Key focus areas for management attention:
+
+1. **Trend Monitoring**: Review multi-week trends for early identification of performance shifts
+2. **Staff Development**: Use performance quartiles to guide coaching and training priorities  
+3. **Compliance Management**: Monitor SLA compliance rates and address alerts promptly
+4. **Resource Optimization**: Consider workload distribution and staffing adjustments based on volume trends
+
+For detailed operational metrics, refer to the companion Weekly Operational Report.
