@@ -27,4 +27,6 @@
   // Disable all formatting during file operations that might trigger during preview
   "editor.formatOnSaveMode": "file",
   "files.autoSave": "off"
+  ,
+  "r.rterm.windows": "C\\\Program Files\\\R\\\R-4.5.2\\\bin\\\R.exe"
 }

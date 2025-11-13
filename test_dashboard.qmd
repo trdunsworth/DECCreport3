@@ -1,0 +1,211 @@
+---
+title: "Weekly Operations Dashboard"
+format:
+  html:
+    theme: cosmo
+    toc: false
+server: shiny
+---
+
+```{r}
+#| context: server-start
+# Core libraries
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(lubridate)
+  library(shiny)
+  library(bslib)
+  library(plotly)
+  library(scales)
+})
+
+# Data folder path
+DATA_DIR <- "data/current_year"
+
+# Helper: extract week number from filename (handles weekNN.csv and WeekNN_YY.csv)
+extract_week_num <- function(fname) {
+  m <- stringr::str_match(tolower(fname), "week(\\d+)")
+  if (is.na(m[2])) return(NA_integer_) else as.integer(m[2])
+}
+
+# List available week files in data root (non-recursive) and return info frame
+list_week_files <- function() {
+  files <- list.files(DATA_DIR, pattern = "(?i)week\\d+.*\\.csv$", full.names = TRUE)
+  tibble(file = files) |> mutate(
+    fname = basename(file),
+    week = extract_week_num(fname)
+  ) |> filter(!is.na(week)) |> arrange(desc(week))
+}
+
+# Load a single week file robustly (all columns character then coerce needed ones)
+load_week <- function(path) {
+  df <- suppressWarnings(readr::read_csv(path, show_col_types = FALSE, 
+    col_types = readr::cols(.default = readr::col_character())))
+  # Coerce numeric timing columns if present
+  num_cols <- c("Time_To_Queue","Time_To_Dispatch","Phone_Time","Processing_Time",
+               "Rollout_Time","Transit_Time","Total_Call_Time")
+  for(nc in num_cols) if (nc %in% names(df)) df[[nc]] <- suppressWarnings(as.numeric(df[[nc]]))
+  if ("Response_Date" %in% names(df)) df$Response_Date <- ymd_hms(df$Response_Date, quiet = TRUE)
+  df
+}
+
+# Load the most recent N weeks
+load_recent_weeks <- function(n = 4) {
+  wk_files <- list_week_files() |> slice_head(n = n)
+  wk_list <- wk_files |> mutate(data = purrr::map(file, load_week))
+  wk_list
+}
+
+recent_weeks <- load_recent_weeks(8)  # load up to last 8 weeks for selection
+
+# Current week chosen as the highest (first after arrange desc)
+default_week <- if(nrow(recent_weeks) > 0) recent_weeks$week[1] else NULL
+
+# Combine for trend comparisons (add week label)
+weeks_long <- if (nrow(recent_weeks) > 0) {
+  purrr::imap_dfr(recent_weeks$data, function(df, idx) {
+    wk <- recent_weeks$week[idx]
+    df$Week <- wk
+    df
+  })
+} else {
+  tibble()
+}
+
+# Metric safe median helper
+safe_median <- function(x) { x <- suppressWarnings(as.numeric(x)); ifelse(all(is.na(x)), NA_real_, median(x, na.rm = TRUE)) }
+
+# Pre-compute per-week metrics for fast lookup
+week_metrics <- if ("Week" %in% names(weeks_long)) {
+  weeks_long |> group_by(Week) |> summarise(
+    TTQ = safe_median(Time_To_Queue),
+    TTD = safe_median(Time_To_Dispatch),
+    Phone = safe_median(Phone_Time),
+    Processing = safe_median(Processing_Time),
+    Calls = n(),
+    .groups='drop'
+  )
+} else {
+  tibble(Week=integer(), TTQ=numeric(), TTD=numeric(), Phone=numeric(), Processing=numeric(), Calls=integer())
+}
+
+# Four-week trend medians (take most recent 4 weeks from pre-computed)
+trend_metrics <- week_metrics |> arrange(desc(Week)) |> slice_head(n=4) |> arrange(Week)
+if (nrow(trend_metrics) == 0) {
+  trend_metrics <- tibble(Week=integer(), TTQ=numeric(), TTD=numeric(), Phone=numeric(), Processing=numeric(), Calls=integer())
+}
+
+# Column name resolution will be done reactively once a week is selected
+DISC_COL_CANDIDATES <- c("Discipline","Agency")
+
+format_seconds <- function(x) ifelse(is.na(x), "—", comma(round(x,0)))
+
+```
+
+## Dashboard
+
+```{r}
+#| context: server-start
+
+ui <- fluidPage(
+  theme = bslib::bs_theme(version = 5, bootswatch = "cosmo"),
+  tags$style(HTML(".value-box {padding:1rem;border-radius:8px;margin-bottom:1rem;color:#fff;} .vb-title{font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em;opacity:.8;} .vb-value{font-size:1.8rem;font-weight:600;} .row{margin-top:10px;}")),
+  titlePanel("Weekly Operations Summary"),
+  sidebarLayout(
+    sidebarPanel(width = 3,
+      selectInput("week_select","Select Week", choices = if(nrow(week_metrics)>0) week_metrics$Week else character(), selected = if(nrow(week_metrics)>0) default_week else NULL),
+      helpText("Metrics and discipline counts update based on selected week. Trends show most recent 4 weeks regardless of selection."),
+      hr(),
+      htmlOutput("summary_counts")
+    ),
+    mainPanel(
+      fluidRow(
+        column(3, uiOutput("vb_ttq")),
+        column(3, uiOutput("vb_ttd")),
+        column(3, uiOutput("vb_phone")),
+        column(3, uiOutput("vb_processing"))
+      ),
+      fluidRow(
+        column(6,
+          card(
+            full_screen = TRUE,
+            card_header("Calls by Discipline"),
+            plotlyOutput("discipline_plot", height = "450px")
+          )
+        ),
+        column(6,
+          card(
+            full_screen = TRUE,
+            card_header("4-Week Metric Trends"),
+            plotlyOutput("trend_plot", height = "450px")
+          )
+        )
+      ),
+      fluidRow(
+        column(12, card(full_screen = TRUE, card_header("4-Week Call Volume"),
+          plotlyOutput("volume_plot", height = "300px")
+        ))
+      )
+    )
+  )
+)
+
+```{r}
+#| context: server
+
+server <- function(input, output, session) {
+  # Reactive selected week metrics
+  selected_metrics <- reactive({
+    week_metrics |> filter(Week == input$week_select) |> slice_head(n=1)
+  })
+  # Reactive current week raw data
+  selected_week_data <- reactive({
+    weeks_long |> filter(Week == input$week_select)
+  })
+  # Determine discipline column dynamically
+  selected_discipline_counts <- reactive({
+    df <- selected_week_data()
+    disc_col <- DISC_COL_CANDIDATES[DISC_COL_CANDIDATES %in% names(df)][1]
+    if (is.null(disc_col) || length(disc_col)==0) return(tibble(Discipline=character(), Calls=integer()))
+    df |> count(.data[[disc_col]], name="Calls", sort=TRUE) |> rename(Discipline = 1)
+  })
+  # Value box render helper
+  render_vb <- function(title, value, color) {
+    div(class="value-box", style=paste0("background:",color,";"),
+        div(class="vb-title", title),
+        div(class="vb-value", ifelse(is.na(value), "—", scales::comma(round(value,0)))) )
+  }
+  output$vb_ttq <- renderUI({ m <- selected_metrics(); render_vb("Median TTQ (s)", m$TTQ, "#3498db") })
+  output$vb_ttd <- renderUI({ m <- selected_metrics(); render_vb("Median TTD (s)", m$TTD, "#e74c3c") })
+  output$vb_phone <- renderUI({ m <- selected_metrics(); render_vb("Median Phone (s)", m$Phone, "#16a085") })
+  output$vb_processing <- renderUI({ m <- selected_metrics(); render_vb("Median Processing (s)", m$Processing, "#8e44ad") })
+  output$summary_counts <- renderUI({ m <- selected_metrics(); div(strong("Calls:"), scales::comma(m$Calls)) })
+  output$discipline_plot <- renderPlotly({
+    dc <- selected_discipline_counts()
+    if(nrow(dc)==0) return(NULL)
+    p <- ggplot(dc |> slice_head(n=12), aes(x=reorder(Discipline, Calls), y=Calls)) +
+      geom_col(fill="#2c3e50") + coord_flip() +
+      labs(x=NULL,y="Calls",title=paste0("Discipline Volume (Top ", min(12,nrow(dc)), ") Week ", input$week_select)) +
+      theme_minimal(base_size=12)
+    ggplotly(p, height=450)
+  })
+  output$trend_plot <- renderPlotly({
+    if(nrow(trend_metrics)==0) return(NULL)
+    tm_long <- trend_metrics |> pivot_longer(cols=c(TTQ,TTD,Phone,Processing), names_to="Metric", values_to="Seconds")
+    p <- ggplot(tm_long, aes(x=Week, y=Seconds, color=Metric)) +
+      geom_line(size=1) + geom_point(size=2) +
+      scale_color_manual(values=c(TTQ="#3498db",TTD="#e74c3c",Phone="#16a085",Processing="#8e44ad")) +
+      labs(x="Week", y="Median Seconds", color="Metric", title="Medians Over Recent Weeks") +
+      theme_minimal(base_size=12)
+    ggplotly(p, height=450) |> layout(legend=list(orientation="h", y=-0.2))
+  })
+  output$volume_plot <- renderPlotly({
+    if(nrow(trend_metrics)==0) return(NULL)
+    p <- ggplot(trend_metrics, aes(x=Week, y=Calls)) +
+      geom_area(fill="#2980b9", alpha=.3) + geom_line(color="#2980b9", size=1) + geom_point(color="#2980b9", size=2) +
+      labs(x="Week", y="Total Calls", title="Call Volume Trend") +
+      theme_minimal(base_size=12)
+    ggplotly(p, height=300)
+  })
+}
+```
