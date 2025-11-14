@@ -6357,6 +6357,459 @@ After this summary table, we can measure the difference between the original med
 
 There is little impact on the median times because the median value is less sensitive to the impact of outliers.
 
+## Correlation Studies
+
+This section examines associations between elapsed-time performance and key categorical factors using ANOVA-based effect sizes (correlation ratio/eta-squared) and multivariable models:
+
+- TTQ ~ Call Taker (excluding C2C and NULL)
+- TTD ~ Dispatcher (excluding Automatic Dispatch, CAD to CAD Service 1, NULL)
+- TTQ ~ Call Type (`Problem`)
+- TTD ~ Call Type (`Problem`)
+- TTQ ~ Call Type + Call Taker (joint model)
+- TTD ~ Call Type + Dispatcher (joint model)
+
+We report eta-squared (η²) for one-way models and partial eta-squared (η²p) for multivariable models. The correlation-ratio is reported as r = sqrt(η² or η²p) for interpretability on a 0–1 scale.
+
+```{r}
+#| label: correlation-studies
+#| echo: false
+#| message: false
+#| warning: false
+
+suppressWarnings({
+  # Helper to compute eta-squared (one-way) and partial eta-squared (multi)
+  effect_table <- function(fit, partial = FALSE) {
+    tab <- as.data.frame(summary(fit)[[1]])
+    tab$Term <- rownames(tab)
+    # Guard for missing pieces
+    if (!("Sum Sq" %in% names(tab))) return(NULL)
+    ss_res <- tryCatch(tab[tab$Term == "Residuals", "Sum Sq"], error = function(e) NA_real_)
+    df_res <- tryCatch(tab[tab$Term == "Residuals", "Df"], error = function(e) NA_real_)
+    # If Residuals missing, cannot compute; return NULL
+    if (is.na(ss_res) || length(ss_res) == 0) return(NULL)
+    total_ss <- sum(tab$`Sum Sq`, na.rm = TRUE)
+    eff <- tab |>
+      dplyr::filter(Term != "Residuals") |>
+      dplyr::mutate(
+        Eta2 = if (!partial) `Sum Sq` / total_ss else `Sum Sq` / (`Sum Sq` + ss_res),
+        P_value = dplyr::if_else(!is.na(`Pr(>F)`), `Pr(>F)`, NA_real_),
+        F_value = dplyr::if_else("F value" %in% names(tab), `F value`, NA_real_),
+        Df1 = dplyr::if_else("Df" %in% names(tab), as.numeric(Df), NA_real_),
+        Df2 = as.numeric(df_res)
+      ) |>
+      dplyr::select(Term, Df1, Df2, Eta2, F_value, P_value)
+    eff
+  }
+
+  # Ensure a tibble has required columns even if empty
+  ensure_cols <- function(tb, cols) {
+    if (is.null(tb)) {
+      tb <- tibble::tibble()
+    }
+    for (nm in cols) {
+      if (!nm %in% names(tb)) tb[[nm]] <- NA_real_
+    }
+    tb[, cols, drop = FALSE]
+  }
+  # Safety: ensure numeric
+  df <- df |> mutate(
+    Time_To_Queue = suppressWarnings(as.numeric(Time_To_Queue)),
+    Time_To_Dispatch = suppressWarnings(as.numeric(Time_To_Dispatch))
+  )
+
+  # Filters for non-person/system entries
+  non_person_dispatch <- c("Automatic Dispatch", "CAD to CAD Service 1", "NULL")
+  non_person_taker <- c("C2C", "NULL")
+
+  # Minimum group size threshold for ANOVA and rare-level handling
+  min_group_n <- 5
+  # Keep top-N levels before enforcing minimum size (more aggressive lumping)
+  keep_top_n_ct <- 10
+  keep_top_n_disp <- 10
+  keep_top_n_prob <- 15
+
+  print_diag <- function(title, eligible_rows, pre_levels, post_levels, top_counts) {
+    cat("\n— Correlation diagnostics:", title, "—\n")
+    cat("Eligible rows:", eligible_rows, "\n")
+    cat("Distinct levels (pre → post):", pre_levels, "→", post_levels, " (min group:", min_group_n, ")\n")
+    if (!is.null(top_counts) && nrow(top_counts) > 0) {
+      cat("Top levels after lumping:\n")
+      utils::capture.output(print(dplyr::slice_head(top_counts, n = 5)), file = '')
+    }
+  }
+
+  # One-way: TTQ ~ Call_Taker (exclude C2C/NULL)
+  df_ct <- df |> filter(!is.na(Time_To_Queue), !is.na(Call_Taker)) |> 
+    filter(!(Call_Taker %in% non_person_taker))
+  pre_levels_ct <- dplyr::n_distinct(df_ct$Call_Taker)
+  if (nrow(df_ct) > 0) {
+    df_ct$Call_Taker <- df_ct$Call_Taker |>
+      forcats::fct_lump_n(n = keep_top_n_ct, other_level = "Other") |>
+      forcats::fct_lump_min(min = min_group_n, other_level = "Other")
+    df_ct <- droplevels(df_ct)
+  }
+  post_levels_ct <- if (nrow(df_ct) > 0) nlevels(df_ct$Call_Taker) else 0
+  top_ct_counts <- if (nrow(df_ct) > 0) df_ct |> count(Call_Taker, sort = TRUE) else NULL
+  es_ttq_ct <- NULL
+  if (nrow(df_ct) > 0 && dplyr::n_distinct(df_ct$Call_Taker) > 1) {
+    fit_ct <- aov(Time_To_Queue ~ Call_Taker, data = df_ct)
+    es_ttq_ct <- effect_table(fit_ct, partial = FALSE)
+  } else {
+    print_diag("TTQ ~ Call Taker", nrow(df_ct), pre_levels_ct, post_levels_ct, top_ct_counts)
+  }
+
+  # One-way: TTD ~ Dispatcher (exclude system/NULL)
+  df_disp <- df |> filter(!is.na(Time_To_Dispatch), !is.na(Dispatcher)) |> 
+    filter(!(Dispatcher %in% non_person_dispatch))
+  pre_levels_disp <- dplyr::n_distinct(df_disp$Dispatcher)
+  if (nrow(df_disp) > 0) {
+    df_disp$Dispatcher <- df_disp$Dispatcher |>
+      forcats::fct_lump_n(n = keep_top_n_disp, other_level = "Other") |>
+      forcats::fct_lump_min(min = min_group_n, other_level = "Other")
+    df_disp <- droplevels(df_disp)
+  }
+  post_levels_disp <- if (nrow(df_disp) > 0) nlevels(df_disp$Dispatcher) else 0
+  top_disp_counts <- if (nrow(df_disp) > 0) df_disp |> count(Dispatcher, sort = TRUE) else NULL
+  es_ttd_disp <- NULL
+  if (nrow(df_disp) > 0 && dplyr::n_distinct(df_disp$Dispatcher) > 1) {
+    fit_disp <- aov(Time_To_Dispatch ~ Dispatcher, data = df_disp)
+    es_ttd_disp <- effect_table(fit_disp, partial = FALSE)
+  } else {
+    print_diag("TTD ~ Dispatcher", nrow(df_disp), pre_levels_disp, post_levels_disp, top_disp_counts)
+  }
+
+  # One-way: TTQ ~ Call Type (Problem)
+  df_prob_ttq <- df |> filter(!is.na(Time_To_Queue), !is.na(Problem))
+  pre_levels_prob_ttq <- dplyr::n_distinct(df_prob_ttq$Problem)
+  if (nrow(df_prob_ttq) > 0) {
+    df_prob_ttq$Problem <- df_prob_ttq$Problem |>
+      forcats::fct_lump_n(n = keep_top_n_prob, other_level = "Other") |>
+      forcats::fct_lump_min(min = min_group_n, other_level = "Other")
+    df_prob_ttq <- droplevels(df_prob_ttq)
+  }
+  post_levels_prob_ttq <- if (nrow(df_prob_ttq) > 0) nlevels(df_prob_ttq$Problem) else 0
+  top_prob_ttq_counts <- if (nrow(df_prob_ttq) > 0) df_prob_ttq |> count(Problem, sort = TRUE) else NULL
+  es_ttq_type <- NULL
+  if (nrow(df_prob_ttq) > 0 && dplyr::n_distinct(df_prob_ttq$Problem) > 1) {
+    fit_ttq_type <- aov(Time_To_Queue ~ Problem, data = df_prob_ttq)
+    es_ttq_type <- effect_table(fit_ttq_type, partial = FALSE)
+  } else {
+    print_diag("TTQ ~ Call Type (Problem)", nrow(df_prob_ttq), pre_levels_prob_ttq, post_levels_prob_ttq, top_prob_ttq_counts)
+  }
+
+  # One-way: TTD ~ Call Type (Problem)
+  df_prob_ttd <- df |> filter(!is.na(Time_To_Dispatch), !is.na(Problem))
+  pre_levels_prob_ttd <- dplyr::n_distinct(df_prob_ttd$Problem)
+  if (nrow(df_prob_ttd) > 0) {
+    df_prob_ttd$Problem <- df_prob_ttd$Problem |>
+      forcats::fct_lump_n(n = keep_top_n_prob, other_level = "Other") |>
+      forcats::fct_lump_min(min = min_group_n, other_level = "Other")
+    df_prob_ttd <- droplevels(df_prob_ttd)
+  }
+  post_levels_prob_ttd <- if (nrow(df_prob_ttd) > 0) nlevels(df_prob_ttd$Problem) else 0
+  top_prob_ttd_counts <- if (nrow(df_prob_ttd) > 0) df_prob_ttd |> count(Problem, sort = TRUE) else NULL
+  es_ttd_type <- NULL
+  if (nrow(df_prob_ttd) > 0 && dplyr::n_distinct(df_prob_ttd$Problem) > 1) {
+    fit_ttd_type <- aov(Time_To_Dispatch ~ Problem, data = df_prob_ttd)
+    es_ttd_type <- effect_table(fit_ttd_type, partial = FALSE)
+  } else {
+    print_diag("TTD ~ Call Type (Problem)", nrow(df_prob_ttd), pre_levels_prob_ttd, post_levels_prob_ttd, top_prob_ttd_counts)
+  }
+
+  # Multivariable: TTQ ~ Problem + Call_Taker (exclude non-person takers)
+  es_ttq_multi <- NULL; ttq_adj_r2 <- NA_real_
+  df_ttq_multi <- df |> filter(!is.na(Time_To_Queue), !is.na(Problem), !is.na(Call_Taker)) |>
+    filter(!(Call_Taker %in% non_person_taker))
+  pre_prob_levels_ttq <- dplyr::n_distinct(df_ttq_multi$Problem)
+  pre_ct_levels_ttq <- dplyr::n_distinct(df_ttq_multi$Call_Taker)
+  if (nrow(df_ttq_multi) > 0) {
+    df_ttq_multi$Problem <- df_ttq_multi$Problem |>
+      forcats::fct_lump_n(n = keep_top_n_prob, other_level = "Other") |>
+      forcats::fct_lump_min(min = min_group_n, other_level = "Other")
+    df_ttq_multi$Call_Taker <- df_ttq_multi$Call_Taker |>
+      forcats::fct_lump_n(n = keep_top_n_ct, other_level = "Other") |>
+      forcats::fct_lump_min(min = min_group_n, other_level = "Other")
+    df_ttq_multi <- droplevels(df_ttq_multi)
+  }
+  post_prob_levels_ttq <- if (nrow(df_ttq_multi) > 0) nlevels(df_ttq_multi$Problem) else 0
+  post_ct_levels_ttq <- if (nrow(df_ttq_multi) > 0) nlevels(df_ttq_multi$Call_Taker) else 0
+  if (nrow(df_ttq_multi) > 0 && post_prob_levels_ttq > 1 && post_ct_levels_ttq > 1) {
+    fit_ttq_multi <- aov(Time_To_Queue ~ Problem + Call_Taker, data = df_ttq_multi)
+    es_ttq_multi <- effect_table(fit_ttq_multi, partial = TRUE)
+    # R^2 from linear model equivalent
+    lm_ttq <- lm(Time_To_Queue ~ Problem + Call_Taker, data = df_ttq_multi)
+    ttq_adj_r2 <- tryCatch(summary(lm_ttq)$adj.r.squared, error=function(e) NA_real_)
+  } else {
+    print_diag("TTQ ~ Problem + Call Taker", nrow(df_ttq_multi), paste0(pre_prob_levels_ttq, "/", pre_ct_levels_ttq), paste0(post_prob_levels_ttq, "/", post_ct_levels_ttq), NULL)
+  }
+
+  # Multivariable: TTD ~ Problem + Dispatcher (exclude system dispatch)
+  es_ttd_multi <- NULL; ttd_adj_r2 <- NA_real_
+  df_ttd_multi <- df |> filter(!is.na(Time_To_Dispatch), !is.na(Problem), !is.na(Dispatcher)) |>
+    filter(!(Dispatcher %in% non_person_dispatch))
+  pre_prob_levels_ttd <- dplyr::n_distinct(df_ttd_multi$Problem)
+  pre_disp_levels_ttd <- dplyr::n_distinct(df_ttd_multi$Dispatcher)
+  if (nrow(df_ttd_multi) > 0) {
+    df_ttd_multi$Problem <- df_ttd_multi$Problem |>
+      forcats::fct_lump_n(n = keep_top_n_prob, other_level = "Other") |>
+      forcats::fct_lump_min(min = min_group_n, other_level = "Other")
+    df_ttd_multi$Dispatcher <- df_ttd_multi$Dispatcher |>
+      forcats::fct_lump_n(n = keep_top_n_disp, other_level = "Other") |>
+      forcats::fct_lump_min(min = min_group_n, other_level = "Other")
+    df_ttd_multi <- droplevels(df_ttd_multi)
+  }
+  post_prob_levels_ttd <- if (nrow(df_ttd_multi) > 0) nlevels(df_ttd_multi$Problem) else 0
+  post_disp_levels_ttd <- if (nrow(df_ttd_multi) > 0) nlevels(df_ttd_multi$Dispatcher) else 0
+  if (nrow(df_ttd_multi) > 0 && post_prob_levels_ttd > 1 && post_disp_levels_ttd > 1) {
+    fit_ttd_multi <- aov(Time_To_Dispatch ~ Problem + Dispatcher, data = df_ttd_multi)
+    es_ttd_multi <- effect_table(fit_ttd_multi, partial = TRUE)
+    lm_ttd <- lm(Time_To_Dispatch ~ Problem + Dispatcher, data = df_ttd_multi)
+    ttd_adj_r2 <- tryCatch(summary(lm_ttd)$adj.r.squared, error=function(e) NA_real_)
+  } else {
+    print_diag("TTD ~ Problem + Dispatcher", nrow(df_ttd_multi), paste0(pre_prob_levels_ttd, "/", pre_disp_levels_ttd), paste0(post_prob_levels_ttd, "/", post_disp_levels_ttd), NULL)
+  }
+
+  # Formatting helpers
+  fmt <- function(x) ifelse(is.na(x), "—", format(round(x, 3), nsmall = 3, trim = TRUE, scientific = FALSE))
+  fmt0 <- function(x) ifelse(is.na(x), "—", format(round(x, 0), nsmall = 0, trim = TRUE, scientific = FALSE))
+  to_corr_ratio <- function(eta2) { ifelse(is.na(eta2), NA_real_, sqrt(eta2)) }
+
+  # Build display tables
+  # Build robustly in pieces to avoid missing-column errors
+  ow_cols <- c("Model","Term","Df1","Df2","Eta2","Corr_Ratio","F_value","P_value")
+  ow_list <- list()
+  if (!is.null(es_ttq_ct) && nrow(es_ttq_ct) > 0) {
+    ow_list[[length(ow_list)+1]] <- tibble::tibble(
+      Model = "TTQ ~ Call Taker",
+      Term = es_ttq_ct$Term,
+      Df1 = es_ttq_ct$Df1,
+      Df2 = es_ttq_ct$Df2,
+      Eta2 = es_ttq_ct$Eta2,
+      F_value = es_ttq_ct$F_value,
+      Corr_Ratio = to_corr_ratio(es_ttq_ct$Eta2),
+      P_value = es_ttq_ct$P_value
+    )
+  }
+  if (!is.null(es_ttd_disp) && nrow(es_ttd_disp) > 0) {
+    ow_list[[length(ow_list)+1]] <- tibble::tibble(
+      Model = "TTD ~ Dispatcher",
+      Term = es_ttd_disp$Term,
+      Df1 = es_ttd_disp$Df1,
+      Df2 = es_ttd_disp$Df2,
+      Eta2 = es_ttd_disp$Eta2,
+      F_value = es_ttd_disp$F_value,
+      Corr_Ratio = to_corr_ratio(es_ttd_disp$Eta2),
+      P_value = es_ttd_disp$P_value
+    )
+  }
+  if (!is.null(es_ttq_type) && nrow(es_ttq_type) > 0) {
+    ow_list[[length(ow_list)+1]] <- tibble::tibble(
+      Model = "TTQ ~ Call Type",
+      Term = es_ttq_type$Term,
+      Df1 = es_ttq_type$Df1,
+      Df2 = es_ttq_type$Df2,
+      Eta2 = es_ttq_type$Eta2,
+      F_value = es_ttq_type$F_value,
+      Corr_Ratio = to_corr_ratio(es_ttq_type$Eta2),
+      P_value = es_ttq_type$P_value
+    )
+  }
+  if (!is.null(es_ttd_type) && nrow(es_ttd_type) > 0) {
+    ow_list[[length(ow_list)+1]] <- tibble::tibble(
+      Model = "TTD ~ Call Type",
+      Term = es_ttd_type$Term,
+      Df1 = es_ttd_type$Df1,
+      Df2 = es_ttd_type$Df2,
+      Eta2 = es_ttd_type$Eta2,
+      F_value = es_ttd_type$F_value,
+      Corr_Ratio = to_corr_ratio(es_ttd_type$Eta2),
+      P_value = es_ttd_type$P_value
+    )
+  }
+  one_way_tbl <- if (length(ow_list)) dplyr::bind_rows(ow_list) else tibble::tibble()
+  one_way_tbl <- ensure_cols(one_way_tbl, ow_cols)
+  one_way_tbl <- one_way_tbl |>
+    dplyr::mutate(
+      Eta2 = as.numeric(Eta2),
+      Corr_Ratio = as.numeric(Corr_Ratio)
+    )
+
+  # Significance stars helper
+  p_to_stars <- function(p) {
+    if (is.na(p)) return("")
+    if (p < 0.001) return("***")
+    if (p < 0.01)  return("**")
+    if (p < 0.05)  return("*")
+    if (p < 0.1)   return(".")
+    return("")
+  }
+  if (nrow(one_way_tbl) > 0) {
+    one_way_tbl <- one_way_tbl |>
+      dplyr::mutate(Sig = vapply(P_value, p_to_stars, character(1)))
+  }
+
+  multi_tbl <- NULL
+  if (!is.null(es_ttq_multi)) {
+    es_ttq_multi <- es_ttq_multi |> dplyr::filter(Term %in% c("Problem", "Call_Taker")) |>
+      dplyr::mutate(Model = "TTQ ~ Call Type + Call Taker",
+                    Corr_Ratio = to_corr_ratio(Eta2),
+                    Eta2_partial = Eta2,
+                    Adj_R2 = ttq_adj_r2)
+    multi_tbl <- dplyr::bind_rows(multi_tbl, es_ttq_multi)
+  }
+  if (!is.null(es_ttd_multi)) {
+    es_ttd_multi <- es_ttd_multi |> dplyr::filter(Term %in% c("Problem", "Dispatcher")) |>
+      dplyr::mutate(Model = "TTD ~ Call Type + Dispatcher",
+                    Corr_Ratio = to_corr_ratio(Eta2),
+                    Eta2_partial = Eta2,
+                    Adj_R2 = ttd_adj_r2)
+    multi_tbl <- dplyr::bind_rows(multi_tbl, es_ttd_multi)
+  }
+
+  # Add significance to multivariable terms if available
+  if (!is.null(multi_tbl) && nrow(multi_tbl) > 0) {
+    if (!("P_value" %in% names(multi_tbl))) multi_tbl$P_value <- NA_real_
+    if (!("F_value" %in% names(multi_tbl))) multi_tbl$F_value <- NA_real_
+    if (!("Df1" %in% names(multi_tbl))) multi_tbl$Df1 <- NA_real_
+    if (!("Df2" %in% names(multi_tbl))) multi_tbl$Df2 <- NA_real_
+    multi_tbl <- multi_tbl |>
+      dplyr::mutate(Sig = vapply(P_value, p_to_stars, character(1)))
+  }
+})
+
+# Render tables outside suppressWarnings to ensure output
+if (nrow(one_way_tbl) > 0) {
+  to_ft(
+    one_way_tbl |> dplyr::mutate(
+      Eta2 = fmt(Eta2),
+      Corr_Ratio = fmt(Corr_Ratio),
+      F_value = fmt(F_value),
+      P_value = fmt(P_value)
+    ),
+    caption = "One-Way Effect Sizes (η²) and Correlation Ratios (r)",
+    header_map = list(
+      Model = "Model",
+      Term = "Term",
+      Eta2 = "η²",
+      Corr_Ratio = "r",
+      F_value = "F",
+      P_value = "p-value",
+      Sig = "Sig"
+    ),
+    digits = 3
+  )
+} else {
+  cat("No one-way correlation results available.\n")
+}
+
+if (!is.null(multi_tbl) && nrow(multi_tbl) > 0) {
+  to_ft(
+    multi_tbl |> dplyr::transmute(
+      Model,
+      Term,
+      Eta2p = fmt(Eta2_partial),
+      r = fmt(Corr_Ratio),
+      F_value = fmt(F_value),
+      P_value = fmt(P_value),
+      Sig,
+      Adj_R2 = fmt(Adj_R2)
+    ),
+    caption = "Multivariable Effect Sizes (partial η²) with Adjusted R²",
+    header_map = list(
+      Model = "Model",
+      Term = "Term",
+      Eta2p = "η²p",
+      r = "r",
+      F_value = "F",
+      P_value = "p-value",
+      Sig = "Sig",
+      Adj_R2 = "Adj. R²"
+    ),
+    digits = 3
+  )
+} else {
+  cat("No multivariable correlation results available.\n")
+}
+```
+
+Key takeaways from these results:
+
+- Higher r (closer to 1) indicates a stronger association between the time metric and the categorical factor.
+- η² (one-way) and η²p (multivariable) quantify variance explained by the factor(s).
+- The multivariable adjusted R² summarizes the joint explanatory power of Call Type and personnel.
+
+```{r}
+#| label: correlation-heatmap
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.width: 6
+#| fig.height: 3.5
+
+hm_data <- dplyr::bind_rows(
+  if (exists("one_way_tbl") && nrow(one_way_tbl)>0) one_way_tbl |>
+    dplyr::transmute(Model, Term, r = Corr_Ratio, Df1 = Df1, Df2 = Df2, F_value = F_value, P_value = P_value, Type = "One-way"),
+  if (exists("multi_tbl") && !is.null(multi_tbl) && nrow(multi_tbl)>0) multi_tbl |>
+    dplyr::transmute(Model, Term, r = Corr_Ratio, Df1 = Df1, Df2 = Df2, F_value = F_value, P_value = P_value, Type = "Multivariable")
+)
+
+if (!is.null(hm_data) && nrow(hm_data) > 0) {
+  # Build hover text with Df, F, p
+  hm_data <- hm_data |>
+    dplyr::mutate(
+      hover_txt = paste0(
+        "Model: ", Model,
+        "<br>Term: ", Term,
+        "<br>Type: ", Type,
+        "<br>r: ", ifelse(is.na(r), "—", sprintf("%.3f", r)),
+        ifelse(!is.na(Df1) & !is.na(Df2), paste0("<br>Df: ", format(round(Df1), nsmall = 0), ", ", format(round(Df2), nsmall = 0)), ""),
+        ifelse(!is.na(F_value), paste0("<br>F: ", sprintf("%.3f", F_value)), ""),
+        ifelse(!is.na(P_value), paste0("<br>p: ", sprintf("%.3f", P_value)), "")
+      )
+    )
+
+  p <- ggplot(hm_data, aes(x = Term, y = Model, fill = r, text = hover_txt)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = ifelse(is.na(r), "—", sprintf("%.2f", r))), size = 3) +
+    scale_fill_gradient(low = "#e8f1fa", high = "#2c7fb8", na.value = "#f0f0f0") +
+    facet_wrap(~Type, nrow = 1, scales = "free_x") +
+    labs(title = "Correlation Ratio (r) by Model and Term",
+         x = "Term",
+         y = NULL,
+         fill = "r") +
+    theme_minimal(base_size = 11) +
+    theme(panel.grid = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1))
+
+  plotly::ggplotly(p, tooltip = "text")
+}
+```
+
+```{r}
+#| label: correlation-summary-text
+#| echo: false
+#| message: false
+#| warning: false
+
+top_n <- 3
+summarize_top <- function(tbl, lbl) {
+  if (is.null(tbl) || nrow(tbl) == 0) return(NULL)
+  tbl |> dplyr::arrange(dplyr::desc(Corr_Ratio)) |>
+    dplyr::slice_head(n = top_n) |>
+    dplyr::mutate(r_txt = sprintf("%.2f", Corr_Ratio)) |>
+    dplyr::transmute(txt = paste0("- ", lbl, ": ", Model, " — ", Term, " (r=", r_txt, ifelse(!is.na(Sig) & Sig != "", paste0(", ", Sig), ""), ")")) |>
+    dplyr::pull(txt)
+}
+
+ow_lines <- if (exists("one_way_tbl") && nrow(one_way_tbl)>0) summarize_top(one_way_tbl, "One-way") else character(0)
+mv_lines <- if (exists("multi_tbl") && !is.null(multi_tbl) && nrow(multi_tbl)>0) summarize_top(multi_tbl, "Multivariable") else character(0)
+
+if (length(ow_lines) + length(mv_lines) > 0) {
+  cat("\n**Strongest Associations (top r):**\n\n")
+  for (ln in c(ow_lines, mv_lines)) cat(ln, "\n")
+}
+```
+
 ## Comparisons
 
 This section is meant to compare this report week's data with the week prior. This will allow us to view some trend information and allow us to generate additional insights. For example there were `r nrow(current_week)` service calls this week and `r nrow(last_week)` service calls the week prior, this represents a change of `r nrow(current_week) - nrow(last_week)` calls from the week prior to last week. When the delta is positive, we had more calls last week, than the week prior. If the delta is negative, we had fewer service calls last week than the week prior.
