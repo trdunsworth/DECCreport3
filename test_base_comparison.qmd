@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-11-13"
+date: "2025-11-17"
 format:
     html:
         toc: true
@@ -12,7 +12,7 @@ execute:
   echo: false
 ---
 
-## Week 45 from 02 November through 08 November 2025
+## Week 46 from 09 November through 15 November 2025
 
 ## Table of Contents
 
@@ -303,6 +303,7 @@ iqr_safe <- function(x) IQR(x, na.rm = TRUE)
 ```
 
 ```{r}
+#| label: flextable-defaults
 #| echo: false
 #| message: false
 #| warning: false
@@ -337,6 +338,7 @@ to_ft <- function(tbl, caption = NULL, header_map = NULL, digits = 2) {
 This is the weekly report for week `r WEEK_NUMBER` covering the period from `r WEEK_START_FORMATTED` through `r WEEK_END_FORMATTED` 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
 
 ```{r}
+#| label: data-processing
 #| echo: false
 #| output: false
 #| cache: true
@@ -368,7 +370,7 @@ df <- df |>
 
 df$WeekNo <- as.factor(df$WeekNo)
 df$Day <- as.factor(df$Day)
-df$Hour <- as.factor(df$Hour)
+df$Hour <- as.factor(sprintf("%02d", as.numeric(trimws(df$Hour))))
 
 # Convert DOW to an ordered factor to respect the sequence of days
 df$DOW <- factor(
@@ -407,7 +409,7 @@ df_last <- last_week |>
 
 df_last$WeekNo <- as.factor(df_last$WeekNo)
 df_last$Day <- as.factor(df_last$Day)
-df_last$Hour <- as.factor(df_last$Hour)
+df_last$Hour <- as.factor(sprintf("%02d", as.numeric(trimws(df_last$Hour))))
 df_last$DOW <- factor(df_last$DOW, levels = c("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"), ordered = TRUE)
 df_last$ShiftPart <- factor(df_last$ShiftPart, levels = c("EARLY", "MIDS", "LATE"), ordered = TRUE)
 df_last$Priority_Number <- ordered(df_last$Priority_Number)
@@ -420,6 +422,7 @@ cat("Both weeks ready for analysis and comparison\n")
 For this week, there were a total of `r nrow(df)` calls for service. The column list is below:
 
 ```{r}
+#| label: column-names
 #| echo: false
 #| tbl-cap: "A sample of the first 10 rows of incident data."
 #| cache: true
@@ -694,6 +697,7 @@ if (length(insights) > 0) {
 In order to have a good dataset for analysis, some data cleaning was performed. The first step is to check for missing values in the dataset.
 
 ```{r}
+#| label: missing-values-plot
 #| echo: false
 #| warning: false
 #| fig-cap: "Prevalence of missing values. Only columns with missing data are shown."
@@ -762,6 +766,7 @@ One of the first analyses is to break down different factor elements to see what
 The following visualization shows the distribution of service calls throughout the day (by hour) for each day of the week. This helps identify patterns in service call volume across different days and times.
 
 ```{r}
+#| label: dow-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
 #| cache: true
@@ -818,6 +823,7 @@ barDOW
 From this chart, we can see that `r busiest_day` was the busiest day of the week with `r busiest_day_count` service calls created, and the slowest day was `r slowest_day` with `r slowest_day_count` service calls. There is some consistency throughout the week, with `r busiest_day_count - slowest_day_count` calls difference between the busiest and slowest days.
 
 ```{r}
+#| label: hour-of-the-day
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
 #| cache: true
@@ -933,6 +939,7 @@ The heat map shows one intense spike on Tuesday at 1000 hours. There is an addit
 These analyses show the distribution of service calls as created through both day and night shifts and specific shifts in general. Each shift was split into three four-hour blocks for future analyses in order to determine how fatigue may be expressed during the course of the shift.
 
 ```{r}
+#| label: shift-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by shift."
 #| cache: true
@@ -1027,6 +1034,7 @@ As expected, day shifts are busier than night shifts by a considerable margin. A
 The following bar charts break down the volume of service calls using various other CAD-centric breakdowns that may be useful for various supplemental analyses. The first of those below shows the distribution pattern of service calls by priority number. This is overall for the center in all disciplines. Specific breakdowns for each discipline will be reflected in later sections.
 
 ```{r}
+#| label: priority-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 #| cache: true
@@ -1069,6 +1077,7 @@ barPriority
 The majority of calls received were Priority `r busiest_pn` calls. Priority `r busiest_pn` calls are `r busiest_pn_percentage` percent of the total number of calls, while Priority 1 calls are `r priority1_percentage` percent of the total number of calls. This is a consistent pattern and more detailed analyses of the high priority, and specifically priority 1 calls, can be found below.
 
 ```{r}
+#| label: agency-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by discipline."
 #| cache: true
@@ -1117,6 +1126,7 @@ As expected, the majority of calls are for `r busiest_agency`. They represent `r
 percent of the total number of calls. This is fairly consistent with previous analyses. We can also examine the way in which we are receiving the calls by looking at the Call_Reception column. That chart is below.
 
 ```{r}
+#| label: call-reception-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
 #| cache: true
@@ -1213,6 +1223,7 @@ As can be seen from the bar chart, `r mostused_dispo` was the most common dispos
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
 ```{r}
+#| label: problem-type-top10
 #| echo: false
 #| fig-cap: "Number of calls for service by call type."
 #| cache: true
@@ -1267,6 +1278,7 @@ This week, the most common problem nature was `r busiest_ct`. For AFD, the most 
 We can also look at the number of calls taken by telecommunicators. Again, like the problem types, we will limit the chart to the top 10 telecommunicators to ensure visual clarity and legibility of the information.
 
 ```{r}
+#| label: call-taker-top10
 #| echo: false
 #| fig-cap: "Number of calls for service by telecommunicator."
 #| cache: true
@@ -2263,7 +2275,7 @@ The values from this table describe operations for the week being analyzed. In t
 #| echo: false
 #| message: false
 #| warning: false
-#| cache: true
+#| include: false
 
 # Helper to format seconds as mm:ss or h:mm:ss
 sec_label <- function(x) {
@@ -2349,12 +2361,228 @@ ttq_hist_dens
 
 These combined histogram and density plots are designed to show the distribution of the elapsed time between events in the call's lifecycle. Using the 90^th^ percentile, we can state that 90% of all service calls are ready to be dispatched within `r ttq_p90` seconds. The same 90^th^ lines are reflected in the remaining plots below.
 
+### Elapsed Time Summary {.tabset}
+
+#### Overall
+
+```{r}
+#| label: elapsed-time-summary
+#| echo: false
+#| message: false
+#| warning: false
+
+# Helper to render seconds as mm:ss or h:mm:ss
+sec_label <- function(x) {
+  s <- round(x)
+  h <- s %/% 3600
+  m <- (s %% 3600) %/% 60
+  sec <- s %% 60
+  ifelse(h > 0, sprintf("%d:%02d:%02d", h, m, sec), sprintf("%d:%02d", m, sec))
+}
+
+# Long format of elapsed-time metrics
+long_df <- bind_rows(
+  df |> transmute(metric = "Time to Queue",     value = suppressWarnings(as.numeric(Time_To_Queue))),
+  df |> transmute(metric = "Time to Dispatch",  value = suppressWarnings(as.numeric(Time_To_Dispatch))),
+  df |> transmute(metric = "Phone Time",        value = suppressWarnings(as.numeric(Phone_Time))),
+  df |> transmute(metric = "Processing Time",   value = suppressWarnings(as.numeric(Processing_Time)))
+) |> filter(is.finite(value) & value >= 0)
+
+# Summary stats per metric
+stats <- long_df |>
+  group_by(metric) |>
+  summarise(
+    N = n(),
+    Median = median(value),
+    P90 = as.numeric(quantile(value, 0.90)),
+    P99 = as.numeric(quantile(value, 0.99)),
+    Pct_le_15 = round(mean(value <= 15) * 100, 1),
+    Pct_le_20 = round(mean(value <= 20) * 100, 1),
+    .groups = "drop"
+  )
+
+# Present concise summary table
+to_ft(
+  stats,
+  caption = "Elapsed Time Summary (Overall)",
+  header_map = list(
+    metric = "Metric",
+    N = "N",
+    Median = "Median (s)",
+    P90 = "P90 (s)",
+    P99 = "P99 (s)",
+    Pct_le_15 = "% ≤ 15s",
+    Pct_le_20 = "% ≤ 20s"
+  ),
+  digits = 1
+)
+
+# Export overall summary
+dir.create("report_files", showWarnings = FALSE, recursive = TRUE)
+readr::write_csv(stats, file.path("report_files", "elapsed_time_summary_overall.csv"))
+
+# Annotation data for ECDF labels/lines
+ann <- stats |>
+  transmute(
+    metric,
+    has_sla = metric %in% c("Time to Queue", "Time to Dispatch"),
+    Pct_le_15, Pct_le_20,
+    x15 = 15, y15 = pmin(0.98, pmax(0.05, (Pct_le_15/100))),
+    x20 = 20, y20 = pmin(0.98, pmax(0.10, (Pct_le_20/100))),
+    label15 = paste0(Pct_le_15, "% ≤15s"),
+    label20 = paste0(Pct_le_20, "% ≤20s"),
+    med = Median, p90 = P90
+  )
+
+# ECDF facets by metric with SLA markers and medians
+ecdf_plot <- ggplot(long_df, aes(x = value)) +
+  stat_ecdf(color = "#1c5789", linewidth = 0.9) +
+  facet_wrap(~ metric, scales = "free_x") +
+  geom_vline(data = ann, aes(xintercept = med), linetype = "dashed", color = "#d62728", linewidth = 0.7) +
+  geom_vline(data = ann, aes(xintercept = p90), linetype = "dotted", color = "#ff7f0e", linewidth = 0.7) +
+  geom_vline(data = dplyr::filter(ann, has_sla), xintercept = 15, linetype = "longdash", color = "#2ca02c", linewidth = 0.6) +
+  geom_vline(data = dplyr::filter(ann, has_sla), xintercept = 20, linetype = "longdash", color = "#9467bd", linewidth = 0.6) +
+  geom_label(data = dplyr::filter(ann, has_sla), aes(x = x15, y = y15, label = label15), size = 3, fill = "white") +
+  geom_label(data = dplyr::filter(ann, has_sla), aes(x = x20, y = y20, label = label20), size = 3, fill = "white") +
+  scale_x_continuous(name = "Elapsed Time (mm:ss)", labels = sec_label) +
+  scale_y_continuous(name = "Cumulative Proportion", labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Elapsed Time ECDF by Metric",
+    subtitle = "Dashed: Median. Dotted: P90. Longdash: NENA 15s and NFPA 20s reference.",
+    caption = "Data: CAD"
+  ) +
+  theme_minimal(base_size = 9) +
+  theme(
+    plot.title = element_text(face = "bold", size = 11),
+    strip.text = element_text(face = "bold"),
+    axis.title.x = element_text(size = 10),
+    axis.title.y = element_text(size = 10)
+  )
+
+ecdf_plotly <- plotly::ggplotly(ecdf_plot, tooltip = c("x","y"))
+ecdf_plotly
+```
+
+#### By Agency
+
+```{r}
+#| label: elapsed-time-agency
+#| echo: false
+#| message: false
+#| warning: false
+
+# Build long form with Agency
+long_agency <- bind_rows(
+  df |> transmute(metric = "Time to Queue",     value = suppressWarnings(as.numeric(Time_To_Queue)),    Agency),
+  df |> transmute(metric = "Time to Dispatch",  value = suppressWarnings(as.numeric(Time_To_Dispatch)), Agency),
+  df |> transmute(metric = "Phone Time",        value = suppressWarnings(as.numeric(Phone_Time)),       Agency),
+  df |> transmute(metric = "Processing Time",   value = suppressWarnings(as.numeric(Processing_Time)),  Agency)
+) |> filter(is.finite(value) & value >= 0 & !is.na(Agency))
+
+stats_ag <- long_agency |>
+  group_by(metric, Agency) |>
+  summarise(
+    N = n(),
+    Median = median(value),
+    P90 = as.numeric(quantile(value, 0.90)),
+    Pct_le_15 = round(mean(value <= 15) * 100, 1),
+    Pct_le_20 = round(mean(value <= 20) * 100, 1),
+    .groups = "drop"
+  )
+
+# Medians/P90 per facet+group for vlines
+ann_ag <- stats_ag |>
+  transmute(metric, Agency, has_sla = metric %in% c("Time to Queue","Time to Dispatch"),
+            med = Median, p90 = P90)
+
+# ECDF colored by Agency; SLA markers only for TTQ/TTD
+ecdf_agency <- ggplot(long_agency, aes(x = value, color = Agency)) +
+  stat_ecdf(linewidth = 0.8) +
+  facet_wrap(~ metric, scales = "free_x") +
+  geom_vline(data = ann_ag, aes(xintercept = med, color = Agency), linetype = "dashed", linewidth = 0.5, show.legend = FALSE) +
+  geom_vline(data = ann_ag, aes(xintercept = p90, color = Agency), linetype = "dotted", linewidth = 0.5, show.legend = FALSE) +
+  geom_vline(data = dplyr::filter(ann_ag, has_sla), xintercept = 15, linetype = "longdash", color = "#2ca02c", linewidth = 0.5, inherit.aes = FALSE) +
+  geom_vline(data = dplyr::filter(ann_ag, has_sla), xintercept = 20, linetype = "longdash", color = "#9467bd", linewidth = 0.5, inherit.aes = FALSE) +
+  scale_x_continuous(name = "Elapsed Time (mm:ss)", labels = sec_label) +
+  scale_y_continuous(name = "Cumulative Proportion", labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Elapsed Time ECDF by Metric — Agency", caption = "Data: CAD") +
+  theme_minimal(base_size = 9) +
+  theme(plot.title = element_text(face = "bold", size = 11), strip.text = element_text(face = "bold"))
+
+to_ft(stats_ag, caption = "Elapsed Time Summary by Agency", header_map = list(
+  metric = "Metric", Agency = "Agency", N = "N", Median = "Median (s)", P90 = "P90 (s)", Pct_le_15 = "% ≤ 15s", Pct_le_20 = "% ≤ 20s"
+), digits = 1)
+
+# Export by-agency summary
+dir.create("report_files", showWarnings = FALSE, recursive = TRUE)
+readr::write_csv(stats_ag, file.path("report_files", "elapsed_time_summary_by_agency.csv"))
+
+ecdf_agency_plotly <- plotly::ggplotly(ecdf_agency, tooltip = c("x","y","colour"))
+ecdf_agency_plotly
+```
+
+#### By Priority
+
+```{r}
+#| label: elapsed-time-priority
+#| echo: false
+#| message: false
+#| warning: false
+
+# Build long form with Priority_Number (ensure character for labeling)
+long_pri <- bind_rows(
+  df |> transmute(metric = "Time to Queue",     value = suppressWarnings(as.numeric(Time_To_Queue)),    Priority = as.character(Priority_Number)),
+  df |> transmute(metric = "Time to Dispatch",  value = suppressWarnings(as.numeric(Time_To_Dispatch)), Priority = as.character(Priority_Number)),
+  df |> transmute(metric = "Phone Time",        value = suppressWarnings(as.numeric(Phone_Time)),       Priority = as.character(Priority_Number)),
+  df |> transmute(metric = "Processing Time",   value = suppressWarnings(as.numeric(Processing_Time)),  Priority = as.character(Priority_Number))
+) |> filter(is.finite(value) & value >= 0 & !is.na(Priority))
+
+stats_pr <- long_pri |>
+  group_by(metric, Priority) |>
+  summarise(
+    N = n(),
+    Median = median(value),
+    P90 = as.numeric(quantile(value, 0.90)),
+    Pct_le_15 = round(mean(value <= 15) * 100, 1),
+    Pct_le_20 = round(mean(value <= 20) * 100, 1),
+    .groups = "drop"
+  )
+
+ann_pr <- stats_pr |>
+  transmute(metric, Priority, has_sla = metric %in% c("Time to Queue","Time to Dispatch"),
+            med = Median, p90 = P90)
+
+ecdf_priority <- ggplot(long_pri, aes(x = value, color = Priority)) +
+  stat_ecdf(linewidth = 0.8) +
+  facet_wrap(~ metric, scales = "free_x") +
+  geom_vline(data = ann_pr, aes(xintercept = med, color = Priority), linetype = "dashed", linewidth = 0.5, show.legend = FALSE) +
+  geom_vline(data = ann_pr, aes(xintercept = p90, color = Priority), linetype = "dotted", linewidth = 0.5, show.legend = FALSE) +
+  geom_vline(data = dplyr::filter(ann_pr, has_sla), xintercept = 15, linetype = "longdash", color = "#2ca02c", linewidth = 0.5, inherit.aes = FALSE) +
+  geom_vline(data = dplyr::filter(ann_pr, has_sla), xintercept = 20, linetype = "longdash", color = "#9467bd", linewidth = 0.5, inherit.aes = FALSE) +
+  scale_x_continuous(name = "Elapsed Time (mm:ss)", labels = sec_label) +
+  scale_y_continuous(name = "Cumulative Proportion", labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Elapsed Time ECDF by Metric — Priority", caption = "Data: CAD") +
+  theme_minimal(base_size = 9) +
+  theme(plot.title = element_text(face = "bold", size = 11), strip.text = element_text(face = "bold"))
+
+to_ft(stats_pr, caption = "Elapsed Time Summary by Priority", header_map = list(
+  metric = "Metric", Priority = "Priority", N = "N", Median = "Median (s)", P90 = "P90 (s)", Pct_le_15 = "% ≤ 15s", Pct_le_20 = "% ≤ 20s"
+), digits = 1)
+
+# Export by-priority summary
+dir.create("report_files", showWarnings = FALSE, recursive = TRUE)
+readr::write_csv(stats_pr, file.path("report_files", "elapsed_time_summary_by_priority.csv"))
+
+ecdf_priority_plotly <- plotly::ggplotly(ecdf_priority, tooltip = c("x","y","colour"))
+ecdf_priority_plotly
+```
+
 ```{r}
 #| label: elapsed-time-plots
 #| echo: false
 #| message: false
 #| warning: false
-#| cache: true
+#| include: false
 
 # Reusable plot helper: histogram normalized to density with density overlay and markers
 plot_time_hist_dens <- function(data, var, title_text) {
@@ -2449,7 +2677,7 @@ if (!is.null(p_processing)) print(p_processing)
 #| echo: false
 #| message: false
 #| warning: false
-#| cache: true
+#| include: false
 
 # Short-title versions for grid
 p_dispatch_grid   <- plot_time_hist_dens(df, "Time_To_Dispatch",  "Time to Dispatch")
@@ -2665,6 +2893,7 @@ By defining these datasets, we can now add to our analyses. For example, we can 
 ### APD Analyses
 
 ```{r}
+#| label: apd-dow-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -2723,6 +2952,7 @@ barDOW_APD
 This week, `r busiest_day_law` was the busiest day of the week for APD service calls. `r slowest_day_law`, being the lightest day of the week overall, was the lightest day for the APD as well.
 
 ```{r}
+#| label: apd-hour-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
 #| cache: true
@@ -2768,6 +2998,7 @@ barHour_APD
 The busiest hours for the week were 1000 and 1700 hours. There is still a consistent pattern to the morning and afternoon rush hours being the busiest times of the week.
 
 ```{r}
+#| label: apd-reception-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -2807,6 +3038,7 @@ barReception_APD
 As can be seen, the majority of calls came through `r busiest_cr_law`. This stands in contrast to `r busiest_cr` being the vehicle for the most calls overall for the week.
 
 ```{r}
+#| label: apd-problem-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by call type."
 # ggplot2
@@ -2851,6 +3083,7 @@ barProblem_APD
 The largest call type was for `r busiest_prob_law`, which was also the largest call type for the week overall. This could be something to monitor over time to see how the trend changes over time.
 
 ```{r}
+#| label: apd-priority-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 # ggplot2
@@ -3113,6 +3346,7 @@ As you will note, these numbers are significantly lower than those found in the 
 Because AFD calls for service can be split into two distinct disciplines, fire-related calls and medical-related calls, DECC has, historically, separated the two disciplines for analytical purposes. So this section will look at fire-related calls for service for the week.
 
 ```{r}
+#| label: afd-fire-dow-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -3171,6 +3405,7 @@ barDOW_AFD
 This week, the busiest day for fire-related calls was `r busiest_day_fire` with `r busiest_day_count_fire` calls for service. `r slowest_day_fire` was the lightest day for fire-related calls with `r slowest_day_count_fire` calls for service.
 
 ```{r}
+#| label: afd-fire-hour-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
 #| cache: true
@@ -3216,6 +3451,7 @@ barHour_AFD
 Fire-related calls are much more spread out through the day as can be seen in the graph above. However, `r busiest_hour_fire`00 hours was the busiest hour for the week There hasn't been an overall trend identified in the four weeks of this report. However, we will continue to observe the patterns to see if any trends emerge in fire related calls.
 
 ```{r}
+#| label: afd-fire-reception-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -3258,6 +3494,7 @@ barReception_AFD
 The majority of fire-related calls came in via `r busiest_cr_fire`. That accounts for `r busiest_cr_pct_fire` percent of all fire-related calls. However the numbers for Mutual Aid and E-911 were larger percentages of the overall volume. In this case, Phone, not necessarily E-911 represented `r cr_phone_pct_fire` percent of all fire-related service calls received.
 
 ```{r}
+#| label: afd-fire-problem-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by call type."
 # ggplot2
@@ -3302,6 +3539,7 @@ barProblem_AFD
 The greatest number of fire-related service calls were for `r busiest_prob_fire`. That is an interesting observation and should be watched through the future.
 
 ```{r}
+#| label: afd-fire-priority-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 # ggplot2
@@ -3525,6 +3763,7 @@ These numbers show that we are meeting and exceeding our SLAs with the AFD.
 Because AFD calls for service can be split into two distinct disciplines, fire-related calls and medical-related calls, DECC has, historically, separated the two disciplines for analytical purposes. So this section will look at medical-related calls for service for the week.
 
 ```{r}
+#| label: afd-ems-dow-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -3583,6 +3822,7 @@ barDOW_EMS
  This week, there is a spike in medical calls on `r busiest_day_ems`. This appears to correlate to the information that we saw earlier in the report. Outside of `r busiest_day_ems`, the remainder of the week appears to be consistent for the number of medical calls handled.
 
 ```{r}
+#| label: afd-ems-hour-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -3633,6 +3873,7 @@ barHour_EMS
 This week, the busiest hour was `r busiest_hour_ems` hours. The afternoon to evening hours, this week, stayed consistently busy which appears to continue the trends previously observed.
 
 ```{r}
+#| label: afd-ems-reception-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -3674,6 +3915,7 @@ barReception_EMS
 As expected, the vast majority of medical calls arrived via `r busiest_cr_ems`. However, `r cr_nr_pct_ems` percent of medical calls arrived without a method by which we recevied the call. We should continue to monitor and investigate why these are occurring.
 
 ```{r}
+#| label: afd-ems-problem-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by call type."
 # ggplot2
@@ -3720,6 +3962,7 @@ barProblem_EMS
 The most prevalent medical service type this week was `r busiest_prob_med`. Further we had `r ems_ma_call` mutual aid medical calls this week.
 
 ```{r}
+#| label: afd-ems-priority-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 # ggplot2
@@ -3943,6 +4186,7 @@ Earlier, for this report, we created some additional datasets that we can invest
 We can look at the datasets and see if there are telecommunicators who may experience more challenging calls during the week. First will be a table of telecommunicators who worked emergency calls that took longer than 60 seconds to go from start to queue. The second will be a table of dispatchers who assigned an emergency call that waited in queue longer than 60 seconds.
 
 ```{r}
+#| label: call-taker-delay-frequency
 #| echo: false
 #| message: false
 #| warning: false
@@ -3965,6 +4209,7 @@ to_ft(
 From this, since there are a small number of telecommunicators who have more than one call in the table above, there may not be any need for amerlioration. This, however, could be something that is included in the report template in order to monitor. Should a telecommunicator appear multiple times in this table over a period of time, additional training or mentoring may be called for.
 
 ```{r}
+#| label: dispatcher-delay-frequency
 #| echo: false
 #| message: false
 #| warning: false
@@ -3990,6 +4235,7 @@ In this section, we will focus on the calls that are deemed high-priority or cri
 ### High-Priority Call Types
 
 ```{r}
+#| label: high-priority-call-types
 #| echo: false
 #| fig-cap: "Top High-Priority Call Types"
 # ggplot2
@@ -4347,6 +4593,7 @@ tryCatch({
 The table above shows the information about the handling of calls that arrived by 9-1-1 trunk lines. The median time to process those calls for dispatch was `r median_processing_time_911` seconds.
 
 ```{r}
+#| label: restore-overall-medians
 #| echo: false
 # If overall aliases exist, restore the generic median variables to overall values
 if (exists("median_time_to_queue_overall")) median_time_to_queue <- median_time_to_queue_overall
@@ -4358,7 +4605,7 @@ if (exists("median_phone_time_overall")) median_phone_time <- median_phone_time_
 ### E-911 Call Breakdowns
 
 ```{r}
-#| label: 911-call-day
+#| label: e911-dow-chart
 #| echo: false
 #| fig-cap: "E-911 Call Volume by Day of the Week"
 # ggplot2 (precomputed in precomputed-summaries)
@@ -4416,7 +4663,7 @@ barDOW_911
 As can be seen `r busiest_day_911` was the busiest day for E-911 calls this week. This is inline with the busiest day of the week for all calls to the center.
 
 ```{r}
-#| label: 911-call-hour
+#| label: e911-hour-chart
 #| echo: false
 #| fig-cap: "E-911 Call Volume by Hour of the Day"
 #| warning: false
@@ -4631,7 +4878,7 @@ tryCatch({
 It is interesting to note that the median processing time, `r median_processing_time_non911` seconds, is not that much longer than the 9-1-1 median processing time. Also interesting to note is that the median time on the phones, `r median_phone_time_non911` seconds is less than the same for E-911 calls. This is likely because the calls coming in on the E-911 lines will require more triage and support during the call's lifespan.
 
 ```{r}
-#| label: non-911-call-day
+#| label: non-911-dow-chart
 #| echo: false
 #| fig-cap: "Non E-911 Call Volume by Day of the Week"
 # ggplot2 (precomputed in precomputed-summaries)
@@ -4689,7 +4936,7 @@ barDOW_911
 As can be seen `r busiest_day_non911` was the busiest day for Non-E-911 calls this week. This is inline with the busiest day of the week for all calls to the center.
 
 ```{r}
-#| label: non-911-call-hour
+#| label: non-911-hour-chart
 #| echo: false
 #| fig-cap: "Non-E-911 Call Volume by Hour of the Day"
 #| warning: false
@@ -4759,6 +5006,7 @@ These specific analyses have been included regardless of the emergency status of
 Finally, we will look into the specific subset of calls that are related to cardiac arrests. These calls have been identified in the `df_ca` dataset.
 
 ```{r}
+#| label: cardiac-arrest-dow
 #| echo: false
 #| fig-cap: "Cardiac Arrest Call Volume by Day and Hour"
 # ggplot2
@@ -4788,6 +5036,7 @@ barDOW_CA
 As we can see, with a very limited number of cardiac arrest calls for the week.
 
 ```{r}
+#| label: cardiac-arrest-response-times
 #| echo: false
 #| fig-cap: "Cardiac Arrest Call Response Times"
 #| warning: false
@@ -4941,6 +5190,7 @@ However, we can see that the median time to process a cardiac arrest and get the
 With the advent of Marcus' Law in Virginia, there has been an emphasis on how mental health calls are processed and serviced. The following analyses will focus on the mental health calls that have been defined as such after consultation with DCHS.
 
 ```{r}
+#| label: mental-health-dow
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -4995,6 +5245,7 @@ barDOW_MH
 The busiest day of the week for mental health calls was `r busiest_day_mh` with `r busiest_day_count_mh` service calls.
 
 ```{r}
+#| label: mental-health-hour-distribution
 #| echo: false
 #| fig-cap: "Number of calls for service by hour of the day."
 # ggplot2 (precomputed in precomputed-summaries)
@@ -5046,6 +5297,7 @@ barHour_MH
 Most of these calls arrived, for this past week, in the late mornings through evenings. Again, should this data prove to be part of a trend, then we should adjust the availability of repsonders to address the community's needs.
 
 ```{r}
+#| label: mental-health-reception
 #| echo: false
 #| fig-cap: "Number of calls for service by call reception."
 # ggplot2
@@ -5086,6 +5338,7 @@ barReception_MH
 This week, most of our mental health calls `r busiest_cr_mh` Further analysis could be understaken to determine if any of these are transfer calls from our local 988 provider partner.
 
 ```{r}
+#| label: mental-health-problem-types
 #| echo: false
 #| fig-cap: "Number of calls for service by call type."
 # ggplot2
@@ -5129,6 +5382,7 @@ barProblem_MH
 The most used call type was `r busiest_ct_mh` which is expected.
 
 ```{r}
+#| label: mental-health-priority
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 # ggplot2
@@ -5380,7 +5634,7 @@ if (nrow(df_nrr) == 0) {
 There are a few calltakers with more than one call where the call source went unrecorded. `r nrr_busiest_tc` had the most calls without recording the source with `r nrr_busiest_tc_count` calls. We should look into those calls to see what additional factors exist that caused this to occur and work to address those.
 
 ```{r}
-#| label: source-unknown-discipline
+#| label: source-unknown-agency-distribution
 #| echo: false
 #| message: false
 #| warning: false
@@ -6101,7 +6355,7 @@ ttd_out_barDispatcher
 This graph shows the distribution of calls where the time to dispatch the first unit was considered to be an outlier value. It is interesting to note that `r ttd_out_busiest_disp` has the most outlier values. We should carefully examine those calls to see how this has happened, so those calls do not fall through the cracks.
 
 ```{r}
-#| label: ttd_outlier_agency
+#| label: ttd-outlier-agency-distribution
 #| echo: false
 #| message: false
 #| warning: false
