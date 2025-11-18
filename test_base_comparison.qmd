@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-11-17"
+date: "2025-11-18"
 format:
     html:
         toc: true
@@ -1029,6 +1029,55 @@ barDN
 
 As expected, day shifts are busier than night shifts by a considerable margin. As expected, the call volumes throughout the shift for day shift are fairly consistent and on night shift, the longer the shifts go, fewer calls are received. These are both expected from prior work.
 
+```{r}
+#| label: shift-narrative-insights
+#| echo: false
+#| results: asis
+
+# Calculate shift metrics for narrative
+shift_comparison <- df %>%
+  group_by(Day_Night) %>%
+  summarise(
+    total_calls = n(),
+    avg_ttq = mean(Time_To_Queue, na.rm = TRUE),
+    avg_ttd = mean(Time_To_Dispatch, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+day_calls <- shift_comparison %>% filter(Day_Night == "DAY") %>% pull(total_calls)
+night_calls <- shift_comparison %>% filter(Day_Night == "NIGHT") %>% pull(total_calls)
+call_ratio <- round(day_calls / night_calls, 2)
+
+day_ttd <- shift_comparison %>% filter(Day_Night == "DAY") %>% pull(avg_ttd)
+night_ttd <- shift_comparison %>% filter(Day_Night == "NIGHT") %>% pull(avg_ttd)
+
+cat("\n**Shift Performance Narrative:**\n\n")
+cat(paste0("Day shift handled ", format(day_calls, big.mark = ","), " calls compared to ", 
+           format(night_calls, big.mark = ","), " on night shift—a ", call_ratio, 
+           ":1 ratio. "))
+
+if (abs(day_ttd - night_ttd) > 10) {
+  faster_shift <- if(day_ttd < night_ttd) "day" else "night"
+  cat(paste0("Notably, ", faster_shift, " shift demonstrated faster average dispatch times (",
+             round(min(day_ttd, night_ttd), 1), "s vs ", round(max(day_ttd, night_ttd), 1), 
+             "s), suggesting ", if(faster_shift == "night") "lower volume periods allow for more thorough call processing" else "day shift staff efficiently manage higher call volumes", ". "))
+}
+
+# Analyze shift part patterns
+shift_part_stats <- df %>%
+  group_by(ShiftPart) %>%
+  summarise(
+    calls = n(),
+    median_processing = median(Processing_Time, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(calls))
+
+busiest_part <- shift_part_stats %>% slice(1) %>% pull(ShiftPart)
+cat(paste0("The ", busiest_part, " portion of shifts consistently showed highest call volumes, ",
+           "which should inform staffing and break scheduling decisions.\n\n"))
+```
+
 ### CAD-centric Analyses
 
 The following bar charts break down the volume of service calls using various other CAD-centric breakdowns that may be useful for various supplemental analyses. The first of those below shows the distribution pattern of service calls by priority number. This is overall for the center in all disciplines. Specific breakdowns for each discipline will be reflected in later sections.
@@ -1075,6 +1124,57 @@ barPriority
 ```
 
 The majority of calls received were Priority `r busiest_pn` calls. Priority `r busiest_pn` calls are `r busiest_pn_percentage` percent of the total number of calls, while Priority 1 calls are `r priority1_percentage` percent of the total number of calls. This is a consistent pattern and more detailed analyses of the high priority, and specifically priority 1 calls, can be found below.
+
+```{r}
+#| label: priority-narrative-insights
+#| echo: false
+#| results: asis
+
+# Analyze priority distribution patterns
+priority_dist <- df %>%
+  count(Priority_Number) %>%
+  mutate(pct = round(n / sum(n) * 100, 1)) %>%
+  arrange(desc(n))
+
+# Calculate priority performance
+priority_perf <- df %>%
+  filter(Priority_Number %in% c("1", "2", "3", "4")) %>%
+  group_by(Priority_Number) %>%
+  summarise(
+    median_ttd = median(Time_To_Dispatch, na.rm = TRUE),
+    p90_ttd = quantile(Time_To_Dispatch, 0.9, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+cat("\n**Priority Distribution Insights:**\n\n")
+
+# Check if high-priority calls are appropriately fast
+p1_ttd <- priority_perf %>% filter(Priority_Number == "1") %>% pull(median_ttd)
+p2_ttd <- priority_perf %>% filter(Priority_Number == "2") %>% pull(median_ttd)
+
+if (!is.na(p1_ttd) && !is.na(p2_ttd)) {
+  if (p1_ttd < p2_ttd) {
+    cat(paste0("The system appropriately prioritizes urgent calls, with Priority 1 calls ",
+               "dispatched ", round(p2_ttd - p1_ttd, 1), " seconds faster than Priority 2 on average. "))
+  } else {
+    cat(paste0("**Attention**: Priority 1 calls show longer dispatch times (", round(p1_ttd, 1),
+               "s) than Priority 2 (", round(p2_ttd, 1), "s), suggesting potential process issues. "))
+  }
+}
+
+# Assess overall priority balance
+routine_calls <- priority_dist %>% filter(Priority_Number %in% c("3", "4")) %>% pull(n) %>% sum()
+total_calls <- sum(priority_dist$n)
+routine_pct <- round(routine_calls / total_calls * 100, 1)
+
+if (routine_pct > 60) {
+  cat(paste0("With ", routine_pct, "% of calls classified as routine (Priority 3-4), ",
+             "there may be opportunities to optimize resource allocation for non-urgent responses.\n\n"))
+} else if (routine_pct < 40) {
+  cat(paste0("The relatively low proportion of routine calls (", routine_pct, 
+             "%) indicates sustained demand for urgent response, requiring consistent staffing levels.\n\n"))
+}
+```
 
 ```{r}
 #| label: agency-distribution
@@ -1219,6 +1319,43 @@ barDisposition
 ```
 
 As can be seen from the bar chart, `r mostused_dispo` was the most common disposition code used with `r mostused_dispo_count` calls coded that way. It is interesting to note that no calls, this week, have been closed without a disposition.
+
+```{r}
+#| label: disposition-narrative-insights
+#| echo: false
+#| results: asis
+
+# Analyze disposition patterns
+dispo_analysis <- df %>%
+  filter(!is.na(Disposition), Disposition != "UNDEFINED") %>%
+  count(Disposition, sort = TRUE) %>%
+  mutate(pct = round(n / sum(n) * 100, 1))
+
+# Identify concerning patterns
+low_completion_dispos <- c("CANCELLED", "DUPLICATE", "UNABLE TO LOCATE")
+concern_calls <- df %>%
+  filter(Disposition %in% low_completion_dispos) %>%
+  nrow()
+
+concern_pct <- round(concern_calls / nrow(df) * 100, 1)
+
+cat("\n**Disposition Pattern Analysis:**\n\n")
+
+if (concern_pct > 10) {
+  cat(paste0("**Notable**: ", concern_pct, "% of calls were cancelled, duplicated, or unable to locate—",
+             "a relatively high proportion that may indicate opportunities for improved call screening or coordination. "))
+} else if (concern_pct > 5) {
+  cat(paste0("Approximately ", concern_pct, "% of calls resulted in non-service dispositions, ",
+             "which is within normal operational range. "))
+}
+
+# Check disposition diversity
+dispo_diversity <- nrow(dispo_analysis)
+if (dispo_diversity > 15) {
+  cat(paste0("The use of ", dispo_diversity, " distinct disposition codes suggests comprehensive ",
+             "call outcome tracking, though consolidation might improve reporting clarity.\n\n"))
+}
+```
 
 The following is a chart of the top 10 call types. The data is limited to ensure visual clarity and legibility of the information.
 
@@ -5190,6 +5327,42 @@ However, we can see that the median time to process a cardiac arrest and get the
 With the advent of Marcus' Law in Virginia, there has been an emphasis on how mental health calls are processed and serviced. The following analyses will focus on the mental health calls that have been defined as such after consultation with DCHS.
 
 ```{r}
+#| label: mental-health-narrative-insights
+#| echo: false
+#| results: asis
+
+# Comprehensive mental health analysis
+if (exists("df_mh") && nrow(df_mh) > 0) {
+  mh_stats <- df_mh %>%
+    summarise(
+      total_mh = n(),
+      median_phone = median(Phone_Time, na.rm = TRUE),
+      median_ttd = median(Time_To_Dispatch, na.rm = TRUE),
+      p1_count = sum(Priority_Number == "1", na.rm = TRUE),
+      .groups = 'drop'
+    )
+  
+  cat("\n**Mental Health Call Insights:**\n\n")
+  
+  cat(paste0("This week saw ", mh_stats$total_mh, " mental health-related calls, representing ",
+             round(mh_stats$total_mh / nrow(df) * 100, 1), "% of total call volume. "))
+  
+  if (!is.na(mh_stats$median_phone) && mh_stats$median_phone > 180) {
+    cat(paste0("Mental health calls required significantly longer call-taking time (median ",
+               round(mh_stats$median_phone, 1), " seconds), reflecting the complexity and care needed ",
+               "for crisis assessment. "))
+  }
+  
+  if (mh_stats$p1_count > 0) {
+    cat(paste0("Notably, ", mh_stats$p1_count, " mental health calls were classified as Priority 1, ",
+               "indicating acute crisis situations requiring immediate response. "))
+  }
+  
+  cat("\n\nThese patterns underscore the critical role of dispatch centers in mental health crisis response and the need for specialized training and protocols.\n\n")
+}
+```
+
+```{r}
 #| label: mental-health-dow
 #| echo: false
 #| fig-cap: "Number of calls for service by day of the week."
@@ -7064,6 +7237,389 @@ if (length(ow_lines) + length(mv_lines) > 0) {
 }
 ```
 
+## Time to Queue and Dispatch Scatter Analysis
+
+This section examines the relationship between Time to Queue (TTQ) and Time to Dispatch (TTD) through scatter plot visualizations. We analyze this relationship across different dimensions: overall patterns, by discipline (POLICE, FIRE, EMS), by priority levels (1-4), and for 9-1-1 calls specifically.
+
+### Overall TTQ vs TTD Relationship
+
+```{r}
+#| label: ttq-ttd-overall-scatter
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Overall relationship between Time to Queue and Time to Dispatch"
+#| fig-width: 10
+#| fig-height: 6
+
+# Prepare data for scatter plot
+scatter_data <- df %>%
+  filter(!is.na(Time_To_Queue), !is.na(Time_To_Dispatch)) %>%
+  filter(Time_To_Queue >= 0, Time_To_Dispatch >= 0) %>%
+  # Cap extreme outliers for visualization clarity
+  mutate(
+    TTQ_capped = pmin(Time_To_Queue, 300),
+    TTD_capped = pmin(Time_To_Dispatch, 600)
+  )
+
+# Calculate correlation
+overall_cor <- cor(scatter_data$Time_To_Queue, scatter_data$Time_To_Dispatch, 
+                   use = "complete.obs", method = "spearman")
+
+# Calculate medians for reference lines
+median_ttq <- median(scatter_data$Time_To_Queue, na.rm = TRUE)
+median_ttd <- median(scatter_data$Time_To_Dispatch, na.rm = TRUE)
+
+# Create scatter plot with density
+p_overall <- ggplot(scatter_data, aes(x = TTQ_capped, y = TTD_capped)) +
+  geom_hex(bins = 50) +
+  geom_vline(xintercept = median_ttq, color = "red", linetype = "dashed", alpha = 0.7) +
+  geom_hline(yintercept = median_ttd, color = "red", linetype = "dashed", alpha = 0.7) +
+  geom_smooth(method = "lm", color = "blue", se = TRUE, alpha = 0.3) +
+  scale_fill_viridis_c(name = "Count", trans = "log10") +
+  labs(
+    title = "Time to Queue vs Time to Dispatch - Overall Pattern",
+    subtitle = paste0("Spearman correlation: ", round(overall_cor, 3), 
+                     " | Medians shown as red dashed lines"),
+    x = "Time to Queue (seconds, capped at 300)",
+    y = "Time to Dispatch (seconds, capped at 600)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 9)
+  )
+
+p_overall
+```
+
+**Overall Analysis:**
+
+- **Correlation**: The Spearman correlation between TTQ and TTD is `r round(overall_cor, 3)`, indicating `r if(abs(overall_cor) > 0.5) "a moderate to strong" else if(abs(overall_cor) > 0.3) "a moderate" else "a weak"` relationship.
+- **Pattern**: `r if(overall_cor > 0.3) "Calls with longer queue times tend to have longer dispatch times, suggesting systemic delays affect both metrics." else "The weak correlation suggests TTQ and TTD are largely independent, with different factors influencing each."` 
+- **Median Performance**: The median TTQ is `r round(median_ttq, 1)` seconds and median TTD is `r round(median_ttd, 1)` seconds.
+
+### TTQ vs TTD by Discipline
+
+```{r}
+#| label: ttq-ttd-discipline-scatter
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Time to Queue vs Time to Dispatch by Discipline"
+#| fig-width: 12
+#| fig-height: 5
+
+# Filter to main disciplines
+discipline_data <- scatter_data %>%
+  filter(Agency %in% c("POLICE", "FIRE", "EMS"))
+
+# Calculate correlations by discipline
+discipline_cors <- discipline_data %>%
+  group_by(Agency) %>%
+  summarise(
+    correlation = cor(Time_To_Queue, Time_To_Dispatch, 
+                     use = "complete.obs", method = "spearman"),
+    n = n(),
+    median_ttq = median(Time_To_Queue, na.rm = TRUE),
+    median_ttd = median(Time_To_Dispatch, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+# Create faceted scatter plot
+p_discipline <- ggplot(discipline_data, aes(x = TTQ_capped, y = TTD_capped, color = Agency)) +
+  geom_point(alpha = 0.3, size = 1) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.2) +
+  facet_wrap(~ Agency, ncol = 3) +
+  scale_color_manual(
+    values = c("POLICE" = "#2c7fb8", "FIRE" = "#e34a33", "EMS" = "#31a354")
+  ) +
+  labs(
+    title = "Time to Queue vs Time to Dispatch by Discipline",
+    subtitle = "Linear trend lines shown for each discipline",
+    x = "Time to Queue (seconds, capped at 300)",
+    y = "Time to Dispatch (seconds, capped at 600)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 9),
+    legend.position = "none"
+  )
+
+p_discipline
+
+# Create summary table
+to_ft(
+  discipline_cors %>%
+    mutate(
+      correlation = round(correlation, 3),
+      median_ttq = round(median_ttq, 1),
+      median_ttd = round(median_ttd, 1)
+    ),
+  caption = "TTQ-TTD Correlation and Performance by Discipline",
+  header_map = list(
+    Agency = "Discipline",
+    correlation = "Correlation (ρ)",
+    n = "Call Count",
+    median_ttq = "Median TTQ (s)",
+    median_ttd = "Median TTD (s)"
+  ),
+  digits = 3
+)
+```
+
+**Discipline-Specific Insights:**
+
+```{r}
+#| label: discipline-insights
+#| echo: false
+#| results: asis
+
+for (i in 1:nrow(discipline_cors)) {
+  agency <- discipline_cors$Agency[i]
+  cor_val <- discipline_cors$correlation[i]
+  med_ttq <- discipline_cors$median_ttq[i]
+  med_ttd <- discipline_cors$median_ttd[i]
+  
+  strength <- if(abs(cor_val) > 0.5) "strong" else if(abs(cor_val) > 0.3) "moderate" else "weak"
+  
+  cat(paste0("- **", agency, "**: Shows a ", strength, " correlation (ρ = ", 
+             round(cor_val, 3), ") with median TTQ of ", round(med_ttq, 1), 
+             "s and median TTD of ", round(med_ttd, 1), "s.\n"))
+}
+```
+
+### TTQ vs TTD by Priority Level
+
+```{r}
+#| label: ttq-ttd-priority-scatter
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Time to Queue vs Time to Dispatch by Priority Level"
+#| fig-width: 12
+#| fig-height: 8
+
+# Filter to priority levels 1-4
+priority_data <- scatter_data %>%
+  filter(Priority_Number %in% c("1", "2", "3", "4"))
+
+# Calculate correlations by priority
+priority_cors <- priority_data %>%
+  group_by(Priority_Number) %>%
+  summarise(
+    correlation = cor(Time_To_Queue, Time_To_Dispatch, 
+                     use = "complete.obs", method = "spearman"),
+    n = n(),
+    median_ttq = median(Time_To_Queue, na.rm = TRUE),
+    median_ttd = median(Time_To_Dispatch, na.rm = TRUE),
+    p90_ttq = quantile(Time_To_Queue, 0.9, na.rm = TRUE),
+    p90_ttd = quantile(Time_To_Dispatch, 0.9, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+# Create faceted scatter plot by priority
+p_priority <- ggplot(priority_data, aes(x = TTQ_capped, y = TTD_capped, color = Priority_Number)) +
+  geom_point(alpha = 0.3, size = 1) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.2) +
+  facet_wrap(~ Priority_Number, ncol = 2, 
+             labeller = labeller(Priority_Number = function(x) paste("Priority", x))) +
+  scale_color_viridis_d(option = "plasma") +
+  labs(
+    title = "Time to Queue vs Time to Dispatch by Priority Level",
+    subtitle = "Priority 1 = Highest urgency; Priority 4 = Routine",
+    x = "Time to Queue (seconds, capped at 300)",
+    y = "Time to Dispatch (seconds, capped at 600)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 9),
+    legend.position = "none"
+  )
+
+p_priority
+
+# Create summary table
+to_ft(
+  priority_cors %>%
+    mutate(
+      correlation = round(correlation, 3),
+      median_ttq = round(median_ttq, 1),
+      median_ttd = round(median_ttd, 1),
+      p90_ttq = round(p90_ttq, 1),
+      p90_ttd = round(p90_ttd, 1)
+    ),
+  caption = "TTQ-TTD Correlation and Performance by Priority Level",
+  header_map = list(
+    Priority_Number = "Priority",
+    correlation = "Correlation (ρ)",
+    n = "Call Count",
+    median_ttq = "Median TTQ (s)",
+    median_ttd = "Median TTD (s)",
+    p90_ttq = "P90 TTQ (s)",
+    p90_ttd = "P90 TTD (s)"
+  ),
+  digits = 3
+)
+```
+
+**Priority-Level Insights:**
+
+```{r}
+#| label: priority-insights
+#| echo: false
+#| results: asis
+
+for (i in 1:nrow(priority_cors)) {
+  pri <- priority_cors$Priority_Number[i]
+  cor_val <- priority_cors$correlation[i]
+  med_ttq <- priority_cors$median_ttq[i]
+  med_ttd <- priority_cors$median_ttd[i]
+  p90_ttq <- priority_cors$p90_ttq[i]
+  p90_ttd <- priority_cors$p90_ttd[i]
+  
+  strength <- if(abs(cor_val) > 0.5) "strong" else if(abs(cor_val) > 0.3) "moderate" else "weak"
+  
+  cat(paste0("- **Priority ", pri, "**: ", strength, " correlation (ρ = ", 
+             round(cor_val, 3), "). Median performance: TTQ = ", round(med_ttq, 1), 
+             "s, TTD = ", round(med_ttd, 1), "s. 90th percentile: TTQ = ", 
+             round(p90_ttq, 1), "s, TTD = ", round(p90_ttd, 1), "s.\n"))
+}
+```
+
+### TTQ vs TTD for 9-1-1 Calls
+
+```{r}
+#| label: ttq-ttd-911-scatter
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Time to Queue vs Time to Dispatch for 9-1-1 Calls"
+#| fig-width: 10
+#| fig-height: 6
+
+# Filter to E-911 calls
+e911_data <- scatter_data %>%
+  filter(Call_Reception == "E-911")
+
+# Calculate correlation for 9-1-1 calls
+e911_cor <- cor(e911_data$Time_To_Queue, e911_data$Time_To_Dispatch, 
+                use = "complete.obs", method = "spearman")
+
+# Calculate medians
+e911_median_ttq <- median(e911_data$Time_To_Queue, na.rm = TRUE)
+e911_median_ttd <- median(e911_data$Time_To_Dispatch, na.rm = TRUE)
+
+# Compare with non-911 calls
+non911_data <- scatter_data %>%
+  filter(Call_Reception != "E-911")
+
+non911_cor <- cor(non911_data$Time_To_Queue, non911_data$Time_To_Dispatch, 
+                  use = "complete.obs", method = "spearman")
+
+# Create scatter plot for 9-1-1 calls
+p_911 <- ggplot(e911_data, aes(x = TTQ_capped, y = TTD_capped)) +
+  geom_hex(bins = 50) +
+  geom_vline(xintercept = e911_median_ttq, color = "red", linetype = "dashed", alpha = 0.7) +
+  geom_hline(yintercept = e911_median_ttd, color = "red", linetype = "dashed", alpha = 0.7) +
+  geom_smooth(method = "lm", color = "blue", se = TRUE, alpha = 0.3) +
+  scale_fill_viridis_c(name = "Count", trans = "log10") +
+  labs(
+    title = "Time to Queue vs Time to Dispatch for 9-1-1 Calls",
+    subtitle = paste0("Spearman correlation: ", round(e911_cor, 3), 
+                     " | n = ", format(nrow(e911_data), big.mark = ","), " calls"),
+    x = "Time to Queue (seconds, capped at 300)",
+    y = "Time to Dispatch (seconds, capped at 600)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 9)
+  )
+
+p_911
+
+# Create comparison summary
+comparison_summary <- tibble(
+  Call_Type = c("9-1-1 Calls", "Non-9-1-1 Calls"),
+  n = c(nrow(e911_data), nrow(non911_data)),
+  correlation = c(e911_cor, non911_cor),
+  median_ttq = c(e911_median_ttq, median(non911_data$Time_To_Queue, na.rm = TRUE)),
+  median_ttd = c(e911_median_ttd, median(non911_data$Time_To_Dispatch, na.rm = TRUE))
+)
+
+to_ft(
+  comparison_summary %>%
+    mutate(
+      n = format(n, big.mark = ","),
+      correlation = round(correlation, 3),
+      median_ttq = round(median_ttq, 1),
+      median_ttd = round(median_ttd, 1)
+    ),
+  caption = "TTQ-TTD Performance: 9-1-1 vs Non-9-1-1 Calls",
+  header_map = list(
+    Call_Type = "Call Type",
+    n = "Call Count",
+    correlation = "Correlation (ρ)",
+    median_ttq = "Median TTQ (s)",
+    median_ttd = "Median TTD (s)"
+  ),
+  digits = 3
+)
+```
+
+**9-1-1 Call Analysis:**
+
+- **Volume**: 9-1-1 calls represent `r round(nrow(e911_data)/nrow(scatter_data)*100, 1)`% of all calls this week.
+- **Correlation**: The TTQ-TTD correlation for 9-1-1 calls is `r round(e911_cor, 3)`, which is `r if(abs(e911_cor) > abs(overall_cor)) "stronger than" else if(abs(e911_cor) < abs(overall_cor)) "weaker than" else "similar to"` the overall correlation.
+- **Performance**: 9-1-1 calls show `r if(e911_median_ttq < median_ttq) "faster" else "slower"` median TTQ (`r round(e911_median_ttq, 1)`s vs `r round(median_ttq, 1)`s overall) and `r if(e911_median_ttd < median_ttd) "faster" else "slower"` median TTD (`r round(e911_median_ttd, 1)`s vs `r round(median_ttd, 1)`s overall).
+
+### Key Findings Summary
+
+```{r}
+#| label: scatter-summary-insights
+#| echo: false
+#| results: asis
+
+# Identify discipline with strongest correlation
+strongest_discipline <- discipline_cors %>%
+  arrange(desc(abs(correlation))) %>%
+  slice(1)
+
+# Identify priority with fastest performance
+fastest_priority <- priority_cors %>%
+  arrange(median_ttd) %>%
+  slice(1)
+
+cat("**Key Takeaways from TTQ-TTD Scatter Analysis:**\n\n")
+cat(paste0("1. **Strongest Discipline Correlation**: ", strongest_discipline$Agency, 
+           " shows the strongest relationship (ρ = ", round(strongest_discipline$correlation, 3), 
+           "), suggesting ", if(strongest_discipline$correlation > 0.3) "systemic delays impact both queue and dispatch times." else "queue and dispatch times are largely independent.", "\n\n"))
+
+cat(paste0("2. **Fastest Priority Response**: Priority ", fastest_priority$Priority_Number,
+           " demonstrates the fastest median dispatch time (", round(fastest_priority$median_ttd, 1), 
+           "s), reflecting appropriate urgency-based processing.\n\n"))
+
+cat(paste0("3. **9-1-1 Performance**: 9-1-1 calls ",
+           if(e911_median_ttd < median_ttd) "outperform" else "underperform",
+           " the overall median by ",
+           abs(round(e911_median_ttd - median_ttd, 1)),
+           " seconds in TTD, indicating ",
+           if(e911_median_ttd < median_ttd) "effective prioritization of emergency calls." else "potential process improvements needed for emergency response.", "\n\n"))
+
+# Identify any performance concerns
+high_p90_priorities <- priority_cors %>%
+  filter(p90_ttd > 180) # Flag if 90th percentile > 3 minutes
+
+if(nrow(high_p90_priorities) > 0) {
+  cat(paste0("4. **Performance Concern**: ",
+             paste(paste0("Priority ", high_p90_priorities$Priority_Number), collapse = ", "),
+             " show(s) 90th percentile TTD exceeding 3 minutes, warranting process review.\n\n"))
+}
+```
+
 ## Comparisons
 
 This section is meant to compare this report week's data with the week prior. This will allow us to view some trend information and allow us to generate additional insights. For example there were `r nrow(current_week)` service calls this week and `r nrow(last_week)` service calls the week prior, this represents a change of `r nrow(current_week) - nrow(last_week)` calls from the week prior to last week. When the delta is positive, we had more calls last week, than the week prior. If the delta is negative, we had fewer service calls last week than the week prior.
@@ -7094,6 +7650,155 @@ This table will show the differences in the numbers of likely outlier values fro
 
 From this table, we can see that the number of calls where we've identified a potential outlier value have come down significantly last week from the week prior. The largest decline was in the time taken from phone pickup to dispatch ready. There are, possibly, several reasons behind this and this could be a study in trend analysis in the future.
 
+```{r}
+#| label: comparison-narrative-insights
+#| echo: false
+#| results: asis
+
+# Generate comprehensive week-over-week insights
+cat("\n**Week-over-Week Performance Narrative:**\n\n")
+
+# Call volume trend
+call_change <- nrow(current_week) - nrow(last_week)
+call_change_pct <- round((call_change / nrow(last_week)) * 100, 1)
+
+if (abs(call_change_pct) >= 10) {
+  direction <- if(call_change > 0) "surge" else "decline"
+  cat(paste0("The ", abs(call_change_pct), "% ", direction, " in call volume (",
+             abs(call_change), " calls) represents a significant shift that may reflect seasonal patterns, ",
+             "community events, or external factors warranting further investigation. "))
+} else if (abs(call_change_pct) >= 5) {
+  cat(paste0("Call volume ", if(call_change > 0) "increased" else "decreased", " by ",
+             abs(call_change_pct), "%, a moderate shift within normal operational variance. "))
+} else {
+  cat(paste0("Call volume remained stable with only a ", abs(call_change_pct), 
+             "% change, indicating consistent community demand. "))
+}
+
+# Discipline-specific trends
+apd_change <- sum(current_week$Agency == "POLICE") - sum(last_week$Agency == "POLICE")
+afd_fire_change <- sum(current_week$Agency == "FIRE") - sum(last_week$Agency == "FIRE")
+afd_ems_change <- sum(current_week$Agency == "EMS") - sum(last_week$Agency == "EMS")
+
+max_change <- max(abs(apd_change), abs(afd_fire_change), abs(afd_ems_change))
+
+if (max_change == abs(apd_change) && abs(apd_change) > 50) {
+  cat(paste0("\n\nLaw enforcement calls showed the most significant change (",
+             ifelse(apd_change > 0, "+", ""), apd_change, "), which may correlate with ",
+             "enforcement campaigns, community events, or crime trends. "))
+} else if (max_change == abs(afd_ems_change) && abs(afd_ems_change) > 20) {
+  cat(paste0("\n\nEMS call volume shifted notably (",
+             ifelse(afd_ems_change > 0, "+", ""), afd_ems_change, "), ",
+             "potentially reflecting public health factors, weather conditions, or community health initiatives. "))
+}
+
+# Outlier trend analysis
+outlier_improvement <- (nrow(lw_ttq_outliers) + nrow(lw_ttd_outliers) + 
+                        nrow(lw_phone_outliers) + nrow(lw_proc_outliers)) -
+                       (nrow(ttq_outliers) + nrow(ttd_outliers) + 
+                        nrow(phone_outliers) + nrow(proc_outliers))
+
+if (outlier_improvement > 10) {
+  cat(paste0("\n\nThe ", outlier_improvement, " reduction in outlier calls suggests improved operational ",
+             "consistency, possibly reflecting training effectiveness, process refinements, or ",
+             "better resource allocation. This positive trend merits continued monitoring."))
+} else if (outlier_improvement < -10) {
+  cat(paste0("\n\n**Attention**: The increase of ", abs(outlier_improvement), 
+             " outlier calls indicates emerging performance challenges that may require ",
+             "immediate process review, additional training, or staffing assessment."))
+}
+
+cat("\n\n")
+```
+
 ## Conclusion
+
+```{r}
+#| label: executive-conclusion-narrative
+#| echo: false
+#| results: asis
+
+cat("\n**Executive Summary of Key Findings:**\n\n")
+
+# Highlight top 3 performance successes
+cat("**Notable Successes:**\n\n")
+
+# Success 1: SLA compliance
+sla_success <- c()
+if (!is.na(fire_ems_106_sla_current) && fire_ems_106_sla_current >= 90) {
+  sla_success <- c(sla_success, paste0("Fire/EMS 106-second SLA achieved ", 
+                                       fire_ems_106_sla_current, "% compliance"))
+}
+if (!is.na(law_p1_sla_current) && law_p1_sla_current >= 85) {
+  sla_success <- c(sla_success, paste0("Law enforcement Priority 1 calls met ",
+                                       law_p1_sla_current, "% SLA target"))
+}
+
+# Success 2: Outlier reduction
+if (exists("outlier_improvement") && outlier_improvement > 5) {
+  sla_success <- c(sla_success, paste0("Outlier calls reduced by ", outlier_improvement,
+                                       ", demonstrating improved consistency"))
+}
+
+# Success 3: Volume management
+if (abs(call_change_pct) < 5 && median_ttd_current < 150) {
+  sla_success <- c(sla_success, "Maintained stable performance despite consistent call volume")
+}
+
+if (length(sla_success) > 0) {
+  for (i in 1:min(3, length(sla_success))) {
+    cat(paste0(i, ". ", sla_success[i], "\n"))
+  }
+} else {
+  cat("Operational performance met baseline expectations across multiple metrics.\n")
+}
+
+cat("\n**Areas Requiring Attention:**\n\n")
+
+# Identify top concerns
+concerns <- c()
+
+if (!is.na(law_p1_sla_current) && law_p1_sla_current < 80) {
+  concerns <- c(concerns, paste0("Priority 1 law enforcement SLA at ", law_p1_sla_current,
+                                 "% requires immediate process review"))
+}
+
+if (median_phone_current > 150 && phone_pct > 10) {
+  concerns <- c(concerns, paste0("Phone time increased ", phone_pct, 
+                                 "%, suggesting more complex calls or training needs"))
+}
+
+if (not_captured_count > 50) {
+  concerns <- c(concerns, paste0(not_captured_count, " calls lack call reception documentation, ",
+                                 "impacting data quality and operational visibility"))
+}
+
+if (exists("outlier_improvement") && outlier_improvement < -5) {
+  concerns <- c(concerns, paste0("Outlier calls increased, indicating potential process degradation"))
+}
+
+if (length(concerns) > 0) {
+  for (i in 1:min(3, length(concerns))) {
+    cat(paste0(i, ". ", concerns[i], "\n"))
+  }
+} else {
+  cat("No critical performance concerns identified this reporting period.\n")
+}
+
+cat("\n**Strategic Recommendations:**\n\n")
+
+# Generate actionable recommendations
+if (length(concerns) > 0 || exists("high_p90_priorities") && nrow(high_p90_priorities) > 0) {
+  cat("1. Conduct targeted process review for underperforming metrics\n")
+  cat("2. Implement focused training on identified performance gaps\n")
+  cat("3. Review staffing patterns during peak outlier periods\n")
+} else {
+  cat("1. Continue current operational protocols and training regimens\n")
+  cat("2. Expand hybrid call taker program based on demonstrated effectiveness\n")
+  cat("3. Document successful practices for replication and knowledge transfer\n")
+}
+
+cat("\n")
+```
 
 This report has covered various aspects of the calls for service during week `r WEEK_NUMBER`. We have analyzed the data for completeness and accuracy, explored it for insights into call patterns and trends, and focused on specific areas of interest such as high-priority calls and cardiac arrest incidents. The findings will assist in making informed decisions to improve service delivery and operational efficiency.
