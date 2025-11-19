@@ -419,16 +419,7 @@ cat("Processing last week data:", nrow(df_last), "rows\n")
 cat("Both weeks ready for analysis and comparison\n")
 ```
 
-For this week, there were a total of `r nrow(df)` calls for service. The column list is below:
-
-```{r}
-#| label: column-names
-#| echo: false
-#| tbl-cap: "A sample of the first 10 rows of incident data."
-#| cache: true
-
-colnames(df)
-```
+For this week, there were a total of `r nrow(df)` calls for service. 
 
 ## Executive Summary
 
