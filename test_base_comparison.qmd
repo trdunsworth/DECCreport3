@@ -243,20 +243,180 @@ load_week_data <- function(week_num, week_year) {
 }
 
 # ============================================================================
-# LOAD DATA FOR CURRENT WEEK AND LAST WEEK
+# PHONE DATA FILE LOADING HELPER
+# ============================================================================
+# Function to find and load the correct phone CSV file for a given week
+load_phone_data <- function(week_num, week_year) {
+  # Determine which folder to look in
+  if (week_year == year(REPORT_DATE)) {
+    # Current year - look in data/current_year
+    base_path <- "data/current_year"
+  } else {
+    # Prior year - look in data/prior_year
+    base_path <- "data/prior_year"
+  }
+  
+  # Try different naming conventions for phone data
+  possible_files <- c(
+    file.path(base_path, paste0("week_", week_num, "_phone.csv")),
+    file.path(base_path, paste0("Week_", week_num, "_phone.csv")),
+    # Fallback: also check root data folder for backwards compatibility
+    paste0("data/week_", week_num, "_phone.csv"),
+    paste0("data/Week_", week_num, "_phone.csv")
+  )
+  
+  # Find the first file that exists
+  data_file <- NULL
+  for(file in possible_files) {
+    if(file.exists(file)) {
+      data_file <- file
+      break
+    }
+  }
+  
+  if(is.null(data_file)) {
+    warning("No phone data file found for week ", week_num, " (", week_year, "). Checked: ", 
+         paste(possible_files, collapse = ", "))
+    return(NULL)
+  }
+  
+  cat("Loading week", week_num, "(", week_year, ") phone data from:", data_file, "\n")
+  
+  # Load the CSV file
+  df <- tryCatch({
+    if (requireNamespace("vroom", quietly = TRUE)) {
+      as_tibble(vroom::vroom(
+        data_file,
+        col_types = vroom::cols(.default = "c"),
+        na = c("", "NA", "NULL"),
+        progress = FALSE
+      ))
+    } else {
+      readr::read_csv(
+        data_file,
+        col_types = readr::cols(.default = readr::col_character()),
+        na = c("", "NA", "NULL"),
+        show_col_types = FALSE
+      )
+    }
+  }, error = function(e) {
+    readr::read_csv(
+      data_file,
+      col_types = readr::cols(.default = readr::col_character()),
+      na = c("", "NA", "NULL"),
+      show_col_types = FALSE
+    )
+  })
+  
+  # Validate data loaded
+  if(nrow(df) == 0) {
+    warning("Phone data file is empty or failed to load: ", data_file)
+    return(NULL)
+  }
+  
+  cat("  Successfully loaded", nrow(df), "rows\n")
+  
+  return(df)
+}
+
+# ============================================================================
+# LOAD DATA FOR CURRENT WEEK AND LAST WEEK (CAD DATA)
 # ============================================================================
 cat("\n=== AUTOMATED WEEK CALCULATION ===\n")
 cat("Report Date:", format(REPORT_DATE, "%Y-%m-%d"), "\n")
 cat("Current Week (reporting on):", WEEK_NUMBER, "—", WEEK_START_FORMATTED, "through", WEEK_END_FORMATTED, current_year, "\n")
 cat("Last Week (comparison):", LAST_WEEK_NUMBER, "—", LAST_WEEK_START_FORMATTED, "through", LAST_WEEK_END_FORMATTED, last_year, "\n\n")
 
-# Load current week data
+# Load current week CAD data
 current_week <- load_week_data(current_week_num, current_year)
 
-# Load last week data
+# Load last week CAD data
 last_week <- load_week_data(last_week_num, last_year)
 
-cat("\n=== DATA LOADING COMPLETE ===\n")
+cat("\n=== CAD DATA LOADING COMPLETE ===\n")
+
+# ============================================================================
+# LOAD PHONE DATA FOR CURRENT WEEK AND LAST WEEK
+# ============================================================================
+cat("\n=== LOADING PHONE DATA ===\n")
+
+# Load current week phone data
+current_week_phone <- load_phone_data(current_week_num, current_year)
+
+# Load last week phone data
+last_week_phone <- load_phone_data(last_week_num, last_year)
+
+# Check if phone data loaded successfully
+if (!is.null(current_week_phone)) {
+  cat("Current week phone data loaded:", nrow(current_week_phone), "rows\n")
+} else {
+  cat("Current week phone data not available\n")
+}
+
+if (!is.null(last_week_phone)) {
+  cat("Last week phone data loaded:", nrow(last_week_phone), "rows\n")
+} else {
+  cat("Last week phone data not available\n")
+}
+
+cat("\n=== PHONE DATA LOADING COMPLETE ===\n")
+
+# ============================================================================
+# LOAD LAST 4 WEEKS OF DATA (CAD AND PHONE)
+# ============================================================================
+cat("\n=== LOADING LAST 4 WEEKS DATA ===\n")
+
+# Calculate the 4 weeks prior to the current week
+last_4_weeks <- list()
+last_4_weeks_phone <- list()
+
+for (i in 1:4) {
+  # Calculate week number and year for this offset
+  week_offset_start <- current_week_start - weeks(i)
+  week_offset_num <- isoweek(week_offset_start + days(3))
+  week_offset_year <- year(week_offset_start)
+  
+  cat("Loading week", week_offset_num, "(", week_offset_year, ")\n")
+  
+  # Load CAD data
+  tryCatch({
+    last_4_weeks[[i]] <- load_week_data(week_offset_num, week_offset_year)
+  }, error = function(e) {
+    cat("  Warning: Could not load CAD data for week", week_offset_num, "\n")
+    last_4_weeks[[i]] <- NULL
+  })
+  
+  # Load phone data
+  phone_data <- load_phone_data(week_offset_num, week_offset_year)
+  if (!is.null(phone_data)) {
+    last_4_weeks_phone[[i]] <- phone_data
+  } else {
+    cat("  Warning: Could not load phone data for week", week_offset_num, "\n")
+    last_4_weeks_phone[[i]] <- NULL
+  }
+}
+
+# Combine last 4 weeks CAD data (remove NULLs first)
+last_4_weeks <- last_4_weeks[!sapply(last_4_weeks, is.null)]
+if (length(last_4_weeks) > 0) {
+  last_4_weeks_combined <- bind_rows(last_4_weeks)
+  cat("\nLast 4 weeks CAD data combined:", nrow(last_4_weeks_combined), "total rows\n")
+} else {
+  cat("\nWarning: No last 4 weeks CAD data available\n")
+  last_4_weeks_combined <- NULL
+}
+
+# Combine last 4 weeks phone data (remove NULLs first)
+last_4_weeks_phone <- last_4_weeks_phone[!sapply(last_4_weeks_phone, is.null)]
+if (length(last_4_weeks_phone) > 0) {
+  last_4_weeks_phone_combined <- bind_rows(last_4_weeks_phone)
+  cat("Last 4 weeks phone data combined:", nrow(last_4_weeks_phone_combined), "total rows\n")
+} else {
+  cat("Warning: No last 4 weeks phone data available\n")
+  last_4_weeks_phone_combined <- NULL
+}
+
+cat("\n=== ALL DATA LOADING COMPLETE ===\n")
 
 # Update title dynamically (since we can't use R in YAML directly)
 DYNAMIC_TITLE <- paste0("Weekly Report: Week ", WEEK_NUMBER, " (", 
@@ -531,6 +691,55 @@ fire_ems_106_status <- ifelse(!is.na(fire_ems_106_sla_current),
                                ifelse(fire_ems_106_sla_current >= 95, "✓", 
                                       ifelse(fire_ems_106_sla_current >= 90, "⚠", "✗")), 
                                "—")
+
+# ---------------------------------------------------------------------------
+# Phone (9-1-1) Answer Time Metrics Integration for Executive Summary
+# Standards: 90% answered <=15s, 95% answered <=20s
+# Compute current week, last week, and rolling 4-week average for foundation
+# ---------------------------------------------------------------------------
+
+compute_phone_week_metrics <- function(phone_df) {
+  if (is.null(phone_df)) return(NULL)
+  phone_df <- phone_df %>% mutate(DateTime = suppressWarnings(mdy_hm(DateTime)))
+  num_cols <- setdiff(names(phone_df), c("DateTime","Hour"))
+  phone_df[num_cols] <- lapply(phone_df[num_cols], function(x) suppressWarnings(as.numeric(x)))
+  answered <- sum(phone_df$`911_T`, na.rm = TRUE) - sum(phone_df$`911_AB`, na.rm = TRUE)
+  if (answered <= 0) return(NULL)
+  within15 <- sum(phone_df$`911_10`, na.rm = TRUE) + sum(phone_df$`911_15`, na.rm = TRUE)
+  within20 <- within15 + sum(phone_df$`911_20`, na.rm = TRUE)
+  tibble(answered = answered,
+         within15 = within15,
+         within20 = within20,
+         pct15 = (within15/answered)*100,
+         pct20 = (within20/answered)*100)
+}
+
+phone_current_metrics <- compute_phone_week_metrics(current_week_phone)
+phone_last_metrics    <- compute_phone_week_metrics(last_week_phone)
+
+# Rolling 4-week (prior weeks only) for baseline
+phone_rolling_prior4 <- NA_real_
+phone_rolling_prior4_20 <- NA_real_
+if (!is.null(last_4_weeks_phone_combined)) {
+  prior4_metrics <- last_4_weeks_phone_combined %>% mutate(DateTime = suppressWarnings(mdy_hm(DateTime)))
+  num_cols <- setdiff(names(prior4_metrics), c("DateTime","Hour"))
+  prior4_metrics[num_cols] <- lapply(prior4_metrics[num_cols], function(x) suppressWarnings(as.numeric(x)))
+  answered4 <- sum(prior4_metrics$`911_T`, na.rm = TRUE) - sum(prior4_metrics$`911_AB`, na.rm = TRUE)
+  within15_4 <- sum(prior4_metrics$`911_10`, na.rm = TRUE) + sum(prior4_metrics$`911_15`, na.rm = TRUE)
+  within20_4 <- within15_4 + sum(prior4_metrics$`911_20`, na.rm = TRUE)
+  if (answered4 > 0) {
+    phone_rolling_prior4 <- (within15_4/answered4)*100
+    phone_rolling_prior4_20 <- (within20_4/answered4)*100
+  }
+}
+
+# Status indicators for phone compliance
+phone_status_15 <- ifelse(!is.null(phone_current_metrics),
+                          ifelse(phone_current_metrics$pct15 >= 90, "✓",
+                                 ifelse(phone_current_metrics$pct15 >= 85, "⚠", "✗")),"—")
+phone_status_20 <- ifelse(!is.null(phone_current_metrics),
+                          ifelse(phone_current_metrics$pct20 >= 95, "✓",
+                                 ifelse(phone_current_metrics$pct20 >= 90, "⚠", "✗")),"—")
 ```
 
 ### Weekly KPI Summary
@@ -550,7 +759,9 @@ kpi_summary <- tibble(
     "LAW P1 SLA (≤60s)",
     "LAW P2 SLA (≤120s)",
     "FIRE/EMS SLA (≤64s)",
-    "FIRE/EMS SLA (≤106s)"
+    "FIRE/EMS SLA (≤106s)",
+    "9-1-1 <=15s (≥90%)",
+    "9-1-1 <=20s (≥95%)"
   ),
   Current_Week = c(
     format(total_calls_current, big.mark = ","),
@@ -560,7 +771,9 @@ kpi_summary <- tibble(
     paste0(law_p1_sla_current, "%"),
     paste0(law_p2_sla_current, "%"),
     paste0(fire_ems_64_sla_current, "%"),
-    paste0(fire_ems_106_sla_current, "%")
+    paste0(fire_ems_106_sla_current, "%"),
+    ifelse(!is.null(phone_current_metrics), paste0(round(phone_current_metrics$pct15,1), "%"), "—"),
+    ifelse(!is.null(phone_current_metrics), paste0(round(phone_current_metrics$pct20,1), "%"), "—")
   ),
   Prior_Week = c(
     format(total_calls_last, big.mark = ","),
@@ -570,7 +783,9 @@ kpi_summary <- tibble(
     paste0(law_p2_sla_last, "%"),
     paste0(law_p2_sla_last, "%"),
     paste0(fire_ems_64_sla_last, "%"),
-    paste0(fire_ems_106_sla_last, "%")
+    paste0(fire_ems_106_sla_last, "%"),
+    ifelse(!is.null(phone_last_metrics), paste0(round(phone_last_metrics$pct15,1), "%"), "—"),
+    ifelse(!is.null(phone_last_metrics), paste0(round(phone_last_metrics$pct20,1), "%"), "—")
   ),
   Change = c(
     paste0(ifelse(call_volume_change >= 0, "+", ""), call_volume_change, " (", 
@@ -591,8 +806,14 @@ kpi_summary <- tibble(
                   paste0(ifelse(fire_ems_64_sla_current - fire_ems_64_sla_last >= 0, "+", ""), 
                          round(fire_ems_64_sla_current - fire_ems_64_sla_last, 1), "%"), "—")),
     paste0(ifelse(!is.na(fire_ems_106_sla_current) && !is.na(fire_ems_106_sla_last), 
-                  paste0(ifelse(fire_ems_106_sla_current - fire_ems_106_sla_last >= 0, "+", ""), 
-                         round(fire_ems_106_sla_current - fire_ems_106_sla_last, 1), "%"), "—"))
+        paste0(ifelse(fire_ems_106_sla_current - fire_ems_106_sla_last >= 0, "+", ""), 
+          round(fire_ems_106_sla_current - fire_ems_106_sla_last, 1), "%"), "—")),
+    ifelse(!is.null(phone_current_metrics) && !is.null(phone_last_metrics), 
+      paste0(ifelse(round(phone_current_metrics$pct15 - phone_last_metrics$pct15,1) >= 0, "+", ""),
+        round(phone_current_metrics$pct15 - phone_last_metrics$pct15,1), " pts"), "—"),
+    ifelse(!is.null(phone_current_metrics) && !is.null(phone_last_metrics), 
+      paste0(ifelse(round(phone_current_metrics$pct20 - phone_last_metrics$pct20,1) >= 0, "+", ""),
+        round(phone_current_metrics$pct20 - phone_last_metrics$pct20,1), " pts"), "—")
   ),
   Status = c(
     "—",
@@ -602,7 +823,9 @@ kpi_summary <- tibble(
     law_p1_status,
     law_p2_status,
     fire_ems_64_status,
-    fire_ems_106_status
+    fire_ems_106_status,
+    phone_status_15,
+    phone_status_20
   )
 )
 
@@ -618,6 +841,14 @@ to_ft(
   ),
   digits = 1
 )
+
+# Store phone summary metrics for use in executive insights chunk
+PHONE_PCT_15_CURRENT <- ifelse(!is.null(phone_current_metrics), round(phone_current_metrics$pct15,1), NA)
+PHONE_PCT_20_CURRENT <- ifelse(!is.null(phone_current_metrics), round(phone_current_metrics$pct20,1), NA)
+PHONE_PCT_15_LAST    <- ifelse(!is.null(phone_last_metrics), round(phone_last_metrics$pct15,1), NA)
+PHONE_PCT_20_LAST    <- ifelse(!is.null(phone_last_metrics), round(phone_last_metrics$pct20,1), NA)
+PHONE_PCT_15_ROLL4   <- ifelse(!is.na(phone_rolling_prior4), round(phone_rolling_prior4,1), NA)
+PHONE_PCT_20_ROLL4   <- ifelse(!is.na(phone_rolling_prior4_20), round(phone_rolling_prior4_20,1), NA)
 ```
 
 **Status Legend:** ✓ = Meets Target | ⚠ = Warning | ✗ = Below Target | — = Not Applicable
@@ -670,6 +901,28 @@ if (median_phone_current > 120 && phone_pct > 5) {
   insights <- append(insights,
     paste0("**Call Complexity**: Median phone time at ", round(median_phone_current), 
            " seconds, up ", abs(phone_pct), "%, suggesting more complex calls this week."))
+}
+
+# 9-1-1 phone standards integration (current, prior, rolling baseline)
+if (!is.na(PHONE_PCT_15_CURRENT)) {
+  status15 <- ifelse(PHONE_PCT_15_CURRENT >= 90, "met", ifelse(PHONE_PCT_15_CURRENT >= 85, "near", "below"))
+  status20 <- ifelse(PHONE_PCT_20_CURRENT >= 95, "met", ifelse(PHONE_PCT_20_CURRENT >= 90, "near", "below"))
+  insights <- append(insights,
+    paste0("**9-1-1 Answer Standards**: 15s ", status15, " (", PHONE_PCT_15_CURRENT, "%), 20s ", status20, " (", PHONE_PCT_20_CURRENT, "%)."))
+  if (!is.na(PHONE_PCT_15_LAST)) {
+    delta15 <- round(PHONE_PCT_15_CURRENT - PHONE_PCT_15_LAST,1)
+    delta20 <- round(PHONE_PCT_20_CURRENT - PHONE_PCT_20_LAST,1)
+    dir15 <- ifelse(delta15>0,"improved", ifelse(delta15<0,"declined","held steady"))
+    dir20 <- ifelse(delta20>0,"improved", ifelse(delta20<0,"declined","held steady"))
+    insights <- append(insights,
+      paste0("**Week-over-Week 9-1-1**: 15s ", dir15, " (", ifelse(delta15>0,"+",""), delta15, " pts), 20s ", dir20, " (", ifelse(delta20>0,"+",""), delta20, " pts)."))
+  }
+  if (!is.na(PHONE_PCT_15_ROLL4)) {
+    diff_roll15 <- round(PHONE_PCT_15_CURRENT - PHONE_PCT_15_ROLL4,1)
+    diff_roll20 <- round(PHONE_PCT_20_CURRENT - PHONE_PCT_20_ROLL4,1)
+    insights <- append(insights,
+      paste0("**Relative to Prior 4 Weeks**: 15s ", ifelse(diff_roll15>=0,"above","below"), " baseline by ", abs(diff_roll15), " pts; 20s ", ifelse(diff_roll20>=0,"above","below"), " baseline by ", abs(diff_roll20), " pts."))
+  }
 }
 
 # Output insights
@@ -752,7 +1005,199 @@ From this plot, we can see that there are only `r missing_cols_count` columns wi
 
 One of the first analyses is to break down different factor elements to see what we have in the dataset. Since the data source for this report is the CAD system, the counts of service calls may not correlate to phone volumes. We will have to, in future, find good methods to integrate the phone date into the reports.
 
+### Phone Summary
+
+```{r}
+#| label: phone-data-summary
+#| echo: false
+#| message: false
+#| warning: false
+
+if (!is.null(current_week_phone)) {
+  # Parse DateTime column
+  current_week_phone <- current_week_phone %>%
+    mutate(DateTime = mdy_hm(DateTime))
+  
+  # Convert numeric columns
+  numeric_cols <- names(current_week_phone)[!names(current_week_phone) %in% c("DateTime", "Hour")]
+  current_week_phone[numeric_cols] <- lapply(current_week_phone[numeric_cols], as.numeric)
+  
+  # Calculate key metrics
+  total_911_calls <- sum(current_week_phone$`911_T`, na.rm = TRUE)
+  total_admin_calls <- sum(current_week_phone$ADM_T, na.rm = TRUE)
+  total_phone_calls <- sum(current_week_phone$Total, na.rm = TRUE)
+  
+  avg_911_pct_10 <- mean(current_week_phone$`911_PCT_10`, na.rm = TRUE) * 100
+  avg_911_pct_15 <- mean(current_week_phone$`911_PCT_15`, na.rm = TRUE) * 100
+  avg_911_pct_20 <- mean(current_week_phone$`911_PCT_20`, na.rm = TRUE) * 100
+  
+  avg_adm_pct_10 <- mean(current_week_phone$ADM_PCT_10, na.rm = TRUE) * 100
+  avg_adm_pct_15 <- mean(current_week_phone$PCT_ADM_15, na.rm = TRUE) * 100
+  avg_adm_pct_20 <- mean(current_week_phone$ADM_PCT_20, na.rm = TRUE) * 100
+  
+  avg_total_pct_10 <- mean(current_week_phone$TTL_PCT_10, na.rm = TRUE) * 100
+  avg_total_pct_15 <- mean(current_week_phone$TTL_PCT_15, na.rm = TRUE) * 100
+  avg_total_pct_20 <- mean(current_week_phone$TTL_PCT_20, na.rm = TRUE) * 100
+  
+  # Calculate abandoned call metrics
+  total_911_abandoned <- sum(current_week_phone$`911_AB`, na.rm = TRUE)
+  total_adm_abandoned <- sum(current_week_phone$ADM_AB, na.rm = TRUE)
+  
+  pct_911_abandoned <- (total_911_abandoned / total_911_calls) * 100
+  pct_adm_abandoned <- (total_adm_abandoned / total_admin_calls) * 100
+  
+  phone_data_available <- TRUE
+} else {
+  phone_data_available <- FALSE
+}
+```
+
+```{r}
+#| label: phone-summary-output
+#| echo: false
+#| results: asis
+
+if (phone_data_available) {
+  cat("This week's phone system data provides insights into call answering performance across both 9-1-1 emergency lines and administrative lines.\n\n")
+  
+  cat("#### Call Volume Overview\n\n")
+  cat(paste0("- **Total Phone Calls:** ", format(total_phone_calls, big.mark = ","), "\n"))
+  cat(paste0("- **9-1-1 Emergency Calls:** ", format(total_911_calls, big.mark = ","), 
+             " (", round((total_911_calls/total_phone_calls)*100, 1), "%)\n"))
+  cat(paste0("- **Administrative Calls:** ", format(total_admin_calls, big.mark = ","), 
+             " (", round((total_admin_calls/total_phone_calls)*100, 1), "%)\n\n"))
+  
+  cat("#### Answer Time Performance\n\n")
+  cat("**9-1-1 Emergency Lines:**\n\n")
+  cat(paste0("- Answered within 10 seconds: ", round(avg_911_pct_10, 1), "%\n"))
+  cat(paste0("- Answered within 15 seconds: ", round(avg_911_pct_15, 1), "%\n"))
+  cat(paste0("- Answered within 20 seconds: ", round(avg_911_pct_20, 1), "%\n\n"))
+  
+  cat("**Administrative Lines:**\n\n")
+  cat(paste0("- Answered within 10 seconds: ", round(avg_adm_pct_10, 1), "%\n"))
+  cat(paste0("- Answered within 15 seconds: ", round(avg_adm_pct_15, 1), "%\n"))
+  cat(paste0("- Answered within 20 seconds: ", round(avg_adm_pct_20, 1), "%\n\n"))
+  
+  cat("**Overall Performance:**\n\n")
+  cat(paste0("- All calls answered within 10 seconds: ", round(avg_total_pct_10, 1), "%\n"))
+  cat(paste0("- All calls answered within 15 seconds: ", round(avg_total_pct_15, 1), "%\n"))
+  cat(paste0("- All calls answered within 20 seconds: ", round(avg_total_pct_20, 1), "%\n\n"))
+  
+  cat("#### Abandoned Calls\n\n")
+  cat(paste0("- **9-1-1 Abandoned:** ", format(total_911_abandoned, big.mark = ","), 
+             " (", round(pct_911_abandoned, 2), "% of 9-1-1 calls)\n"))
+  cat(paste0("- **Administrative Abandoned:** ", format(total_adm_abandoned, big.mark = ","), 
+             " (", round(pct_adm_abandoned, 2), "% of admin calls)\n\n"))
+  
+  # Performance assessment
+  if (avg_911_pct_10 >= 90) {
+    cat("*9-1-1 performance is meeting the 10-second answer standard.*\n\n")
+  } else if (avg_911_pct_10 >= 80) {
+    cat("*9-1-1 performance is approaching the 10-second answer standard but requires attention.*\n\n")
+  } else {
+    cat("*9-1-1 performance is below the 10-second answer standard and requires immediate attention.*\n\n")
+  }
+  
+} else {
+  cat("*Phone data is not available for this reporting period.*\n\n")
+}
+```
+
 ### Call Distribution: Hour by Day of Week
+```{r}
+#| label: phone-standards-comparison
+#| echo: false
+#| message: false
+#| warning: false
+
+# Compare current vs last week 9-1-1 answer performance against standards
+# Standards: 90% answered <=15s, 95% answered <=20s
+
+compute_phone_metrics <- function(phone_df) {
+  if (is.null(phone_df)) return(NULL)
+  # Ensure types
+  phone_df <- phone_df %>% mutate(DateTime = suppressWarnings(mdy_hm(DateTime)))
+  numeric_cols <- setdiff(names(phone_df), c("DateTime", "Hour"))
+  phone_df[numeric_cols] <- lapply(phone_df[numeric_cols], function(x) suppressWarnings(as.numeric(x)))
+  # Derive answered call counts (exclude abandoned)
+  answered_calls <- sum(phone_df$`911_T`, na.rm = TRUE) - sum(phone_df$`911_AB`, na.rm = TRUE)
+  if (answered_calls <= 0) return(NULL)
+  within_15 <- sum(phone_df$`911_10`, na.rm = TRUE) + sum(phone_df$`911_15`, na.rm = TRUE)
+  within_20 <- within_15 + sum(phone_df$`911_20`, na.rm = TRUE)
+  pct_15 <- (within_15 / answered_calls) * 100
+  pct_20 <- (within_20 / answered_calls) * 100
+  tibble(answered_calls = answered_calls,
+         within_15 = within_15,
+         within_20 = within_20,
+         pct_15 = pct_15,
+         pct_20 = pct_20)
+}
+
+current_metrics <- compute_phone_metrics(current_week_phone)
+last_metrics    <- compute_phone_metrics(last_week_phone)
+
+standards_tbl <- NULL
+if (!is.null(current_metrics)) {
+  standards_tbl <- tibble(
+    Metric = c("9-1-1 answered <=15s", "9-1-1 answered <=20s"),
+    `Current Week %` = c(round(current_metrics$pct_15, 1), round(current_metrics$pct_20, 1)),
+    `Last Week %` = c(if (!is.null(last_metrics)) round(last_metrics$pct_15, 1) else NA_real_,
+                      if (!is.null(last_metrics)) round(last_metrics$pct_20, 1) else NA_real_),
+    Standard = c(">= 90%", ">= 95%"),
+    Status = c(
+      ifelse(current_metrics$pct_15 >= 90, "✓", ifelse(current_metrics$pct_15 >= 85, "⚠", "✗")),
+      ifelse(current_metrics$pct_20 >= 95, "✓", ifelse(current_metrics$pct_20 >= 90, "⚠", "✗"))
+    )
+  )
+}
+
+standards_tbl_out <- if (!is.null(standards_tbl)) to_ft(standards_tbl, caption = "9-1-1 Answer Time Standards Comparison", digits = 1) else NULL
+
+standards_tbl_out
+```
+
+```{r}
+#| label: phone-standards-narrative
+#| echo: false
+#| results: asis
+
+if (!is.null(current_metrics)) {
+  cat("**9-1-1 Standards Adherence Narrative:**\n\n")
+  # 15s standard narrative
+  if (current_metrics$pct_15 >= 90) {
+    cat(paste0("- The center met the 15-second standard (", round(current_metrics$pct_15,1), "%)."))
+  } else if (current_metrics$pct_15 >= 85) {
+    cat(paste0("- The center is marginally below the 15-second standard (", round(current_metrics$pct_15,1), "%), monitoring recommended."))
+  } else {
+    cat(paste0("- The center fell below the 15-second standard (", round(current_metrics$pct_15,1), "%), immediate corrective action advised."))
+  }
+  cat("\n")
+  # 20s standard narrative
+  if (current_metrics$pct_20 >= 95) {
+    cat(paste0("- The 20-second standard was met (", round(current_metrics$pct_20,1), "%)."))
+  } else if (current_metrics$pct_20 >= 90) {
+    cat(paste0("- Slightly below the 20-second standard (", round(current_metrics$pct_20,1), "%), performance should be reviewed."))
+  } else {
+    cat(paste0("- Below the 20-second standard (", round(current_metrics$pct_20,1), "%), urgent focus required."))
+  }
+  cat("\n")
+  # Week-over-week comparison
+  if (!is.null(last_metrics)) {
+    delta_15 <- round(current_metrics$pct_15 - last_metrics$pct_15,1)
+    delta_20 <- round(current_metrics$pct_20 - last_metrics$pct_20,1)
+    dir_15 <- ifelse(delta_15>0,"improved","declined")
+    dir_20 <- ifelse(delta_20>0,"improved","declined")
+    if (delta_15==0) dir_15 <- "held steady"
+    if (delta_20==0) dir_20 <- "held steady"
+    cat(paste0("- Week-over-week: 15s compliance ", dir_15, " (", ifelse(delta_15>=0,"+",""), delta_15, " pts); 20s compliance ", dir_20, " (", ifelse(delta_20>=0,"+",""), delta_20, " pts)."))
+  } else {
+    cat("- Prior week phone data unavailable; no week-over-week comparison.")
+  }
+  cat("\n\n")
+} else {
+  cat("*9-1-1 standards comparison not available (no phone data).*\n\n")
+}
+```
 
 The following visualization shows the distribution of service calls throughout the day (by hour) for each day of the week. This helps identify patterns in service call volume across different days and times.
 

@@ -85,6 +85,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">Data Cleaning</a></li>
   <li><a href="#exploratory-analysis" id="toc-exploratory-analysis" class="nav-link" data-scroll-target="#exploratory-analysis">Exploratory Analysis</a>
   <ul class="collapse">
+  <li><a href="#phone-summary" id="toc-phone-summary" class="nav-link" data-scroll-target="#phone-summary">Phone Summary</a></li>
   <li><a href="#call-distribution-hour-by-day-of-week" id="toc-call-distribution-hour-by-day-of-week" class="nav-link" data-scroll-target="#call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</a></li>
   <li><a href="#distribution-of-service-calls-by-shift" id="toc-distribution-of-service-calls-by-shift" class="nav-link" data-scroll-target="#distribution-of-service-calls-by-shift">Distribution of Service Calls by Shift</a></li>
   <li><a href="#cad-centric-analyses" id="toc-cad-centric-analyses" class="nav-link" data-scroll-target="#cad-centric-analyses">CAD-centric Analyses</a></li>
@@ -279,6 +280,47 @@ ul.task-list li input[type="checkbox"] {
 <section id="exploratory-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-analysis">Exploratory Analysis</h2>
 <p>One of the first analyses is to break down different factor elements to see what we have in the dataset. Since the data source for this report is the CAD system, the counts of service calls may not correlate to phone volumes. We will have to, in future, find good methods to integrate the phone date into the reports.</p>
+<section id="phone-summary" class="level3">
+<h3 class="anchored" data-anchor-id="phone-summary">Phone Summary</h3>
+<p>This week’s phone system data provides insights into call answering performance across both 9-1-1 emergency lines and administrative lines.</p>
+<section id="call-volume-overview" class="level4">
+<h4 class="anchored" data-anchor-id="call-volume-overview">Call Volume Overview</h4>
+<ul>
+<li><strong>Total Phone Calls:</strong> 4,454</li>
+<li><strong>9-1-1 Emergency Calls:</strong> 1,275 (28.6%)</li>
+<li><strong>Administrative Calls:</strong> 3,179 (71.4%)</li>
+</ul>
+</section>
+<section id="answer-time-performance" class="level4">
+<h4 class="anchored" data-anchor-id="answer-time-performance">Answer Time Performance</h4>
+<p><strong>9-1-1 Emergency Lines:</strong></p>
+<ul>
+<li>Answered within 10 seconds: 88.7%</li>
+<li>Answered within 15 seconds: 94.7%</li>
+<li>Answered within 20 seconds: 96.2%</li>
+</ul>
+<p><strong>Administrative Lines:</strong></p>
+<ul>
+<li>Answered within 10 seconds: 83%</li>
+<li>Answered within 15 seconds: 93.3%</li>
+<li>Answered within 20 seconds: 96.1%</li>
+</ul>
+<p><strong>Overall Performance:</strong></p>
+<ul>
+<li>All calls answered within 10 seconds: 85.1%</li>
+<li>All calls answered within 15 seconds: 94.6%</li>
+<li>All calls answered within 20 seconds: 96.7%</li>
+</ul>
+</section>
+<section id="abandoned-calls" class="level4">
+<h4 class="anchored" data-anchor-id="abandoned-calls">Abandoned Calls</h4>
+<ul>
+<li><strong>9-1-1 Abandoned:</strong> 153 (12% of 9-1-1 calls)</li>
+<li><strong>Administrative Abandoned:</strong> 44 (1.38% of admin calls)</li>
+</ul>
+<p><em>9-1-1 performance is approaching the 10-second answer standard but requires attention.</em></p>
+</section>
+</section>
 <section id="call-distribution-hour-by-day-of-week" class="level3">
 <h3 class="anchored" data-anchor-id="call-distribution-hour-by-day-of-week">Call Distribution: Hour by Day of Week</h3>
 <p>The following visualization shows the distribution of service calls throughout the day (by hour) for each day of the week. This helps identify patterns in service call volume across different days and times.</p>
