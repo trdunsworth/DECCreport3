@@ -970,9 +970,8 @@ incident_arrival_missing_pct <- round(missing_counts["Incident_Arrival_Time"] / 
 # Identify columns with missing data for inline reporting
 incident_arrival_missing_count <- missing_counts["Incident_Arrival_Time"]
 
-# ...existing code...
-
-inspect_na(df) |>
+# Create the missing values plot
+missing_plot <- inspect_na(df) |>
   dplyr::filter(cnt > 0) |> # Explicitly use dplyr's filter
   show_plot(
     text_labels = TRUE,
@@ -997,6 +996,9 @@ inspect_na(df) |>
     axis.text.x = element_text(angle = 45, hjust = 1, size = 9), # Rotate x-axis labels
     axis.text.y = element_text(size = 9) # Fine-tune y-axis label size
   )
+
+# Display the plot
+print(missing_plot)
 ```
 
 From this plot, we can see that there are only `r missing_cols_count` columns with missing data. Of those, the column with the largest number of missing values is `r max_missing_col`. That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. There were `r incident_arrival_missing_count` calls that did not have a recorded time that the call arrived, representing `r incident_arrival_missing_pct`% of calls for the week. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
@@ -1103,7 +1105,6 @@ if (phone_data_available) {
 }
 ```
 
-### Call Distribution: Hour by Day of Week
 ```{r}
 #| label: phone-standards-comparison
 #| echo: false
@@ -1198,6 +1199,208 @@ if (!is.null(current_metrics)) {
   cat("*9-1-1 standards comparison not available (no phone data).*\n\n")
 }
 ```
+
+```{r}
+#| label: phone-4week-trend-data
+#| echo: false
+#| message: false
+#| warning: false
+#| cache: true
+
+# Build 4-week trend dataset for 9-1-1 volumes, percentages, and abandoned calls
+# This includes the current week plus the last 4 weeks (5 total weeks)
+
+build_phone_weekly_summary <- function(phone_df, week_num, week_start) {
+  if (is.null(phone_df)) return(NULL)
+  phone_df <- phone_df %>% mutate(DateTime = suppressWarnings(mdy_hm(DateTime)))
+  num_cols <- setdiff(names(phone_df), c("DateTime", "Hour"))
+  phone_df[num_cols] <- lapply(phone_df[num_cols], function(x) suppressWarnings(as.numeric(x)))
+  
+  total_911 <- sum(phone_df$`911_T`, na.rm = TRUE)
+  abandoned_911 <- sum(phone_df$`911_AB`, na.rm = TRUE)
+  answered_911 <- total_911 - abandoned_911
+  
+  if (answered_911 <= 0) return(NULL)
+  
+  within_10 <- sum(phone_df$`911_10`, na.rm = TRUE)
+  within_15 <- within_10 + sum(phone_df$`911_15`, na.rm = TRUE)
+  within_20 <- within_15 + sum(phone_df$`911_20`, na.rm = TRUE)
+  
+  tibble(
+    week_num = week_num,
+    week_start = week_start,
+    total_911 = total_911,
+    answered_911 = answered_911,
+    abandoned_911 = abandoned_911,
+    abandoned_pct = (abandoned_911 / total_911) * 100,
+    within_10 = within_10,
+    within_15 = within_15,
+    within_20 = within_20,
+    pct_10 = (within_10 / answered_911) * 100,
+    pct_15 = (within_15 / answered_911) * 100,
+    pct_20 = (within_20 / answered_911) * 100
+  )
+}
+
+# Gather weekly summaries for current week + last 4 weeks
+phone_weekly_trends <- list()
+
+# Current week
+if (!is.null(current_week_phone)) {
+  phone_weekly_trends[[1]] <- build_phone_weekly_summary(current_week_phone, WEEK_NUMBER, WEEK_START_DATE)
+}
+
+# Last week
+if (!is.null(last_week_phone)) {
+  phone_weekly_trends[[2]] <- build_phone_weekly_summary(last_week_phone, LAST_WEEK_NUMBER, LAST_WEEK_START_DATE)
+}
+
+# Prior 4 weeks (individual)
+if (length(last_4_weeks_phone) > 0) {
+  for (i in seq_along(last_4_weeks_phone)) {
+    if (!is.null(last_4_weeks_phone[[i]])) {
+      week_offset_start <- current_week_start - weeks(i)
+      week_offset_num <- isoweek(week_offset_start + days(3))
+      phone_weekly_trends[[i + 2]] <- build_phone_weekly_summary(last_4_weeks_phone[[i]], week_offset_num, week_offset_start)
+    }
+  }
+}
+
+# Combine and sort by week
+phone_weekly_trends <- phone_weekly_trends[!sapply(phone_weekly_trends, is.null)]
+if (length(phone_weekly_trends) > 0) {
+  phone_trends_df <- bind_rows(phone_weekly_trends) %>%
+    arrange(week_start) %>%
+    mutate(week_label = paste0("Wk ", week_num, "\n", format(week_start, "%m/%d")))
+} else {
+  phone_trends_df <- NULL
+}
+```
+
+```{r}
+#| label: phone-4week-volume-plot
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "9-1-1 Call Volumes and Answer Performance (Last 4 Weeks)"
+#| fig-width: 10
+#| fig-height: 6
+
+if (!is.null(phone_trends_df) && nrow(phone_trends_df) > 0) {
+  # Create dual-axis plot: volumes (bars) + percentages (lines)
+  
+  # Reshape for plotting
+  volume_data <- phone_trends_df %>%
+    dplyr::select(week_label, week_start, total_911, answered_911) %>%
+    pivot_longer(cols = c(total_911, answered_911), names_to = "metric", values_to = "count") %>%
+    mutate(metric_label = case_when(
+      metric == "total_911" ~ "Total 9-1-1 Calls",
+      metric == "answered_911" ~ "Answered Calls"
+    ))
+  
+  pct_data <- phone_trends_df %>%
+    dplyr::select(week_label, week_start, pct_10, pct_15, pct_20)
+  
+  # Volume bar plot
+  p_volume <- ggplot(volume_data, aes(x = reorder(week_label, week_start), y = count, fill = metric_label)) +
+    geom_col(position = "dodge", width = 0.7) +
+    geom_text(aes(label = scales::comma(count)), 
+              position = position_dodge(width = 0.7), 
+              vjust = -0.3, size = 3) +
+    scale_fill_manual(values = c("Total 9-1-1 Calls" = palette_cyan_base[8], 
+                                   "Answered Calls" = palette_blue_base[7])) +
+    labs(title = "9-1-1 Call Volumes Over Last 4 Weeks",
+         x = "Week",
+         y = "Call Count",
+         fill = "Metric") +
+    theme_minimal() +
+    theme(legend.position = "bottom",
+          plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+          axis.text.x = element_text(size = 9))
+  
+  # Percentage line plot
+  p_pct <- ggplot(phone_trends_df, aes(x = reorder(week_label, week_start))) +
+    geom_line(aes(y = pct_15, color = "<=15s", group = 1), linewidth = 1.2) +
+    geom_point(aes(y = pct_15, color = "<=15s"), size = 3) +
+    geom_line(aes(y = pct_20, color = "<=20s", group = 1), linewidth = 1.2) +
+    geom_point(aes(y = pct_20, color = "<=20s"), size = 3) +
+    geom_hline(yintercept = 90, linetype = "dashed", color = "darkgreen", linewidth = 0.8) +
+    geom_hline(yintercept = 95, linetype = "dashed", color = "darkblue", linewidth = 0.8) +
+    geom_text(aes(y = pct_15, label = paste0(round(pct_15, 1), "%")), 
+              vjust = -1, size = 3, color = "#006400") +
+    geom_text(aes(y = pct_20, label = paste0(round(pct_20, 1), "%")), 
+              vjust = 2, size = 3, color = "#00008B") +
+    scale_color_manual(values = c("<=15s" = "#006400", "<=20s" = "#00008B"),
+                       labels = c("<=15s (≥90% standard)", "<=20s (≥95% standard)")) +
+    labs(title = "9-1-1 Answer Time Compliance Over Last 4 Weeks",
+         x = "Week",
+         y = "Percentage Answered (%)",
+         color = "Answer Time") +
+    scale_y_continuous(limits = c(max(0, min(phone_trends_df$pct_15, phone_trends_df$pct_20) - 5), 100),
+                       breaks = seq(0, 100, 10)) +
+    theme_minimal() +
+    theme(legend.position = "bottom",
+          plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+          axis.text.x = element_text(size = 9))
+  
+  # Display both plots
+  print(p_volume)
+  cat("\n\n")
+  print(p_pct)
+  
+} else {
+  cat("*Insufficient phone data for 4-week trend visualization.*\n\n")
+}
+```
+
+```{r}
+#| label: phone-4week-abandoned-plot
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "9-1-1 Abandoned Calls Over Last 4 Weeks"
+#| fig-width: 10
+#| fig-height: 6
+
+if (!is.null(phone_trends_df) && nrow(phone_trends_df) > 0) {
+  
+  # Combined bar + line plot for abandoned calls
+  p_abandoned <- ggplot(phone_trends_df, aes(x = reorder(week_label, week_start))) +
+    geom_col(aes(y = abandoned_911), fill = "#8B0000", width = 0.6, alpha = 0.8) +
+    geom_text(aes(y = abandoned_911, label = scales::comma(abandoned_911)), 
+              vjust = -0.5, size = 3.5, fontface = "bold") +
+    geom_line(aes(y = abandoned_pct * max(abandoned_911) / max(abandoned_pct), group = 1), 
+              color = "#8B0000", linewidth = 1.2) +
+    geom_point(aes(y = abandoned_pct * max(abandoned_911) / max(abandoned_pct)), 
+               color = "#8B0000", size = 3) +
+    geom_text(aes(y = abandoned_pct * max(abandoned_911) / max(abandoned_pct), 
+                  label = paste0(round(abandoned_pct, 2), "%")), 
+              vjust = -1, size = 3, color = "#8B0000") +
+    scale_y_continuous(
+      name = "Abandoned Call Count",
+      sec.axis = sec_axis(~ . * max(phone_trends_df$abandoned_pct) / max(phone_trends_df$abandoned_911), 
+                          name = "Abandoned Call Percentage (%)")
+    ) +
+    labs(title = "9-1-1 Abandoned Calls: Volume and Percentage Over Last 4 Weeks",
+         x = "Week") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+      axis.text.x = element_text(size = 9),
+      axis.title.y.left = element_text(color = "#8B0000", face = "bold"),
+      axis.title.y.right = element_text(color = "#8B0000", face = "bold"),
+      axis.text.y.left = element_text(color = "#8B0000"),
+      axis.text.y.right = element_text(color = "#8B0000")
+    )
+  
+  print(p_abandoned)
+  
+} else {
+  cat("*Insufficient phone data for abandoned call trend visualization.*\n\n")
+}
+```
+
+### Call Distribution: Hour by Day of Week
 
 The following visualization shows the distribution of service calls throughout the day (by hour) for each day of the week. This helps identify patterns in service call volume across different days and times.
 
