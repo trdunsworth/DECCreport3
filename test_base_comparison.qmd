@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-11-24"
+date: "2025-12-01"
 format:
     html:
         toc: true
@@ -12,7 +12,7 @@ execute:
   echo: false
 ---
 
-## Week 47 from 16 November through 22 November 2025
+## Week 48 from 23 November through 29 November 2025
 
 ## Table of Contents
 
@@ -972,30 +972,17 @@ incident_arrival_missing_count <- missing_counts["Incident_Arrival_Time"]
 
 # Create the missing values plot
 missing_plot <- inspect_na(df) |>
-  dplyr::filter(cnt > 0) |> # Explicitly use dplyr's filter
-  show_plot(
-    text_labels = TRUE,
-    label_color = "white"
-  ) +
-  # Use interpolated palette to handle any number of missing columns
-  scale_fill_manual(
-    values = colorRampPalette(
-      as.character(paletteer::paletteer_d("MexBrewer::Maiz"))
-    )(sum(colSums(is.na(df)) > 0))
-  ) +
-  geom_text(
-    aes(label = paste0(round(pcnt, 1), "%")),
-    stat = "identity",
-    vjust = -0.5,
-    size = 3,
-    color = "black",
-    fontface = "bold"
-  ) +
-  ggthemes::theme_fivethirtyeight(base_size = 9) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 9), # Rotate x-axis labels
-    axis.text.y = element_text(size = 9) # Fine-tune y-axis label size
-  )
+  dplyr::filter(cnt > 0) |>
+  show_plot()
+
+# Optional: adjust theme if the plot supports ggplot theme
+if (inherits(missing_plot, "ggplot")) {
+  missing_plot <- missing_plot +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+      axis.text.y = element_text(size = 9)
+    )
+}
 
 # Display the plot
 print(missing_plot)
@@ -1155,6 +1142,112 @@ if (!is.null(current_metrics)) {
 standards_tbl_out <- if (!is.null(standards_tbl)) to_ft(standards_tbl, caption = "9-1-1 Answer Time Standards Comparison", digits = 1) else NULL
 
 standards_tbl_out
+```
+
+```{r}
+#| label: phone-heatmaps-dow
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig-height: 6
+
+if (!is.null(current_week_phone) && nrow(current_week_phone) > 0) {
+  # Prepare hourly + DOW summaries for 9-1-1 and Admin calls
+  phone_df_hm <- current_week_phone %>%
+    dplyr::mutate(
+      Hour_numeric = suppressWarnings(as.integer(as.numeric(Hour))),
+      dt_parsed = suppressWarnings(lubridate::ymd_hms(DateTime, quiet = TRUE)),
+      dow_lab = lubridate::wday(dt_parsed, label = TRUE, abbr = TRUE, week_start = 7),
+      DOW = factor(toupper(as.character(dow_lab)),
+                   levels = c("SUN","MON","TUE","WED","THU","FRI","SAT"), ordered = TRUE)
+    ) %>%
+    dplyr::filter(!is.na(Hour_numeric), !is.na(DOW))
+
+  hm_911 <- phone_df_hm %>%
+    dplyr::group_by(DOW, Hour_numeric) %>%
+    dplyr::summarise(call_count = sum(`911_T`, na.rm = TRUE), .groups = "drop")
+  max_911 <- max(hm_911$call_count, na.rm = TRUE)
+  hm_911  <- hm_911 %>% dplyr::mutate(label_color = ifelse(call_count >= 0.6 * max_911, "white", "black"))
+
+  hm_adm <- phone_df_hm %>%
+    dplyr::group_by(DOW, Hour_numeric) %>%
+    dplyr::summarise(call_count = sum(ADM_T, na.rm = TRUE), .groups = "drop")
+  max_adm <- max(hm_adm$call_count, na.rm = TRUE)
+  hm_adm  <- hm_adm %>% dplyr::mutate(label_color = ifelse(call_count >= 0.6 * max_adm, "white", "black"))
+
+  # 9-1-1 heatmap
+  p_hm_911 <- ggplot(hm_911, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = scales::comma(call_count), color = label_color), size = 3.1) +
+    scale_color_identity() +
+    scale_x_continuous(breaks = seq(0, 23, by = 2)) +
+    scale_fill_gradient(low = "#FDEDEC", high = "#8B0000", name = "Calls") +
+    labs(title = "9-1-1 Calls by Hour and Day of Week (Current Week)",
+         x = "Hour of Day", y = NULL) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 13))
+
+  # Administrative heatmap
+  p_hm_adm <- ggplot(hm_adm, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = scales::comma(call_count), color = label_color), size = 3.1) +
+    scale_color_identity() +
+    scale_x_continuous(breaks = seq(0, 23, by = 2)) +
+    scale_fill_gradient(low = "#EAF2F8", high = "#00008B", name = "Calls") +
+    labs(title = "Administrative Calls by Hour and Day of Week (Current Week)",
+         x = "Hour of Day", y = NULL) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 13))
+
+  print(p_hm_911)
+  cat("\n\n")
+  print(p_hm_adm)
+} else {
+  cat("*Phone data not available for hourly heatmaps.*\n\n")
+}
+```
+
+```{r}
+#| label: phone-heatmaps-analysis
+#| echo: false
+#| results: asis
+
+if (!is.null(current_week_phone) && nrow(current_week_phone) > 0) {
+  # Reuse prepared fields to compute quick insights
+  phone_df_hm2 <- current_week_phone %>%
+    dplyr::mutate(
+      Hour_numeric = suppressWarnings(as.integer(as.numeric(Hour))),
+      dt_parsed = suppressWarnings(lubridate::ymd_hms(DateTime, quiet = TRUE)),
+      dow_lab = lubridate::wday(dt_parsed, label = TRUE, abbr = TRUE, week_start = 7),
+      DOW = factor(toupper(as.character(dow_lab)),
+                   levels = c("SUN","MON","TUE","WED","THU","FRI","SAT"), ordered = TRUE)
+    ) %>%
+    dplyr::filter(!is.na(Hour_numeric), !is.na(DOW))
+
+  hm_911 <- phone_df_hm2 %>%
+    dplyr::group_by(DOW, Hour_numeric) %>%
+    dplyr::summarise(call_count = sum(`911_T`, na.rm = TRUE), .groups = "drop")
+  hm_adm <- phone_df_hm2 %>%
+    dplyr::group_by(DOW, Hour_numeric) %>%
+    dplyr::summarise(call_count = sum(ADM_T, na.rm = TRUE), .groups = "drop")
+
+  top_911 <- hm_911 %>% dplyr::filter(call_count == max(call_count, na.rm = TRUE)) %>% dplyr::slice(1)
+  top_adm <- hm_adm %>% dplyr::filter(call_count == max(call_count, na.rm = TRUE)) %>% dplyr::slice(1)
+
+  if (nrow(top_911) == 1) {
+    cat(paste0("- 9-1-1 busiest cell: ", as.character(top_911$DOW),
+               " at ", sprintf("%02d", top_911$Hour_numeric), ":00 with ",
+               top_911$call_count, " calls.\n"))
+  }
+  if (nrow(top_adm) == 1) {
+    cat(paste0("- Administrative busiest cell: ", as.character(top_adm$DOW),
+               " at ", sprintf("%02d", top_adm$Hour_numeric), ":00 with ",
+               top_adm$call_count, " calls.\n\n"))
+  }
+} else {
+  cat("*No phone data available for hourly heatmap analysis.*\n\n")
+}
 ```
 
 ```{r}
@@ -1354,49 +1447,60 @@ if (!is.null(phone_trends_df) && nrow(phone_trends_df) > 0) {
 ```
 
 ```{r}
-#| label: phone-4week-abandoned-plot
+#| label: phone-4week-abandoned-counts
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-cap: "9-1-1 Abandoned Calls Over Last 4 Weeks"
+#| fig-cap: "9-1-1 Abandoned Calls (Counts, Last 4 Weeks)"
 #| fig-width: 10
 #| fig-height: 6
 
 if (!is.null(phone_trends_df) && nrow(phone_trends_df) > 0) {
-  
-  # Combined bar + line plot for abandoned calls
-  p_abandoned <- ggplot(phone_trends_df, aes(x = reorder(week_label, week_start))) +
-    geom_col(aes(y = abandoned_911), fill = "#8B0000", width = 0.6, alpha = 0.8) +
-    geom_text(aes(y = abandoned_911, label = scales::comma(abandoned_911)), 
-              vjust = -0.5, size = 3.5, fontface = "bold") +
-    geom_line(aes(y = abandoned_pct * max(abandoned_911) / max(abandoned_pct), group = 1), 
-              color = "#8B0000", linewidth = 1.2) +
-    geom_point(aes(y = abandoned_pct * max(abandoned_911) / max(abandoned_pct)), 
-               color = "#8B0000", size = 3) +
-    geom_text(aes(y = abandoned_pct * max(abandoned_911) / max(abandoned_pct), 
-                  label = paste0(round(abandoned_pct, 2), "%")), 
-              vjust = -1, size = 3, color = "#8B0000") +
-    scale_y_continuous(
-      name = "Abandoned Call Count",
-      sec.axis = sec_axis(~ . * max(phone_trends_df$abandoned_pct) / max(phone_trends_df$abandoned_911), 
-                          name = "Abandoned Call Percentage (%)")
-    ) +
-    labs(title = "9-1-1 Abandoned Calls: Volume and Percentage Over Last 4 Weeks",
-         x = "Week") +
+  p_abandoned_count <- ggplot(phone_trends_df, aes(x = reorder(week_label, week_start))) +
+    geom_col(aes(y = abandoned_911), fill = "#8B0000", width = 0.6, alpha = 0.85) +
+    geom_text(aes(y = abandoned_911, label = scales::comma(abandoned_911)),
+              vjust = -0.5, size = 3.5, fontface = "bold", color = "#8B0000") +
+    labs(title = "9-1-1 Abandoned Calls – Counts",
+         x = "Week",
+         y = "Abandoned Call Count") +
     theme_minimal() +
     theme(
-      plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
-      axis.text.x = element_text(size = 9),
-      axis.title.y.left = element_text(color = "#8B0000", face = "bold"),
-      axis.title.y.right = element_text(color = "#8B0000", face = "bold"),
-      axis.text.y.left = element_text(color = "#8B0000"),
-      axis.text.y.right = element_text(color = "#8B0000")
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 13),
+      axis.text.x = element_text(size = 9)
     )
-  
-  print(p_abandoned)
-  
+  print(p_abandoned_count)
 } else {
-  cat("*Insufficient phone data for abandoned call trend visualization.*\n\n")
+  cat("*Insufficient phone data for abandoned call count visualization.*\n\n")
+}
+```
+
+```{r}
+#| label: phone-4week-abandoned-percent
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "9-1-1 Abandoned Calls (% of 9-1-1, Last 4 Weeks)"
+#| fig-width: 10
+#| fig-height: 6
+
+if (!is.null(phone_trends_df) && nrow(phone_trends_df) > 0) {
+  p_abandoned_pct <- ggplot(phone_trends_df, aes(x = reorder(week_label, week_start), y = abandoned_pct)) +
+    geom_line(group = 1, color = "#00008B", linewidth = 1.2) +
+    geom_point(color = "#00008B", size = 3) +
+    geom_text(aes(label = paste0(round(abandoned_pct, 1), "%")),
+              vjust = -0.8, size = 3.2, color = "#00008B") +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    labs(title = "9-1-1 Abandoned Calls – Percentage",
+         x = "Week",
+         y = "Abandoned Percentage") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 13),
+      axis.text.x = element_text(size = 9)
+    )
+  print(p_abandoned_pct)
+} else {
+  cat("*Insufficient phone data for abandoned call percentage visualization.*\n\n")
 }
 ```
 
@@ -1525,6 +1629,8 @@ This week, the busiest hour of the day was `r busiest_hour`00 hours, with `r bus
 #| message: false
 #| warning: false
 #| fig-cap: "Call Volume by Hour and Day of Week"
+#| fig-width: 10
+#| fig-height: 6
 #| cache: true
 
 # Create summary data
@@ -1727,19 +1833,32 @@ The following bar charts break down the volume of service calls using various ot
 #| fig-cap: "Number of calls for service by priority level."
 #| cache: true
 # ggplot2
-pn_counts <- df |>
-  count(Priority_Number, sort = TRUE)
+# Ensure Priority_Number is parsed to numeric and ordered
+df_priority <- df %>%
+  mutate(
+    Priority_Number_num = suppressWarnings(as.numeric(gsub("[^0-9]", "", as.character(Priority_Number)))),
+    Priority_Number_fac = factor(
+      Priority_Number_num,
+      levels = sort(unique(na.omit(Priority_Number_num))),
+      ordered = TRUE
+    )
+  )
+
+pn_counts <- df_priority |>
+  filter(!is.na(Priority_Number_fac)) |>
+  count(Priority_Number_fac, sort = FALSE)
 
 max_pn_info <- pn_counts |> filter(n == max(n))
-busiest_pn <- max_pn_info |> slice(1) |> pull(Priority_Number)
+busiest_pn <- max_pn_info |> slice(1) |> pull(Priority_Number_fac)
+busiest_pn_num <- suppressWarnings(as.numeric(as.character(busiest_pn)))
 busiest_pn_count <- max_pn_info |> slice(1) |> pull(n)
 
 # Calculate percentage statistics for inline use
-busiest_pn_percentage <- round(busiest_pn_count / nrow(df) * 100, 1)
-priority1_count <- sum(df$Priority_Number == "1", na.rm = TRUE)
-priority1_percentage <- round(priority1_count / nrow(df) * 100, 1)
+busiest_pn_percentage <- round(busiest_pn_count / nrow(df_priority) * 100, 1)
+priority1_count <- sum(df_priority$Priority_Number_num == 1, na.rm = TRUE)
+priority1_percentage <- round(priority1_count / nrow(df_priority) * 100, 1)
 
-barPriority <- df |> ggplot(aes(x=Priority_Number, fill=Priority_Number)) +
+barPriority <- df_priority |> ggplot(aes(x=Priority_Number_fac, fill=Priority_Number_fac)) +
   geom_bar() +
   paletteer::scale_fill_paletteer_d("ggsci::cyan_material") +
   labs(title="Number of Calls for Service by Priority Level",
@@ -2206,8 +2325,14 @@ for (i in 0:(weeks_to_analyze - 1)) {
   data_file <- file.path("data", "current_year", paste0("week", week_to_load, ".csv"))
   
   if (file.exists(data_file)) {
-    week_df <- vroom::vroom(data_file, show_col_types = FALSE) %>%
-      mutate(
+    week_df <- vroom::vroom(
+      data_file,
+      col_types = vroom::cols(.default = "c"),
+      na = c("", "NA", "NULL"),
+      progress = FALSE,
+      show_col_types = FALSE
+    ) %>%
+      dplyr::mutate(
         week_num = week_to_load,
         week_year = year_to_load,
         Time_To_Queue = suppressWarnings(as.numeric(Time_To_Queue)),
@@ -3863,20 +3988,33 @@ The largest call type was for `r busiest_prob_law`, which was also the largest c
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 # ggplot2
-pri_counts_law <- df_law |>
-  count(Priority_Number, sort = TRUE)
+# Ensure Priority_Number is parsed to numeric and ordered
+df_law_priority <- df_law %>%
+  mutate(
+    Priority_Number_num = suppressWarnings(as.numeric(gsub("[^0-9]", "", as.character(Priority_Number)))),
+    Priority_Number_fac = factor(
+      Priority_Number_num,
+      levels = sort(unique(na.omit(Priority_Number_num))),
+      ordered = TRUE
+    )
+  )
+
+pri_counts_law <- df_law_priority |>
+  filter(!is.na(Priority_Number_fac)) |>
+  count(Priority_Number_fac, sort = FALSE)
 
 max_pri_info_law <- pri_counts_law |> filter(n == max(n))
-busiest_pri_law <- max_pri_info_law |> slice(1) |> pull(Priority_Number)
+busiest_pri_law <- max_pri_info_law |> slice(1) |> pull(Priority_Number_fac)
+busiest_pri_law_num <- suppressWarnings(as.numeric(as.character(busiest_pri_law)))
 busiest_pri_count_law <- max_pri_info_law |> slice(1) |> pull(n)
 
 # Calculate percentage for APD priority calls
-busiest_pri_law_percentage <- round((sum(df_law$Priority_Number == busiest_pri_law, na.rm = TRUE) / nrow(df_law)) * 100, 1)
+busiest_pri_law_percentage <- round((sum(df_law_priority$Priority_Number_num == busiest_pri_law_num, na.rm = TRUE) / nrow(df_law_priority)) * 100, 1)
 
 # Calculate percentage for P1 calls
-p1_law_percentage <- round((sum(df_law$Priority_Number == 1, na.rm = TRUE) / nrow(df_law)) * 100, 1)
+p1_law_percentage <- round((sum(df_law_priority$Priority_Number_num == 1, na.rm = TRUE) / nrow(df_law_priority)) * 100, 1)
 
-barPriority_APD <- df_law |> ggplot(aes(x = Priority_Number, fill = Priority_Number)) +
+barPriority_APD <- df_law_priority |> ggplot(aes(x = Priority_Number_fac, fill = Priority_Number_fac)) +
     geom_bar() +
     paletteer::scale_fill_paletteer_d("ggsci::blue_material") +
     labs(
@@ -4319,20 +4457,32 @@ The greatest number of fire-related service calls were for `r busiest_prob_fire`
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 # ggplot2
-pri_counts_fire <- df_fire |>
-  count(Priority_Number, sort = TRUE)
+# Ensure Priority_Number is parsed to numeric and ordered
+df_fire_priority <- df_fire %>%
+  mutate(
+    Priority_Number_num = suppressWarnings(as.numeric(gsub("[^0-9]", "", as.character(Priority_Number)))),
+    Priority_Number_fac = factor(
+      Priority_Number_num,
+      levels = sort(unique(na.omit(Priority_Number_num))),
+      ordered = TRUE
+    )
+  )
 
+pri_counts_fire <- df_fire_priority |>
+  filter(!is.na(Priority_Number_fac)) |>
+  count(Priority_Number_fac, sort = FALSE)
 max_pri_info_fire <- pri_counts_fire |> filter(n == max(n))
-busiest_pri_fire <- max_pri_info_fire |> slice(1) |> pull(Priority_Number)
+busiest_pri_fire <- max_pri_info_fire |> slice(1) |> pull(Priority_Number_fac)
+busiest_pri_fire_num <- suppressWarnings(as.numeric(as.character(busiest_pri_fire)))
 busiest_pri_count_fire <- max_pri_info_fire |> slice(1) |> pull(n)
 
-# Calculate percentage for APD priority calls
-busiest_pri_fire_percentage <- round((sum(df_fire$Priority_Number == busiest_pri_fire, na.rm = TRUE) / nrow(df_fire)) * 100, 1)
+# Calculate percentage for AFD-Fire priority calls
+busiest_pri_fire_percentage <- round((sum(df_fire_priority$Priority_Number_num == busiest_pri_fire_num, na.rm = TRUE) / nrow(df_fire_priority)) * 100, 1)
 
 # Calculate percentage for P1 calls
-p1_fire_percentage <- round((sum(df_fire$Priority_Number == 1, na.rm = TRUE) / nrow(df_fire)) * 100, 1)
+p1_fire_percentage <- round((sum(df_fire_priority$Priority_Number_num == 1, na.rm = TRUE) / nrow(df_fire_priority)) * 100, 1)
 
-barPriority_AFD <- df_fire |> ggplot(aes(x = Priority_Number, fill = Priority_Number)) +
+barPriority_AFD <- df_fire_priority |> ggplot(aes(x = Priority_Number_fac, fill = Priority_Number_fac)) +
     geom_bar() +
     paletteer::scale_fill_paletteer_d("ggsci::red_material") +
     labs(
@@ -4742,20 +4892,32 @@ The most prevalent medical service type this week was `r busiest_prob_med`. Furt
 #| echo: false
 #| fig-cap: "Number of calls for service by priority level."
 # ggplot2
-pri_counts_ems <- df_ems |>
-  count(Priority_Number, sort = TRUE)
+# Ensure Priority_Number is parsed to numeric and ordered
+df_ems_priority <- df_ems %>%
+  mutate(
+    Priority_Number_num = suppressWarnings(as.numeric(gsub("[^0-9]", "", as.character(Priority_Number)))),
+    Priority_Number_fac = factor(
+      Priority_Number_num,
+      levels = sort(unique(na.omit(Priority_Number_num))),
+      ordered = TRUE
+    )
+  )
 
+pri_counts_ems <- df_ems_priority |>
+  filter(!is.na(Priority_Number_fac)) |>
+  count(Priority_Number_fac, sort = FALSE)
 max_pri_info_ems <- pri_counts_ems |> filter(n == max(n))
-busiest_pri_ems <- max_pri_info_ems |> slice(1) |> pull(Priority_Number)
+busiest_pri_ems <- max_pri_info_ems |> slice(1) |> pull(Priority_Number_fac)
+busiest_pri_ems_num <- suppressWarnings(as.numeric(as.character(busiest_pri_ems)))
 busiest_pri_count_ems <- max_pri_info_ems |> slice(1) |> pull(n)
 
-# Calculate percentage for APD priority calls
-busiest_pri_ems_percentage <- round((sum(df_ems$Priority_Number == busiest_pri_ems, na.rm = TRUE) / nrow(df_ems)) * 100, 1)
+# Calculate percentage for AFD-EMS priority calls
+busiest_pri_ems_percentage <- round((sum(df_ems_priority$Priority_Number_num == busiest_pri_ems_num, na.rm = TRUE) / nrow(df_ems_priority)) * 100, 1)
 
 # Calculate percentage for P1 calls
-p1_ems_percentage <- round((sum(df_ems$Priority_Number == 1, na.rm = TRUE) / nrow(df_ems)) * 100, 1)
+p1_ems_percentage <- round((sum(df_ems_priority$Priority_Number_num == 1, na.rm = TRUE) / nrow(df_ems_priority)) * 100, 1)
 
-barPriority_EMS <- df_ems |> ggplot(aes(x = Priority_Number, fill = Priority_Number)) +
+barPriority_EMS <- df_ems_priority |> ggplot(aes(x = Priority_Number_fac, fill = Priority_Number_fac)) +
     geom_bar() +
     paletteer::scale_fill_paletteer_d("ggsci::green_material") +
     labs(
