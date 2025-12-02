@@ -1,0 +1,9 @@
+---
+title: "Weekly Reports"
+listing:
+  contents: posts
+  type: default
+  sort: "date desc"
+---
+
+This page lists all weekly report posts.

@@ -1,0 +1,11 @@
+---
+title: "DECC Weekly Reports"
+format:
+  html:
+    toc: false
+---
+
+Welcome to the DECC weekly reporting site. Browse prior weeks and current analyses.
+
+- View the full list of weekly reports on the Reports page.
+

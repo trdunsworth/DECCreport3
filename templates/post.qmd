@@ -1,0 +1,65 @@
+---
+title: "Weekly Report"
+date: __REPORT_DATE__
+categories: [weekly]
+params:
+  data_path: __DATA_PATH__
+  week_start: __WEEK_START__
+  week_end: __WEEK_END__
+---
+
+```{r}
+#| include: false
+suppressPackageStartupMessages({
+  library(dplyr); library(readr); library(ggplot2)
+})
+source("R/utils.R")
+source("R/loaders.R")
+source("R/metrics.R")
+source("R/plots.R")
+source("R/narratives.R")
+
+cad_path <- file.path(params$data_path, "cad.csv")
+phone_path <- file.path(params$data_path, "phone.csv")
+
+df <- load_week_data(cad_path)
+phone_df <- load_phone_data(phone_path)
+```
+
+## Summary
+
+- Week: from `r params$week_start` to `r params$week_end`.
+- CAD rows: `r if (!is.null(df)) nrow(df) else 0`.
+- Phone rows: `r if (!is.null(phone_df)) nrow(phone_df) else 0`.
+
+## Priority Distribution
+
+```{r}
+#| echo: false
+if (!is.null(df) && nrow(df) > 0) {
+  print(priority_bar(df))
+} else {
+  cat("No CAD data available for this week.")
+}
+```
+
+## Narrative
+
+```{r}
+#| results: asis
+if (!is.null(df) && nrow(df) > 0) {
+  cat(priority_narrative(df))
+}
+```
+
+## Analyst Notes
+
+```{r}
+#| echo: false
+notes_file <- file.path(params$data_path, "notes.md")
+if (file.exists(notes_file)) {
+  cat(readr::read_file(notes_file))
+} else {
+  cat("(No analyst notes provided for this week.)")
+}
+```

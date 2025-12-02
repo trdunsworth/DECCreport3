@@ -1,0 +1,135 @@
+[
+  {
+    "objectID": "posts/2025-12-02/index.html",
+    "href": "posts/2025-12-02/index.html",
+    "title": "Weekly Report",
+    "section": "",
+    "text": "Week: from 2025-11-30 to 2025-12-06.\nCAD rows: 0.\nPhone rows: 0."
+  },
+  {
+    "objectID": "posts/2025-12-02/index.html#summary",
+    "href": "posts/2025-12-02/index.html#summary",
+    "title": "Weekly Report",
+    "section": "",
+    "text": "Week: from 2025-11-30 to 2025-12-06.\nCAD rows: 0.\nPhone rows: 0."
+  },
+  {
+    "objectID": "posts/2025-12-02/index.html#priority-distribution",
+    "href": "posts/2025-12-02/index.html#priority-distribution",
+    "title": "Weekly Report",
+    "section": "Priority Distribution",
+    "text": "Priority Distribution\n\n\nNo CAD data available for this week."
+  },
+  {
+    "objectID": "posts/2025-12-02/index.html#narrative",
+    "href": "posts/2025-12-02/index.html#narrative",
+    "title": "Weekly Report",
+    "section": "Narrative",
+    "text": "Narrative\nif (!is.null(df) && nrow(df) &gt; 0) {\n  cat(priority_narrative(df))\n}"
+  },
+  {
+    "objectID": "posts/2025-12-02/index.html#analyst-notes",
+    "href": "posts/2025-12-02/index.html#analyst-notes",
+    "title": "Weekly Report",
+    "section": "Analyst Notes",
+    "text": "Analyst Notes"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "This site presents weekly operational reports for DECC. Each post renders from a consistent template and week-specific data snapshots to ensure reproducibility."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "DECC Weekly Reports",
+    "section": "",
+    "text": "Welcome to the DECC weekly reporting site. Browse prior weeks and current analyses.\n\nView the full list of weekly reports on the Reports page."
+  },
+  {
+    "objectID": "reports.html",
+    "href": "reports.html",
+    "title": "Weekly Reports",
+    "section": "",
+    "text": "This page lists all weekly report posts.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWeekly Report\n\n\n\n\n\n\n\n\nDec 2, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nDECC Dev Post (Week 48 Data)\n\n\n\n\n\n\n\n\nInvalid Date\n\n\nDevelopment\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/dev/index.html",
+    "href": "posts/dev/index.html",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "",
+    "text": "This development post uses week 48 data so you can iterate without touching the production blog posts.\nUsing CAD: week48.csv \n\n\nUsing PHONE: week_48_phone.csv"
+  },
+  {
+    "objectID": "posts/dev/index.html#quick-kpis",
+    "href": "posts/dev/index.html#quick-kpis",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Quick KPIs",
+    "text": "Quick KPIs\n\n\nTotal calls: 1493\n\n\nMedian Time_To_Queue: 43s\n\n\nMedian Time_To_Dispatch: 5s"
+  },
+  {
+    "objectID": "posts/dev/index.html#priority-distribution-live",
+    "href": "posts/dev/index.html#priority-distribution-live",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Priority Distribution (Live)",
+    "text": "Priority Distribution (Live)"
+  },
+  {
+    "objectID": "posts/dev/index.html#hour-x-dow-heatmap-live",
+    "href": "posts/dev/index.html#hour-x-dow-heatmap-live",
+    "title": "DECC Dev Post (Live Data)",
+    "section": "Hour x DOW Heatmap (Live)",
+    "text": "Hour x DOW Heatmap (Live)\n\n\nHour or DOW columns not available."
+  },
+  {
+    "objectID": "posts/dev/index.html#notes",
+    "href": "posts/dev/index.html#notes",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Notes",
+    "text": "Notes\n\nThis page is marked published: false, so it won’t render with the site build. Render directly while developing:\n\nquarto render posts/dev/index.qmd --no-cache"
+  },
+  {
+    "objectID": "posts/dev/index.html#hour-x-dow-heatmap-cad-calls",
+    "href": "posts/dev/index.html#hour-x-dow-heatmap-cad-calls",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Hour x DOW Heatmap (CAD Calls)",
+    "text": "Hour x DOW Heatmap (CAD Calls)"
+  },
+  {
+    "objectID": "posts/dev/index.html#phone-heatmaps-9-1-1-and-admin",
+    "href": "posts/dev/index.html#phone-heatmaps-9-1-1-and-admin",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Phone Heatmaps (9-1-1 and Admin)",
+    "text": "Phone Heatmaps (9-1-1 and Admin)"
+  },
+  {
+    "objectID": "posts/dev/index.html#abandoned-calls-trends",
+    "href": "posts/dev/index.html#abandoned-calls-trends",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Abandoned Calls Trends",
+    "text": "Abandoned Calls Trends"
+  },
+  {
+    "objectID": "posts/dev/index.html#agency-specific-priority-distributions",
+    "href": "posts/dev/index.html#agency-specific-priority-distributions",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Agency-Specific Priority Distributions",
+    "text": "Agency-Specific Priority Distributions"
+  },
+  {
+    "objectID": "posts/dev/index.html#module-based-priority-chart-and-narrative",
+    "href": "posts/dev/index.html#module-based-priority-chart-and-narrative",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Module-Based Priority Chart and Narrative",
+    "text": "Module-Based Priority Chart and Narrative\n\n\n\n\n\n\n\n\n\n\nThe majority of calls were Priority 2, representing 43.2% of calls."
+  },
+  {
+    "objectID": "posts/dev/index.html#last-4-weeks-comparators",
+    "href": "posts/dev/index.html#last-4-weeks-comparators",
+    "title": "DECC Dev Post (Week 48 Data)",
+    "section": "Last 4 Weeks Comparators",
+    "text": "Last 4 Weeks Comparators\n\n\n$cad_trend\n# A tibble: 4 × 4\n   Week Calls Median_TTQ Median_TTD\n  &lt;int&gt; &lt;int&gt;      &lt;dbl&gt;      &lt;dbl&gt;\n1    44  1849         38         17\n2    45  1934         40         17\n3    46  1759         43         32\n4    47  1739         43         30\n\n$phone_trend\n# A tibble: 4 × 3\n   Week Pct_15 Pct_20\n  &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt;\n1    44     NA     NA\n2    45     NA     NA\n3    46     NA     NA\n4    47     NA     NA"
+  }
+]

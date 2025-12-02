@@ -1,0 +1,406 @@
+---
+title: "DECC Dev Post (Week 48 Data)"
+author: "Development"
+date: "`r Sys.Date()`"
+published: false
+format:
+  html:
+    toc: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+This development post uses week 48 data so you can iterate without touching the production blog posts.
+
+```{r}
+#| label: setup
+# Source shared modules
+source("../../R/utils.R")
+source("../../R/loaders.R")
+source("../../R/metrics.R")
+source("../../R/plots.R")
+source("../../R/narratives.R")
+
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(lubridate)
+library(tidyr)
+library(stringr)
+```
+
+```{r}
+#| label: live-data-loaders
+# Helpers to find week 48 CAD and phone CSVs
+
+latest_file <- function(pattern, subdir = "current_year", prefer_week = NULL) {
+  abs_root <- "c:/Users/tony.dunsworth/projects/DECCreport3/data"
+  roots <- c(
+    file.path("data", subdir),
+    file.path("../../data", subdir),
+    file.path(abs_root, subdir)
+  )
+  files <- unlist(lapply(roots, function(p) {
+    if (dir.exists(p)) list.files(p, pattern = pattern, full.names = TRUE, ignore.case = TRUE) else character(0)
+  }))
+  if (length(files) == 0) return(NULL)
+  
+  # If prefer_week is specified, try to find that week first
+  if (!is.null(prefer_week)) {
+    week_pattern <- paste0("week", prefer_week)
+    preferred <- files[grepl(week_pattern, basename(files), ignore.case = TRUE)]
+    if (length(preferred) > 0) return(preferred[1])
+  }
+  
+  files[which.max(file.info(files)$mtime)]
+}
+
+# Use week 48 data
+latest_cad_path   <- latest_file("^week.*\\.csv$", prefer_week = 48)
+latest_phone_path <- latest_file("^(week|Week).*phone.*\\.csv$", prefer_week = 48)
+
+if (is.null(latest_cad_path)) {
+  cat("NOTE: No CAD weekly CSV found.\n")
+}
+
+# Load CAD
+cad <- if (!is.null(latest_cad_path)) read_csv(latest_cad_path, show_col_types = FALSE) else NULL
+
+# Load phone
+phone <- NULL
+if (!is.null(latest_phone_path)) {
+  phone <- tryCatch(read_csv(latest_phone_path, show_col_types = FALSE), error = function(e) NULL)
+}
+
+cat("Using CAD:", ifelse(is.null(latest_cad_path), "<none>", basename(latest_cad_path)), "\n")
+cat("Using PHONE:", ifelse(is.null(latest_phone_path) || is.null(phone), "<none>", basename(latest_phone_path)), "\n")
+```
+
+```{r}
+#| label: transform
+if (is.null(cad)) knitr::knit_exit()
+df <- cad
+
+# Transform columns
+if ("Hour" %in% names(df)) {
+  df$Hour <- factor(sprintf("%02d", as.numeric(trimws(df$Hour))), levels = sprintf("%02d", 0:23), ordered = TRUE)
+}
+
+if ("DOW" %in% names(df)) {
+  df$DOW <- factor(df$DOW, levels = c("SUN","MON","TUE","WED","THU","FRI","SAT"), ordered = TRUE)
+}
+
+if ("Priority_Number" %in% names(df)) {
+  df$Priority_Num <- parse_priority_number(df$Priority_Number)
+  df$Priority_F   <- factor(df$Priority_Num, levels = sort(unique(na.omit(df$Priority_Num))), ordered = TRUE)
+}
+```
+
+## Quick KPIs
+
+```{r}
+#| label: kpis
+total_calls <- nrow(df)
+median_ttq  <- if ("Time_To_Queue" %in% names(df)) median(df$Time_To_Queue, na.rm = TRUE) else NA
+median_ttd  <- if ("Time_To_Dispatch" %in% names(df)) median(df$Time_To_Dispatch, na.rm = TRUE) else NA
+
+cat(paste0("Total calls: ", total_calls, "\n"))
+cat(paste0("Median Time_To_Queue: ", ifelse(is.na(median_ttq), "N/A", round(median_ttq,1)), "s\n"))
+cat(paste0("Median Time_To_Dispatch: ", ifelse(is.na(median_ttd), "N/A", round(median_ttd,1)), "s\n"))
+
+if (!is.null(phone) && "Answer_Time" %in% names(phone)) {
+  pct15 <- round(mean(phone$Answer_Time <= 15, na.rm = TRUE) * 100, 1)
+  pct20 <- round(mean(phone$Answer_Time <= 20, na.rm = TRUE) * 100, 1)
+  cat(paste0("9-1-1: ", pct15, "% <=15s, ", pct20, "% <=20s\n"))
+}
+```
+
+## Module-Based Priority Chart and Narrative
+
+```{r}
+#| label: modules-priority
+if (exists("priority_bar") && exists("priority_narrative") && nrow(df) > 0) {
+  try({
+    print(priority_bar(df))
+  }, silent = TRUE)
+  cat("\n")
+  try({
+    cat(priority_narrative(df))
+  }, silent = TRUE)
+} else {
+  cat("Priority modules not available or dataframe empty.\n")
+}
+```
+
+## Priority Distribution (Live)
+
+```{r}
+#| label: priority-bar
+if ("Priority_F" %in% names(df) && nrow(df) > 0) {
+  p <- ggplot(df, aes(x = Priority_F, fill = Priority_F)) +
+    geom_bar() +
+    scale_fill_brewer(palette = "Blues") +
+    labs(title = "Priority Distribution", x = "Priority", y = "Count") +
+    theme_minimal()
+  print(p)
+} else {
+  cat("Priority data not available.\n")
+}
+```
+
+## Hour x DOW Heatmap (CAD Calls)
+
+```{r}
+#| label: hour-dow-heatmap
+#| fig-width: 10
+#| fig-height: 6
+if ("Hour" %in% names(df) && "DOW" %in% names(df) && nrow(df) > 0) {
+  hourly_dow_summary <- df |>
+    mutate(Hour_numeric = as.numeric(as.character(Hour))) |>
+    group_by(DOW, Hour_numeric) |>
+    summarise(call_count = n(), .groups = "drop")
+
+  hm <- ggplot(hourly_dow_summary, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = call_count), 
+              color = ifelse(hourly_dow_summary$call_count > median(hourly_dow_summary$call_count), "white", "black"), 
+              size = 3) +
+    scale_fill_viridis_c(option = "C", direction = -1) +
+    scale_x_continuous(breaks = 0:23) +
+    labs(title = "CAD Service Calls by Hour and Day", x = "Hour", y = "Day", fill = "Calls") +
+    theme_minimal()
+  print(hm)
+}
+```
+
+## Phone Heatmaps (9-1-1 and Admin)
+
+```{r}
+#| label: phone-heatmaps
+#| fig-width: 10
+#| fig-height: 6
+if (!is.null(phone) && nrow(phone) > 0 && "Call_Type" %in% names(phone)) {
+  phone_clean <- phone |>
+    mutate(
+      Hour = factor(sprintf("%02d", as.numeric(trimws(Hour))), levels = sprintf("%02d", 0:23), ordered = TRUE),
+      DOW = factor(DOW, levels = c("SUN","MON","TUE","WED","THU","FRI","SAT"), ordered = TRUE)
+    ) |>
+    filter(!is.na(Hour), !is.na(DOW))
+  
+  # 9-1-1 calls
+  phone_911 <- phone_clean |>
+    filter(Call_Type == "9-1-1") |>
+    mutate(Hour_numeric = as.numeric(as.character(Hour))) |>
+    group_by(DOW, Hour_numeric) |>
+    summarise(call_count = n(), .groups = "drop")
+  
+  if (nrow(phone_911) > 0) {
+    p_hm_911 <- ggplot(phone_911, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+      geom_tile(color = "white") +
+      geom_text(aes(label = call_count), 
+                color = ifelse(phone_911$call_count > median(phone_911$call_count), "white", "black"), 
+                size = 3) +
+      scale_fill_viridis_c(option = "C", direction = -1) +
+      scale_x_continuous(breaks = 0:23) +
+      labs(title = "9-1-1 Calls by Hour and Day", x = "Hour", y = "Day", fill = "Calls") +
+      theme_minimal()
+    print(p_hm_911)
+  }
+  
+  # Admin calls
+  phone_admin <- phone_clean |>
+    filter(Call_Type == "Admin") |>
+    mutate(Hour_numeric = as.numeric(as.character(Hour))) |>
+    group_by(DOW, Hour_numeric) |>
+    summarise(call_count = n(), .groups = "drop")
+  
+  if (nrow(phone_admin) > 0) {
+    p_hm_adm <- ggplot(phone_admin, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+      geom_tile(color = "white") +
+      geom_text(aes(label = call_count), 
+                color = ifelse(phone_admin$call_count > median(phone_admin$call_count), "white", "black"), 
+                size = 3) +
+      scale_fill_viridis_c(option = "C", direction = -1) +
+      scale_x_continuous(breaks = 0:23) +
+      labs(title = "Admin Calls by Hour and Day", x = "Hour", y = "Day", fill = "Calls") +
+      theme_minimal()
+    print(p_hm_adm)
+  }
+}
+```
+
+## Last 4 Weeks Comparators
+
+```{r}
+#| label: last4-load
+# Load week 44–47 (prior weeks to 48) if present for CAD and phone
+find_week_path <- function(week, subdir = "current_year", type = c("cad","phone")) {
+  type <- match.arg(type)
+  pattern <- if (type == "cad") paste0("^week", week, "\\.csv$") else paste0("^week_", week, "_phone\\.csv$")
+  abs_root <- "c:/Users/tony.dunsworth/projects/DECCreport3/data"
+  roots <- c(file.path("data", subdir), file.path("../../data", subdir), file.path(abs_root, subdir))
+  files <- unlist(lapply(roots, function(p) if (dir.exists(p)) list.files(p, pattern = pattern, full.names = TRUE, ignore.case = TRUE) else character(0)))
+  if (length(files) == 0) return(NULL)
+  files[1]
+}
+
+weeks_prior <- 44:47
+cad_list <- list()
+phone_list <- list()
+for (w in weeks_prior) {
+  cad_p <- find_week_path(w, type = "cad")
+  if (!is.null(cad_p)) cad_list[[as.character(w)]] <- tryCatch(readr::read_csv(cad_p, show_col_types = FALSE), error = function(e) NULL)
+  ph_p <- find_week_path(w, type = "phone")
+  if (!is.null(ph_p)) phone_list[[as.character(w)]] <- tryCatch(readr::read_csv(ph_p, show_col_types = FALSE), error = function(e) NULL)
+}
+
+# Build a simple comparator table for CAD call volumes and median times
+cad_trend <- NULL
+if (length(cad_list) > 0) {
+  cad_trend <- dplyr::bind_rows(lapply(names(cad_list), function(w) {
+    x <- cad_list[[w]]
+    if (is.null(x)) return(NULL)
+    tibble::tibble(
+      Week = as.integer(w),
+      Calls = nrow(x),
+      Median_TTQ = if ("Time_To_Queue" %in% names(x)) median(x$Time_To_Queue, na.rm = TRUE) else NA_real_,
+      Median_TTD = if ("Time_To_Dispatch" %in% names(x)) median(x$Time_To_Dispatch, na.rm = TRUE) else NA_real_
+    )
+  })) |> dplyr::arrange(Week)
+}
+
+# Build a simple comparator table for phone answer standards
+phone_trend <- NULL
+if (length(phone_list) > 0) {
+  phone_trend <- dplyr::bind_rows(lapply(names(phone_list), function(w) {
+    p <- phone_list[[w]]
+    if (is.null(p)) return(NULL)
+    tibble::tibble(
+      Week = as.integer(w),
+      Pct_15 = if ("Answer_Time" %in% names(p)) round(mean(p$Answer_Time <= 15, na.rm = TRUE) * 100, 1) else NA_real_,
+      Pct_20 = if ("Answer_Time" %in% names(p)) round(mean(p$Answer_Time <= 20, na.rm = TRUE) * 100, 1) else NA_real_
+    )
+  })) |> dplyr::arrange(Week)
+}
+
+list(cad_trend = cad_trend, phone_trend = phone_trend)
+```
+
+```{r}
+#| label: last4-plots
+#| fig-width: 10
+#| fig-height: 6
+if (!is.null(cad_trend) && nrow(cad_trend) > 0) {
+  p_calls <- ggplot(cad_trend, aes(x = factor(Week), y = Calls, group = 1)) +
+    geom_col(fill = "#4DB6AC") +
+    geom_text(aes(label = Calls), vjust = -0.5) +
+    labs(title = "CAD Calls (Weeks 44–47)", x = "Week", y = "Calls") +
+    theme_minimal()
+  print(p_calls)
+}
+
+if (!is.null(phone_trend) && nrow(phone_trend) > 0) {
+  p_phone <- ggplot(phone_trend, aes(x = factor(Week))) +
+    geom_line(aes(y = Pct_15, group = 1, color = "<=15s")) +
+    geom_point(aes(y = Pct_15, color = "<=15s")) +
+    geom_line(aes(y = Pct_20, group = 1, color = "<=20s")) +
+    geom_point(aes(y = Pct_20, color = "<=20s")) +
+    scale_color_manual(values = c("<=15s" = "#1f77b4", "<=20s" = "#ff7f0e"), name = "Standard") +
+    labs(title = "9-1-1 Answer Performance (Weeks 44–47)", x = "Week", y = "Percent") +
+    theme_minimal()
+  print(p_phone)
+}
+```
+
+## Abandoned Calls Trends
+
+```{r}
+#| label: phone-abandoned
+#| fig-width: 10
+#| fig-height: 6
+if (!is.null(phone) && "Call_Type" %in% names(phone) && "Abandoned" %in% names(phone)) {
+  phone_summary <- phone |>
+    group_by(Call_Type) |>
+    summarise(
+      Total = n(),
+      Abandoned = sum(Abandoned == "Yes", na.rm = TRUE),
+      Pct_Abandoned = round((Abandoned / Total) * 100, 1),
+      .groups = "drop"
+    )
+  
+  # Counts
+  p_abandoned_count <- ggplot(phone_summary, aes(x = Call_Type, y = Abandoned, fill = Call_Type)) +
+    geom_col() +
+    geom_text(aes(label = Abandoned), vjust = -0.5) +
+    scale_fill_brewer(palette = "Set2") +
+    labs(title = "Abandoned Calls by Type", x = "Call Type", y = "Count") +
+    theme_minimal() +
+    theme(legend.position = "none")
+  print(p_abandoned_count)
+  
+  # Percentages
+  p_abandoned_pct <- ggplot(phone_summary, aes(x = Call_Type, y = Pct_Abandoned, fill = Call_Type)) +
+    geom_col() +
+    geom_text(aes(label = paste0(Pct_Abandoned, "%")), vjust = -0.5) +
+    scale_fill_brewer(palette = "Set2") +
+    labs(title = "Abandoned Calls (% of Total)", x = "Call Type", y = "Percentage") +
+    theme_minimal() +
+    theme(legend.position = "none")
+  print(p_abandoned_pct)
+}
+```
+
+## Agency-Specific Priority Distributions
+
+```{r}
+#| label: agency-priority
+#| fig-width: 10
+#| fig-height: 6
+if ("Agency" %in% names(df) && "Priority_F" %in% names(df)) {
+  # APD
+  df_apd <- df |> filter(Agency == "POLICE")
+  if (nrow(df_apd) > 0) {
+    p_apd <- ggplot(df_apd, aes(x = Priority_F, fill = Priority_F)) +
+      geom_bar() +
+      scale_fill_brewer(palette = "Blues") +
+      labs(title = "APD Priority Distribution", x = "Priority", y = "Count") +
+      theme_minimal() +
+      theme(legend.position = "none")
+    print(p_apd)
+  }
+  
+  # Fire
+  df_fire <- df |> filter(Agency == "FIRE")
+  if (nrow(df_fire) > 0) {
+    p_fire <- ggplot(df_fire, aes(x = Priority_F, fill = Priority_F)) +
+      geom_bar() +
+      scale_fill_brewer(palette = "Reds") +
+      labs(title = "AFD Fire Priority Distribution", x = "Priority", y = "Count") +
+      theme_minimal() +
+      theme(legend.position = "none")
+    print(p_fire)
+  }
+  
+  # EMS
+  df_ems <- df |> filter(Agency == "EMS")
+  if (nrow(df_ems) > 0) {
+    p_ems <- ggplot(df_ems, aes(x = Priority_F, fill = Priority_F)) +
+      geom_bar() +
+      scale_fill_brewer(palette = "Oranges") +
+      labs(title = "AFD EMS Priority Distribution", x = "Priority", y = "Count") +
+      theme_minimal() +
+      theme(legend.position = "none")
+    print(p_ems)
+  }
+}
+```
+
+## Notes
+
+- This page is marked `published: false`, so it won't render with the site build. Render directly while developing:
+
+```pwsh
+quarto render posts/dev/index.qmd --no-cache
+```

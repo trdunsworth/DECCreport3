@@ -1,0 +1,5 @@
+---
+title: "About"
+---
+
+This site presents weekly operational reports for DECC. Each post renders from a consistent template and week-specific data snapshots to ensure reproducibility.

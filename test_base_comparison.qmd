@@ -1,7 +1,7 @@
 ---
 title: "DECC Weekly Report"
 author: "Tony Dunsworth, PhD"
-date: "2025-12-01"
+date: "2025-12-02"
 format:
     html:
         toc: true
@@ -1170,11 +1170,25 @@ if (!is.null(current_week_phone) && nrow(current_week_phone) > 0) {
   max_911 <- max(hm_911$call_count, na.rm = TRUE)
   hm_911  <- hm_911 %>% dplyr::mutate(label_color = ifelse(call_count >= 0.6 * max_911, "white", "black"))
 
+  # 9-1-1 abandoned
+  hm_911_ab <- phone_df_hm %>%
+    dplyr::group_by(DOW, Hour_numeric) %>%
+    dplyr::summarise(call_count = sum(`911_AB`, na.rm = TRUE), .groups = "drop")
+  max_911_ab <- max(hm_911_ab$call_count, na.rm = TRUE)
+  hm_911_ab  <- hm_911_ab %>% dplyr::mutate(label_color = ifelse(call_count >= 0.6 * max_911_ab, "white", "black"))
+
   hm_adm <- phone_df_hm %>%
     dplyr::group_by(DOW, Hour_numeric) %>%
     dplyr::summarise(call_count = sum(ADM_T, na.rm = TRUE), .groups = "drop")
   max_adm <- max(hm_adm$call_count, na.rm = TRUE)
   hm_adm  <- hm_adm %>% dplyr::mutate(label_color = ifelse(call_count >= 0.6 * max_adm, "white", "black"))
+
+  # Admin abandoned
+  hm_adm_ab <- phone_df_hm %>%
+    dplyr::group_by(DOW, Hour_numeric) %>%
+    dplyr::summarise(call_count = sum(ADM_AB, na.rm = TRUE), .groups = "drop")
+  max_adm_ab <- max(hm_adm_ab$call_count, na.rm = TRUE)
+  hm_adm_ab  <- hm_adm_ab %>% dplyr::mutate(label_color = ifelse(call_count >= 0.6 * max_adm_ab, "white", "black"))
 
   # 9-1-1 heatmap
   p_hm_911 <- ggplot(hm_911, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
@@ -1184,6 +1198,18 @@ if (!is.null(current_week_phone) && nrow(current_week_phone) > 0) {
     scale_x_continuous(breaks = seq(0, 23, by = 2)) +
     scale_fill_gradient(low = "#FDEDEC", high = "#8B0000", name = "Calls") +
     labs(title = "9-1-1 Calls by Hour and Day of Week (Current Week)",
+         x = "Hour of Day", y = NULL) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 13))
+
+  # 9-1-1 abandoned heatmap
+  p_hm_911_ab <- ggplot(hm_911_ab, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = scales::comma(call_count), color = label_color), size = 3.1) +
+    scale_color_identity() +
+    scale_x_continuous(breaks = seq(0, 23, by = 2)) +
+    scale_fill_gradient(low = "#FBE9E7", high = "#BF360C", name = "Abandoned") +
+    labs(title = "9-1-1 Abandoned Calls by Hour and Day of Week (Current Week)",
          x = "Hour of Day", y = NULL) +
     theme_minimal() +
     theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 13))
@@ -1200,9 +1226,26 @@ if (!is.null(current_week_phone) && nrow(current_week_phone) > 0) {
     theme_minimal() +
     theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 13))
 
+  # Administrative abandoned heatmap
+  p_hm_adm_ab <- ggplot(hm_adm_ab, aes(x = Hour_numeric, y = DOW, fill = call_count)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = scales::comma(call_count), color = label_color), size = 3.1) +
+    scale_color_identity() +
+    scale_x_continuous(breaks = seq(0, 23, by = 2)) +
+    scale_fill_gradient(low = "#E3F2FD", high = "#0D47A1", name = "Abandoned") +
+    labs(title = "Administrative Abandoned Calls by Hour and Day of Week (Current Week)",
+         x = "Hour of Day", y = NULL) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 13))
+
+  # Print in requested order: received then abandoned for each line type
   print(p_hm_911)
   cat("\n\n")
+  print(p_hm_911_ab)
+  cat("\n\n")
   print(p_hm_adm)
+  cat("\n\n")
+  print(p_hm_adm_ab)
 } else {
   cat("*Phone data not available for hourly heatmaps.*\n\n")
 }

@@ -1,0 +1,27 @@
+project:
+  type: website
+  render:
+    - index.qmd
+    - reports.qmd
+    - about.qmd
+    - posts/**
+
+website:
+  title: "DECC Weekly Reports"
+  navbar:
+    left:
+      - text: Home
+        href: index.qmd
+      - text: Reports
+        href: reports.qmd
+      - text: About
+        href: about.qmd
+  page-navigation: true
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    smooth-scroll: true
