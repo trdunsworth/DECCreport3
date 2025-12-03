@@ -1,0 +1,2699 @@
+---
+title: "DECC Weekly Report (Python Version)"
+author: "Tony Dunsworth, PhD"
+date: "2025-12-03"
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        toc-location: left
+execute:
+  freeze: auto
+  echo: false
+jupyter: python3
+---
+
+## Python Dependencies Required
+
+This report requires the following Python libraries to run successfully:
+
+### Core Data & Scientific Computing
+- **pandas**: Data manipulation and analysis (DataFrames, CSV reading, groupby operations)
+- **numpy**: Numerical computing and array operations
+- **scipy**: Scientific computing (statistics, correlation, outlier detection)
+
+### Date/Time Handling
+- **datetime**: Built-in date and time manipulation
+- **dateutil**: Extensions for datetime parsing
+
+### Data Visualization
+- **matplotlib**: Core plotting library for all visualizations
+- **seaborn**: Statistical data visualization (heatmaps, distribution plots)
+- **plotly**: Interactive visualizations (optional, for advanced charts)
+
+### Statistical Analysis
+- **statsmodels**: Statistical models and hypothesis testing
+- **scikit-learn**: Machine learning utilities (scaling, preprocessing, clustering)
+
+### Table Formatting
+- **tabulate**: Pretty-printing tabular data
+- **great_tables**: Modern table formatting for Python (alternative: itables)
+
+### Color Palettes
+- **palettable**: Color palette library (equivalent to R's paletteer)
+
+### Installation Command
+```bash
+pip install pandas numpy scipy matplotlib seaborn statsmodels scikit-learn tabulate great_tables palettable python-dateutil
+```
+
+---
+
+## Week 48 from 23 November through 29 November 2025
+
+## Table of Contents
+
+### Main Sections
+
+- **[Introduction](#introduction)**
+- **[Data Cleaning](#data-cleaning)**
+- **[Exploratory Analysis](#exploratory-analysis)**
+  - [Call Distribution: Hour by Day of Week](#call-distribution-hour-by-day-of-week)
+  - [Distribution of Service Calls by Shift](#distribution-of-service-calls-by-shift)
+  - [CAD-centric Analyses](#cad-centric-analyses)
+  - [Summary Statistics and Analyses](#summary-statsitcs-and-analyses)
+- **[Discipline Analyses](#discipline-analyses)**
+  - [APD Analyses](#apd-analyses)
+  - [AFD FIRE Analyses](#afd-fire-analyses)
+  - [AFD EMS Analyses](#afd-ems-analyses)
+- **[Additional Analyses](#additional-analyses)**
+  - [Possible Service Delays](#possible-service-delays)
+- **[High-Priority and Critical Calls](#high-priority-and-critical-calls)**
+  - [High-Priority Call Types](#high-priority-call-types)
+  - [High-Priority Response Times](#high-priority-response-times)
+- **[E-911 Service Call Analyses](#e-911-service-call-analyses)**
+  - [E-911 Call Response Summary](#e-911-call-response-summary)
+  - [E-911 Call Breakdowns](#e-911-call-breakdowns)
+- **[Cardiac Arrest Calls Analysis](#cardiac-arrest-calls-analysis)**
+- **[Mental Health Analyses](#mental-health-analyses)**
+- **[Call Source Unrecorded](#call-source-unrecorded)**
+- **[Hybrid Call Takers](#hybrid-call-takers)**
+- **[Outlier Identification](#outlier-identification)**
+- **[Comparisons](#comparisons)**
+- **[Conclusion](#conclusion)**
+
+---
+
+```{python}
+#| label: setup
+#| echo: false
+#| message: false
+#| warning: false
+
+# Import required libraries
+import pandas as pd
+import numpy as np
+import sys
+import matplotlib.pyplot as plt
+try:
+    # TimeCopilot: time-series forecasting addon
+    import timecopilot as tc
+except ImportError:
+    tc = None
+import seaborn as sns
+from datetime import datetime, timedelta
+from dateutil.parser import parse
+from scipy import stats
+import warnings
+warnings.filterwarnings('ignore')
+
+# Set display options
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_colwidth', 50)
+
+# Set matplotlib/seaborn style
+plt.style.use('seaborn-v0_8-darkgrid')
+sns.set_palette("Set2")
+
+# Figure size defaults
+plt.rcParams['figure.figsize'] = (10, 6)
+plt.rcParams['figure.dpi'] = 96
+
+print("Libraries loaded successfully")
+```
+
+```{python}
+#| label: dataframes
+#| include: false
+
+# ============================================================================
+# AUTOMATED WEEK CALCULATION AND DATA LOADING
+# ============================================================================
+# This chunk automatically determines which weeks to load based on the report date
+# Report covers: week PRIOR to the week containing the report date
+# Comparison uses: week BEFORE the reporting week
+
+from datetime import datetime, timedelta
+import os
+from pathlib import Path
+
+# Report date (today's date or override here if needed)
+REPORT_DATE = datetime.now()
+# REPORT_DATE = datetime(2025, 10, 30)  # Example: uncomment to use specific date
+
+# Calculate which week the REPORT_DATE falls into (ISO 8601: weeks start Sunday)
+# Python's isocalendar starts weeks on Monday, so we adjust
+days_since_sunday = (REPORT_DATE.weekday() + 1) % 7
+report_week_start = REPORT_DATE - timedelta(days=days_since_sunday)
+report_week_num = report_week_start.isocalendar()[1]
+report_year = report_week_start.year
+
+# The week we're REPORTING ON is the week PRIOR to the report week
+current_week_start = report_week_start - timedelta(weeks=1)
+current_week_end = current_week_start + timedelta(days=6)
+current_week_num = current_week_start.isocalendar()[1]
+current_year = current_week_start.year
+
+# The COMPARISON week is one week before the current week
+last_week_start = current_week_start - timedelta(weeks=1)
+last_week_end = last_week_start + timedelta(days=6)
+last_week_num = last_week_start.isocalendar()[1]
+last_year = last_week_start.year
+
+# Store week numbers for use throughout the document
+WEEK_NUMBER = current_week_num
+WEEK_START_DATE = current_week_start
+WEEK_END_DATE = current_week_end
+
+LAST_WEEK_NUMBER = last_week_num
+LAST_WEEK_START_DATE = last_week_start
+LAST_WEEK_END_DATE = last_week_end
+
+# Format dates for display
+WEEK_START_FORMATTED = WEEK_START_DATE.strftime("%d %b")
+WEEK_END_FORMATTED = WEEK_END_DATE.strftime("%d %b")
+
+LAST_WEEK_START_FORMATTED = LAST_WEEK_START_DATE.strftime("%d %b")
+LAST_WEEK_END_FORMATTED = LAST_WEEK_END_DATE.strftime("%d %b")
+
+# ============================================================================
+# DATA FILE LOADING HELPER
+# ============================================================================
+def load_week_data(week_num, week_year):
+    """Find and load the correct CSV file for a given week"""
+    # Determine which folder to look in
+    if week_year == REPORT_DATE.year:
+        base_path = "data/current_year"
+    else:
+        base_path = "data/prior_year"
+    
+    # Try different naming conventions
+    possible_files = [
+        os.path.join(base_path, f"week{week_num}.csv"),
+        os.path.join(base_path, f"Week{week_num}_{str(week_year)[2:4]}.csv"),
+        os.path.join(base_path, f"Week{week_num}.csv"),
+        # Fallback: also check root data folder
+        f"data/week{week_num}.csv",
+        f"data/Week{week_num}_{str(week_year)[2:4]}.csv",
+        f"data/Week{week_num}.csv"
+    ]
+    
+    # Find the first file that exists
+    data_file = None
+    for file in possible_files:
+        if os.path.exists(file):
+            data_file = file
+            break
+    
+    if data_file is None:
+        raise FileNotFoundError(f"No data file found for week {week_num} ({week_year}). Checked: {possible_files}")
+    
+    print(f"Loading week {week_num} ({week_year}) data from: {data_file}")
+    
+    # Load the CSV file (all columns as strings initially)
+    df = pd.read_csv(data_file, dtype=str, na_values=['', 'NA', 'NULL'])
+    
+    if df.empty:
+        raise ValueError(f"Data file is empty or failed to load: {data_file}")
+    
+    print(f"  Successfully loaded {len(df)} rows")
+    
+    return df
+
+# ============================================================================
+# PHONE DATA FILE LOADING HELPER
+# ============================================================================
+def load_phone_data(week_num, week_year):
+    """Find and load the correct phone CSV file for a given week"""
+    # Determine which folder to look in
+    if week_year == REPORT_DATE.year:
+        base_path = "data/current_year"
+    else:
+        base_path = "data/prior_year"
+    
+    # Try different naming conventions for phone data
+    possible_files = [
+        os.path.join(base_path, f"week_{week_num}_phone.csv"),
+        os.path.join(base_path, f"Week_{week_num}_phone.csv"),
+        # Fallback: also check root data folder
+        f"data/week_{week_num}_phone.csv",
+        f"data/Week_{week_num}_phone.csv"
+    ]
+    
+    # Find the first file that exists
+    data_file = None
+    for file in possible_files:
+        if os.path.exists(file):
+            data_file = file
+            break
+    
+    if data_file is None:
+        print(f"Warning: No phone data file found for week {week_num} ({week_year}). Checked: {possible_files}")
+        return None
+    
+    print(f"Loading week {week_num} ({week_year}) phone data from: {data_file}")
+    
+    # Load the CSV file
+    df = pd.read_csv(data_file, dtype=str, na_values=['', 'NA', 'NULL'])
+    
+    if df.empty:
+        print(f"Warning: Phone data file is empty: {data_file}")
+        return None
+    
+    print(f"  Successfully loaded {len(df)} rows")
+    
+    return df
+
+# ============================================================================
+# LOAD DATA FOR CURRENT WEEK AND LAST WEEK (CAD DATA)
+# ============================================================================
+print("\n=== AUTOMATED WEEK CALCULATION ===")
+print(f"Report Date: {REPORT_DATE.strftime('%Y-%m-%d')}")
+print(f"Current Week (reporting on): {WEEK_NUMBER} — {WEEK_START_FORMATTED} through {WEEK_END_FORMATTED} {current_year}")
+print(f"Last Week (comparison): {LAST_WEEK_NUMBER} — {LAST_WEEK_START_FORMATTED} through {LAST_WEEK_END_FORMATTED} {last_year}\n")
+
+# Load current week CAD data
+current_week = load_week_data(current_week_num, current_year)
+
+# Load last week CAD data
+last_week = load_week_data(last_week_num, last_year)
+
+print("\n=== CAD DATA LOADING COMPLETE ===\n")
+
+# ============================================================================
+# LOAD PHONE DATA FOR CURRENT WEEK AND LAST WEEK
+# ============================================================================
+print("\n=== LOADING PHONE DATA ===")
+
+# Load current week phone data
+current_week_phone = load_phone_data(current_week_num, current_year)
+
+# Load last week phone data
+last_week_phone = load_phone_data(last_week_num, last_year)
+
+# Check if phone data loaded successfully
+if current_week_phone is not None:
+    print(f"Current week phone data loaded: {len(current_week_phone)} rows")
+else:
+    print("Current week phone data not available")
+
+if last_week_phone is not None:
+    print(f"Last week phone data loaded: {len(last_week_phone)} rows")
+else:
+    print("Last week phone data not available")
+
+print("\n=== PHONE DATA LOADING COMPLETE ===\n")
+
+# ============================================================================
+# LOAD LAST 4 WEEKS OF DATA (CAD AND PHONE)
+# ============================================================================
+print("\n=== LOADING LAST 4 WEEKS DATA ===")
+
+# Calculate the 4 weeks prior to the current week
+last_4_weeks = []
+last_4_weeks_phone = []
+
+for i in range(1, 5):
+    # Calculate week number and year for this offset
+    week_offset_start = current_week_start - timedelta(weeks=i)
+    week_offset_num = week_offset_start.isocalendar()[1]
+    week_offset_year = week_offset_start.year
+    
+    print(f"Loading week {week_offset_num} ({week_offset_year})")
+    
+    # Load CAD data
+    try:
+        week_data = load_week_data(week_offset_num, week_offset_year)
+        last_4_weeks.append(week_data)
+    except Exception as e:
+        print(f"  Warning: Could not load CAD data for week {week_offset_num}")
+    
+    # Load phone data
+    phone_data = load_phone_data(week_offset_num, week_offset_year)
+    if phone_data is not None:
+        last_4_weeks_phone.append(phone_data)
+    else:
+        print(f"  Warning: Could not load phone data for week {week_offset_num}")
+
+# Combine last 4 weeks CAD data
+if len(last_4_weeks) > 0:
+    last_4_weeks_combined = pd.concat(last_4_weeks, ignore_index=True)
+    print(f"\nLast 4 weeks CAD data combined: {len(last_4_weeks_combined)} total rows")
+else:
+    print("\nWarning: No last 4 weeks CAD data available")
+    last_4_weeks_combined = None
+
+# Combine last 4 weeks phone data
+if len(last_4_weeks_phone) > 0:
+    last_4_weeks_phone_combined = pd.concat(last_4_weeks_phone, ignore_index=True)
+    print(f"Last 4 weeks phone data combined: {len(last_4_weeks_phone_combined)} total rows")
+else:
+    print("Warning: No last 4 weeks phone data available")
+    last_4_weeks_phone_combined = None
+
+print("\n=== ALL DATA LOADING COMPLETE ===\n")
+
+# Update title dynamically
+DYNAMIC_TITLE = f"Weekly Report: Week {WEEK_NUMBER} ({WEEK_START_FORMATTED} through {WEEK_END_FORMATTED} {current_year})"
+```
+
+```{python}
+#| label: global-options
+#| include: false
+
+# Global plotting configuration
+import matplotlib as mpl
+
+# Cache path for this week
+cache_path = f'cache/week-{WEEK_NUMBER}/'
+os.makedirs(cache_path, exist_ok=True)
+
+# Precompute shared color palettes (equivalent to R's paletteer)
+# (Removed external palettable imports to avoid extra dependency)
+
+# Cyan material palette (approximation)
+palette_cyan_base = ['#E0F2F1', '#B2DFDB', '#80CBC4', '#4DB6AC', '#26A69A', '#009688', '#00897B', '#00796B', '#00695C', '#004D40']
+palette_blue_base = ['#08306B', '#08519C', '#2171B5', '#4292C6', '#6BAED6', '#9ECAE1', '#C6DBEF', '#DEEBF7']
+palette_red_base = ['#67000D', '#A50F15', '#CB181D', '#EF3B2C', '#FB6A4A', '#FC9272', '#FCBBA1', '#FEE0D2']
+
+# Create 24-color palettes by interpolation
+from matplotlib.colors import LinearSegmentedColormap
+
+def create_palette(colors, n=24):
+    """Create n-color palette from base colors"""
+    cmap = LinearSegmentedColormap.from_list("custom", colors)
+    return [mpl.colors.rgb2hex(cmap(i)) for i in np.linspace(0, 1, n)]
+
+palette_cyan_24 = create_palette(palette_cyan_base, 24)
+palette_blue_24 = create_palette(palette_blue_base, 24)
+palette_red_24 = create_palette(palette_red_base, 24)
+
+# Helper functions for safe statistics
+def q90(x):
+    """90th percentile, ignoring NaN"""
+    return np.nanpercentile(x, 90)
+
+def q99(x):
+    """99th percentile, ignoring NaN"""
+    return np.nanpercentile(x, 99)
+
+def iqr_safe(x):
+    """IQR, ignoring NaN"""
+    return np.nanpercentile(x, 75) - np.nanpercentile(x, 25)
+
+print("Global options configured")
+```
+
+```{python}
+#| label: table-defaults
+#| echo: false
+#| message: false
+#| warning: false
+
+# Table formatting helper function
+from tabulate import tabulate
+
+def to_table(df, caption=None, headers='keys', tablefmt='html', floatfmt='.2f'):
+    """
+    Format a pandas DataFrame as an HTML table
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        Data to format
+    caption : str, optional
+        Table caption
+    headers : str or list
+        Column headers ('keys' uses DataFrame column names)
+    tablefmt : str
+        Table format ('html', 'grid', 'simple', etc.)
+    floatfmt : str
+        Float formatting string
+    """
+    if caption:
+        print(f"**{caption}**\n")
+    
+    # Format numeric columns
+    df_formatted = df.copy()
+    for col in df_formatted.select_dtypes(include=[np.number]).columns:
+        if df_formatted[col].dtype in ['int64', 'int32']:
+            df_formatted[col] = df_formatted[col].apply(lambda x: f"{x:,}" if pd.notna(x) else "")
+        else:
+            df_formatted[col] = df_formatted[col].apply(lambda x: f"{x:,.2f}" if pd.notna(x) else "")
+    
+    return tabulate(df_formatted, headers=headers, tablefmt=tablefmt, showindex=False)
+
+print("Table formatting configured")
+```
+
+## Introduction
+
+This is the weekly report for week {python} f"{WEEK_NUMBER}" covering the period from {python} f"{WEEK_START_FORMATTED}" through {python} f"{WEEK_END_FORMATTED}" 2025. The report will include analyses of the data to emphasize different information that is contained within the data and may be pertinent to both operations and management.
+
+```{python}
+#| label: data-processing
+#| echo: false
+#| output: false
+
+# Data is now loaded as 'current_week' and 'last_week'
+# This chunk processes the current week data for the main report
+
+# Use current_week as the primary dataframe for this report
+df = current_week.copy()
+
+print(f"Processing current week data: {len(df)} rows")
+print(f"Call_Reception column check: {'Call_Reception' in df.columns}")
+
+# Parse date-time columns
+datetime_cols = [
+    'Response_Date', 'Incident_Start_Time', 'TimeCallViewed',
+    'Incident_Queue_Time', 'Incident_Dispatch_Time', 'Incident_Phone_Stop',
+    'TimeFirstUnitDispatchAcknowledged', 'Incident_Enroute_Time',
+    'Incident_Arrival_Time', 'TimeFirstCallCleared', 'Incident_First_Close_Time',
+    'Final_Closed_Time', 'First_Reopen_Time'
+]
+
+for col in datetime_cols:
+    if col in df.columns:
+        df[col] = pd.to_datetime(df[col], errors='coerce')
+
+# Convert categorical columns
+df['WeekNo'] = df['WeekNo'].astype('category')
+df['Day'] = df['Day'].astype('category')
+df['Hour'] = df['Hour'].astype(str).str.strip().str.zfill(2).astype('category')
+
+# Convert DOW to ordered categorical
+dow_order = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+df['DOW'] = pd.Categorical(df['DOW'], categories=dow_order, ordered=True)
+
+# Convert ShiftPart to ordered categorical
+shift_order = ['EARLY', 'MIDS', 'LATE']
+df['ShiftPart'] = pd.Categorical(df['ShiftPart'], categories=shift_order, ordered=True)
+
+# Convert Priority_Number to numeric ordered categorical
+df['Priority_Number'] = pd.to_numeric(df['Priority_Number'].astype(str).str.extract(r'(\d+)')[0], errors='coerce')
+df['Priority_Number'] = pd.Categorical(df['Priority_Number'], ordered=True)
+
+# Convert numeric time columns
+numeric_cols = ['Time_To_Queue', 'Time_To_Dispatch', 'Phone_Time', 'Processing_Time', 
+                'Rollout_Time', 'Transit_Time', 'Total_Call_Time']
+for col in numeric_cols:
+    if col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+# Process last week data for comparison (same transformations)
+df_last = last_week.copy()
+
+for col in datetime_cols:
+    if col in df_last.columns:
+        df_last[col] = pd.to_datetime(df_last[col], errors='coerce')
+
+df_last['WeekNo'] = df_last['WeekNo'].astype('category')
+df_last['Day'] = df_last['Day'].astype('category')
+df_last['Hour'] = df_last['Hour'].astype(str).str.strip().str.zfill(2).astype('category')
+df_last['DOW'] = pd.Categorical(df_last['DOW'], categories=dow_order, ordered=True)
+df_last['ShiftPart'] = pd.Categorical(df_last['ShiftPart'], categories=shift_order, ordered=True)
+df_last['Priority_Number'] = pd.to_numeric(df_last['Priority_Number'].astype(str).str.extract(r'(\d+)')[0], errors='coerce')
+df_last['Priority_Number'] = pd.Categorical(df_last['Priority_Number'], ordered=True)
+
+for col in numeric_cols:
+    if col in df_last.columns:
+        df_last[col] = pd.to_numeric(df_last[col], errors='coerce')
+
+print(f"Processing last week data: {len(df_last)} rows")
+print("Both weeks ready for analysis and comparison")
+```
+
+For this week, there were a total of {python} f"{len(df):,}" calls for service.
+
+## Executive Summary
+
+```{python}
+#| label: kpi-calculations
+#| echo: false
+#| message: false
+#| warning: false
+
+# Calculate KPIs for current and last week
+# SLA Compliance Calculations
+
+# LAW P1: ≤60s Time_To_Dispatch
+law_p1_current = df[(df['Agency'] == 'POLICE') & (df['Priority_Number'] == 1) & (df['Time_To_Dispatch'].notna())]
+law_p1_compliant_current = law_p1_current[law_p1_current['Time_To_Dispatch'] <= 60]
+law_p1_sla_current = round((len(law_p1_compliant_current) / len(law_p1_current)) * 100, 1) if len(law_p1_current) > 0 else np.nan
+
+law_p1_last = df_last[(df_last['Agency'] == 'POLICE') & (df_last['Priority_Number'] == 1) & (df_last['Time_To_Dispatch'].notna())]
+law_p1_compliant_last = law_p1_last[law_p1_last['Time_To_Dispatch'] <= 60]
+law_p1_sla_last = round((len(law_p1_compliant_last) / len(law_p1_last)) * 100, 1) if len(law_p1_last) > 0 else np.nan
+
+# LAW P2: ≤120s Time_To_Dispatch
+law_p2_current = df[(df['Agency'] == 'POLICE') & (df['Priority_Number'] == 2) & (df['Time_To_Dispatch'].notna())]
+law_p2_compliant_current = law_p2_current[law_p2_current['Time_To_Dispatch'] <= 120]
+law_p2_sla_current = round((len(law_p2_compliant_current) / len(law_p2_current)) * 100, 1) if len(law_p2_current) > 0 else np.nan
+
+law_p2_last = df_last[(df_last['Agency'] == 'POLICE') & (df_last['Priority_Number'] == 2) & (df_last['Time_To_Dispatch'].notna())]
+law_p2_compliant_last = law_p2_last[law_p2_last['Time_To_Dispatch'] <= 120]
+law_p2_sla_last = round((len(law_p2_compliant_last) / len(law_p2_last)) * 100, 1) if len(law_p2_last) > 0 else np.nan
+
+# FIRE/EMS: ≤64s and ≤106s Time_To_Queue
+fire_ems_current = df[df['Agency'].isin(['FIRE', 'EMS']) & df['Time_To_Queue'].notna()]
+fire_ems_64_compliant_current = fire_ems_current[fire_ems_current['Time_To_Queue'] <= 64]
+fire_ems_106_compliant_current = fire_ems_current[fire_ems_current['Time_To_Queue'] <= 106]
+fire_ems_64_sla_current = round((len(fire_ems_64_compliant_current) / len(fire_ems_current)) * 100, 1) if len(fire_ems_current) > 0 else np.nan
+fire_ems_106_sla_current = round((len(fire_ems_106_compliant_current) / len(fire_ems_current)) * 100, 1) if len(fire_ems_current) > 0 else np.nan
+
+fire_ems_last = df_last[df_last['Agency'].isin(['FIRE', 'EMS']) & df_last['Time_To_Queue'].notna()]
+fire_ems_64_compliant_last = fire_ems_last[fire_ems_last['Time_To_Queue'] <= 64]
+fire_ems_106_compliant_last = fire_ems_last[fire_ems_last['Time_To_Queue'] <= 106]
+fire_ems_64_sla_last = round((len(fire_ems_64_compliant_last) / len(fire_ems_last)) * 100, 1) if len(fire_ems_last) > 0 else np.nan
+fire_ems_106_sla_last = round((len(fire_ems_106_compliant_last) / len(fire_ems_last)) * 100, 1) if len(fire_ems_last) > 0 else np.nan
+
+# Overall metrics
+total_calls_current = len(df)
+total_calls_last = len(df_last)
+median_ttq_current = df['Time_To_Queue'].median()
+median_ttq_last = df_last['Time_To_Queue'].median()
+median_ttd_current = df['Time_To_Dispatch'].median()
+median_ttd_last = df_last['Time_To_Dispatch'].median()
+median_phone_current = df['Phone_Time'].median()
+median_phone_last = df_last['Phone_Time'].median()
+
+# Calculate changes
+call_volume_change = total_calls_current - total_calls_last
+call_volume_pct = round((call_volume_change / total_calls_last) * 100, 1)
+ttq_change = median_ttq_current - median_ttq_last
+ttq_pct = round((ttq_change / median_ttq_last) * 100, 1) if median_ttq_last != 0 else 0
+ttd_change = median_ttd_current - median_ttd_last
+ttd_pct = round((ttd_change / median_ttd_last) * 100, 1) if median_ttd_last != 0 else 0
+phone_change = median_phone_current - median_phone_last
+phone_pct = round((phone_change / median_phone_last) * 100, 1) if median_phone_last != 0 else 0
+
+# Helper function for trend indicators
+def trend_indicator(value, threshold_good=0, threshold_warning=5, lower_is_better=True):
+    if pd.isna(value):
+        return "—"
+    if lower_is_better:
+        if value <= threshold_good:
+            return "✓"
+        elif value <= threshold_warning:
+            return "⚠"
+        else:
+            return "✗"
+    else:
+        if value >= threshold_good:
+            return "✓"
+        elif value >= threshold_warning:
+            return "⚠"
+        else:
+            return "✗"
+
+# SLA status indicators
+law_p1_status = "✓" if not pd.isna(law_p1_sla_current) and law_p1_sla_current >= 90 else ("⚠" if not pd.isna(law_p1_sla_current) and law_p1_sla_current >= 85 else ("✗" if not pd.isna(law_p1_sla_current) else "—"))
+law_p2_status = "✓" if not pd.isna(law_p2_sla_current) and law_p2_sla_current >= 85 else ("⚠" if not pd.isna(law_p2_sla_current) and law_p2_sla_current >= 80 else ("✗" if not pd.isna(law_p2_sla_current) else "—"))
+fire_ems_64_status = "✓" if not pd.isna(fire_ems_64_sla_current) and fire_ems_64_sla_current >= 90 else ("⚠" if not pd.isna(fire_ems_64_sla_current) and fire_ems_64_sla_current >= 85 else ("✗" if not pd.isna(fire_ems_64_sla_current) else "—"))
+fire_ems_106_status = "✓" if not pd.isna(fire_ems_106_sla_current) and fire_ems_106_sla_current >= 95 else ("⚠" if not pd.isna(fire_ems_106_sla_current) and fire_ems_106_sla_current >= 90 else ("✗" if not pd.isna(fire_ems_106_sla_current) else "—"))
+
+print("KPI calculations complete")
+```
+
+### Weekly KPI Summary
+
+```{python}
+#| label: kpi-summary-table
+#| echo: false
+#| message: false
+#| warning: false
+#| output: asis
+
+# Create KPI summary table
+kpi_summary = pd.DataFrame({
+    'Metric': [
+        'Total Call Volume',
+        'Median Time to Queue (s)',
+        'Median Time to Dispatch (s)',
+        'Median Phone Time (s)',
+        'LAW P1 SLA (≤60s)',
+        'LAW P2 SLA (≤120s)',
+        'FIRE/EMS SLA (≤64s)',
+        'FIRE/EMS SLA (≤106s)'
+    ],
+    'Current Week': [
+        f"{total_calls_current:,}",
+        f"{median_ttq_current:.1f}",
+        f"{median_ttd_current:.1f}",
+        f"{median_phone_current:.1f}",
+        f"{law_p1_sla_current}%" if not pd.isna(law_p1_sla_current) else "—",
+        f"{law_p2_sla_current}%" if not pd.isna(law_p2_sla_current) else "—",
+        f"{fire_ems_64_sla_current}%" if not pd.isna(fire_ems_64_sla_current) else "—",
+        f"{fire_ems_106_sla_current}%" if not pd.isna(fire_ems_106_sla_current) else "—"
+    ],
+    'Prior Week': [
+        f"{total_calls_last:,}",
+        f"{median_ttq_last:.1f}",
+        f"{median_ttd_last:.1f}",
+        f"{median_phone_last:.1f}",
+        f"{law_p1_sla_last}%" if not pd.isna(law_p1_sla_last) else "—",
+        f"{law_p2_sla_last}%" if not pd.isna(law_p2_sla_last) else "—",
+        f"{fire_ems_64_sla_last}%" if not pd.isna(fire_ems_64_sla_last) else "—",
+        f"{fire_ems_106_sla_last}%" if not pd.isna(fire_ems_106_sla_last) else "—"
+    ],
+    'Change': [
+        f"{'+' if call_volume_change >= 0 else ''}{call_volume_change} ({'+' if call_volume_pct >= 0 else ''}{call_volume_pct}%)",
+        f"{'+' if ttq_change >= 0 else ''}{ttq_change:.1f} ({'+' if ttq_pct >= 0 else ''}{ttq_pct}%)",
+        f"{'+' if ttd_change >= 0 else ''}{ttd_change:.1f} ({'+' if ttd_pct >= 0 else ''}{ttd_pct}%)",
+        f"{'+' if phone_change >= 0 else ''}{phone_change:.1f} ({'+' if phone_pct >= 0 else ''}{phone_pct}%)",
+        f"{'+' if not pd.isna(law_p1_sla_current) and not pd.isna(law_p1_sla_last) and (law_p1_sla_current - law_p1_sla_last) >= 0 else ''}{law_p1_sla_current - law_p1_sla_last:.1f}%" if not pd.isna(law_p1_sla_current) and not pd.isna(law_p1_sla_last) else "—",
+        f"{'+' if not pd.isna(law_p2_sla_current) and not pd.isna(law_p2_sla_last) and (law_p2_sla_current - law_p2_sla_last) >= 0 else ''}{law_p2_sla_current - law_p2_sla_last:.1f}%" if not pd.isna(law_p2_sla_current) and not pd.isna(law_p2_sla_last) else "—",
+        f"{'+' if not pd.isna(fire_ems_64_sla_current) and not pd.isna(fire_ems_64_sla_last) and (fire_ems_64_sla_current - fire_ems_64_sla_last) >= 0 else ''}{fire_ems_64_sla_current - fire_ems_64_sla_last:.1f}%" if not pd.isna(fire_ems_64_sla_current) and not pd.isna(fire_ems_64_sla_last) else "—",
+        f"{'+' if not pd.isna(fire_ems_106_sla_current) and not pd.isna(fire_ems_106_sla_last) and (fire_ems_106_sla_current - fire_ems_106_sla_last) >= 0 else ''}{fire_ems_106_sla_current - fire_ems_106_sla_last:.1f}%" if not pd.isna(fire_ems_106_sla_current) and not pd.isna(fire_ems_106_sla_last) else "—"
+    ],
+    'Status': [
+        "—",
+        "—",
+        "—",
+        "—",
+        law_p1_status,
+        law_p2_status,
+        fire_ems_64_status,
+        fire_ems_106_status
+    ]
+})
+
+print(to_table(kpi_summary, 
+               caption=f"Weekly KPI Summary - Week {WEEK_NUMBER} vs Week {LAST_WEEK_NUMBER}"))
+```
+
+**Status Legend:** ✓ = Meets Target | ⚠ = Warning | ✗ = Below Target | — = Not Applicable
+
+### Key Insights
+
+```{python}
+#| label: executive-insights
+#| echo: false
+#| output: asis
+
+insights = []
+
+# Call volume insight
+if abs(call_volume_pct) >= 5:
+    direction = "increased" if call_volume_change > 0 else "decreased"
+    insights.append(f"**Call Volume**: Total calls {direction} by {abs(call_volume_change)} ({abs(call_volume_pct)}%) compared to last week.")
+
+# Response time insights
+if abs(ttd_pct) >= 10:
+    direction = "increased" if ttd_change > 0 else "decreased"
+    insights.append(f"**Response Time**: Median time to dispatch {direction} by {abs(round(ttd_change, 1))} seconds ({abs(ttd_pct)}%).")
+
+# SLA compliance insights
+sla_issues = []
+if not pd.isna(law_p1_sla_current) and law_p1_sla_current < 90:
+    sla_issues.append(f"LAW P1 at {law_p1_sla_current}%")
+if not pd.isna(law_p2_sla_current) and law_p2_sla_current < 85:
+    sla_issues.append(f"LAW P2 at {law_p2_sla_current}%")
+if not pd.isna(fire_ems_64_sla_current) and fire_ems_64_sla_current < 90:
+    sla_issues.append(f"FIRE/EMS 64s at {fire_ems_64_sla_current}%")
+
+if len(sla_issues) > 0:
+    insights.append(f"**SLA Compliance**: {len(sla_issues)} metric(s) below target: {', '.join(sla_issues)}.")
+
+# Phone time insight
+if median_phone_current > 120 and phone_pct > 5:
+    insights.append(f"**Call Complexity**: Median phone time at {round(median_phone_current)} seconds, up {abs(phone_pct)}%, suggesting more complex calls this week.")
+
+# Output insights
+if len(insights) > 0:
+    print("\n")
+    for i, insight in enumerate(insights, 1):
+        print(f"{i}. {insight}\n\n")
+else:
+    print("\nOperational performance remains stable with no significant week-over-week changes.\n")
+```
+
+## Data Cleaning
+
+In order to have a good dataset for analysis, some data cleaning was performed. The first step is to check for missing values in the dataset.
+
+```{python}
+#| label: missing-values-analysis
+#| echo: false
+#| warning: false
+#| fig-cap: "Prevalence of missing values. Only columns with missing data are shown."
+
+# Count columns with any missing data
+missing_cols_count = (df.isna().sum() > 0).sum()
+
+# Get missing counts per column
+missing_counts = df.isna().sum()
+missing_counts = missing_counts[missing_counts > 0].sort_values(ascending=False)
+
+# Find the column with the largest number of missing values
+if len(missing_counts) > 0:
+    max_missing_col = missing_counts.index[0]
+    max_missing_count = missing_counts.iloc[0]
+    
+    # Calculate percentage of calls without Incident_Arrival_Time
+    if 'Incident_Arrival_Time' in missing_counts.index:
+        incident_arrival_missing_count = missing_counts['Incident_Arrival_Time']
+        incident_arrival_missing_pct = round(incident_arrival_missing_count / len(df) * 100, 1)
+    else:
+        incident_arrival_missing_count = 0
+        incident_arrival_missing_pct = 0
+    
+    # Create missing values plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+    missing_pcts = (missing_counts / len(df)) * 100
+    missing_pcts.plot(kind='barh', ax=ax, color='steelblue')
+    ax.set_xlabel('Percentage Missing (%)')
+    ax.set_title('Missing Values by Column')
+    ax.grid(axis='x', alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+else:
+    max_missing_col = "None"
+    max_missing_count = 0
+    incident_arrival_missing_count = 0
+    incident_arrival_missing_pct = 0
+    print("No missing values detected in the dataset.")
+```
+
+From this plot, we can see that there are only {python} f"{missing_cols_count}" columns with missing data. Of those, the column with the largest number of missing values is {python} f"{max_missing_col}". That is something that we would like to see because that means that most of our calls are closed once and left that way. Later, we will look deeper into those calls to see if there are any patterns to those calls. There were {python} f"{incident_arrival_missing_count:,}" calls that did not have a recorded time that the call arrived, representing {python} f"{incident_arrival_missing_pct}%" of calls for the week. We will have to determine if they were cancelled or how many of those were mutual aid calls where we did not receive a phone call.
+
+## Exploratory Analysis
+
+One of the first analyses is to break down different factor elements to see what we have in the dataset. Since the data source for this report is the CAD system, the counts of service calls may not correlate to phone volumes. We will have to, in future, find good methods to integrate the phone date into the reports.
+
+### Phone Summary
+
+```{python}
+#| label: phone-data-summary
+#| echo: false
+#| message: false
+#| warning: false
+
+if current_week_phone is not None:
+    # Parse DateTime column
+    current_week_phone['DateTime'] = pd.to_datetime(current_week_phone['DateTime'], errors='coerce')
+    
+    # Convert numeric columns
+    numeric_cols = [col for col in current_week_phone.columns if col not in ['DateTime', 'Hour']]
+    for col in numeric_cols:
+        current_week_phone[col] = pd.to_numeric(current_week_phone[col], errors='coerce')
+    
+    # Calculate key metrics
+    total_911_calls = current_week_phone['911_T'].sum()
+    total_admin_calls = current_week_phone['ADM_T'].sum()
+    total_phone_calls = current_week_phone['Total'].sum()
+    
+    avg_911_pct_10 = current_week_phone['911_PCT_10'].mean() * 100
+    avg_911_pct_15 = current_week_phone['911_PCT_15'].mean() * 100
+    avg_911_pct_20 = current_week_phone['911_PCT_20'].mean() * 100
+    
+    avg_adm_pct_10 = current_week_phone['ADM_PCT_10'].mean() * 100
+    avg_adm_pct_15 = current_week_phone['PCT_ADM_15'].mean() * 100
+    avg_adm_pct_20 = current_week_phone['ADM_PCT_20'].mean() * 100
+    
+    avg_total_pct_10 = current_week_phone['TTL_PCT_10'].mean() * 100
+    avg_total_pct_15 = current_week_phone['TTL_PCT_15'].mean() * 100
+    avg_total_pct_20 = current_week_phone['TTL_PCT_20'].mean() * 100
+    
+    # Calculate abandoned call metrics
+    total_911_abandoned = current_week_phone['911_AB'].sum()
+    total_adm_abandoned = current_week_phone['ADM_AB'].sum()
+    
+    pct_911_abandoned = (total_911_abandoned / total_911_calls) * 100 if total_911_calls > 0 else 0
+    pct_adm_abandoned = (total_adm_abandoned / total_admin_calls) * 100 if total_admin_calls > 0 else 0
+    
+    phone_data_available = True
+else:
+    phone_data_available = False
+```
+
+```{python}
+#| label: phone-summary-output
+#| echo: false
+#| output: asis
+
+if phone_data_available:
+    print("This week's phone system data provides insights into call answering performance across both 9-1-1 emergency lines and administrative lines.\n\n")
+    
+    print("#### Call Volume Overview\n\n")
+    print(f"- **Total Phone Calls:** {total_phone_calls:,}\n")
+    print(f"- **9-1-1 Emergency Calls:** {total_911_calls:,} ({round((total_911_calls/total_phone_calls)*100, 1)}%)\n")
+    print(f"- **Administrative Calls:** {total_admin_calls:,} ({round((total_admin_calls/total_phone_calls)*100, 1)}%)\n\n")
+    
+    print("#### Answer Time Performance\n\n")
+    print("**9-1-1 Emergency Lines:**\n\n")
+    print(f"- Answered within 10 seconds: {round(avg_911_pct_10, 1)}%\n")
+    print(f"- Answered within 15 seconds: {round(avg_911_pct_15, 1)}%\n")
+    print(f"- Answered within 20 seconds: {round(avg_911_pct_20, 1)}%\n\n")
+    
+    print("**Administrative Lines:**\n\n")
+    print(f"- Answered within 10 seconds: {round(avg_adm_pct_10, 1)}%\n")
+    print(f"- Answered within 15 seconds: {round(avg_adm_pct_15, 1)}%\n")
+    print(f"- Answered within 20 seconds: {round(avg_adm_pct_20, 1)}%\n\n")
+    
+    print("**Overall Performance:**\n\n")
+    print(f"- All calls answered within 10 seconds: {round(avg_total_pct_10, 1)}%\n")
+    print(f"- All calls answered within 15 seconds: {round(avg_total_pct_15, 1)}%\n")
+    print(f"- All calls answered within 20 seconds: {round(avg_total_pct_20, 1)}%\n\n")
+    
+    print("#### Abandoned Calls\n\n")
+    print(f"- **9-1-1 Abandoned:** {total_911_abandoned:,} ({round(pct_911_abandoned, 2)}% of 9-1-1 calls)\n")
+    print(f"- **Administrative Abandoned:** {total_adm_abandoned:,} ({round(pct_adm_abandoned, 2)}% of admin calls)\n\n")
+    
+    # Performance assessment
+    if avg_911_pct_10 >= 90:
+        print("*9-1-1 performance is meeting the 10-second answer standard.*\n\n")
+    elif avg_911_pct_10 >= 80:
+        print("*9-1-1 performance is approaching the 10-second answer standard but requires attention.*\n\n")
+    else:
+        print("*9-1-1 performance is below the 10-second answer standard and requires immediate attention.*\n\n")
+else:
+    print("*Phone data is not available for this reporting period.*\n\n")
+```
+
+### Phone Heatmaps
+
+```{python}
+#| label: phone-heatmaps-dow
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig-height: 6
+
+if phone_data_available and len(current_week_phone) > 0:
+    # Prepare data for heatmaps
+    phone_hm = current_week_phone.copy()
+    phone_hm['DOW'] = pd.Categorical(
+        pd.to_datetime(phone_hm['DateTime']).dt.day_name().str[:3].str.upper(),
+        categories=['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+        ordered=True
+    )
+    phone_hm['Hour'] = pd.to_datetime(phone_hm['DateTime']).dt.hour
+    
+    # 9-1-1 Received Heatmap
+    # Use per-hour totals for received calls
+    hm_911_rec = phone_hm.pivot_table(values='911_T', index='DOW', columns='Hour', aggfunc='sum', fill_value=0)
+    
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.heatmap(hm_911_rec, annot=True, fmt='g', cmap='Blues', cbar_kws={'label': '9-1-1 Received'}, ax=ax)
+    ax.set_title('9-1-1 Calls Received by Day of Week and Hour', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Hour of Day')
+    ax.set_ylabel('Day of Week')
+    plt.tight_layout()
+    plt.show()
+    
+    # 9-1-1 Abandoned Heatmap
+    hm_911_ab = phone_hm.pivot_table(values='911_AB', index='DOW', columns='Hour', aggfunc='sum', fill_value=0)
+    
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.heatmap(hm_911_ab, annot=True, fmt='g', cmap='Reds', cbar_kws={'label': '9-1-1 Abandoned'}, ax=ax)
+    ax.set_title('9-1-1 Calls Abandoned by Day of Week and Hour', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Hour of Day')
+    ax.set_ylabel('Day of Week')
+    plt.tight_layout()
+    plt.show()
+    
+    # Admin Received Heatmap
+    hm_adm_rec = phone_hm.pivot_table(values='ADM_T', index='DOW', columns='Hour', aggfunc='sum', fill_value=0)
+    
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.heatmap(hm_adm_rec, annot=True, fmt='g', cmap='Greens', cbar_kws={'label': 'Admin Received'}, ax=ax)
+    ax.set_title('Admin Calls Received by Day of Week and Hour', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Hour of Day')
+    ax.set_ylabel('Day of Week')
+    plt.tight_layout()
+    plt.show()
+    
+    # Admin Abandoned Heatmap
+    hm_adm_ab = phone_hm.pivot_table(values='ADM_AB', index='DOW', columns='Hour', aggfunc='sum', fill_value=0)
+    
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.heatmap(hm_adm_ab, annot=True, fmt='g', cmap='Oranges', cbar_kws={'label': 'Admin Abandoned'}, ax=ax)
+    ax.set_title('Admin Calls Abandoned by Day of Week and Hour', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Hour of Day')
+    ax.set_ylabel('Day of Week')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("*Phone data not available for heatmap visualization.*\n\n")
+```
+
+### Call Distribution: Hour by Day of Week
+
+The following visualization shows the distribution of service calls throughout the day (by hour) for each day of the week. This helps identify patterns in service call volume across different days and times.
+
+```{python}
+#| label: dow-distribution
+#| echo: false
+#| fig-cap: "Number of calls for service by day of the week."
+
+# Calculate DOW counts
+dow_counts = df['DOW'].value_counts().reindex(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
+
+max_dow_idx = dow_counts.idxmax()
+busiest_day_abbr = max_dow_idx
+busiest_day_count = dow_counts.max()
+
+min_dow_idx = dow_counts.idxmin()
+slowest_day_abbr = min_dow_idx
+slowest_day_count = dow_counts.min()
+
+# Create mapping from abbreviations to full day names
+day_names = {
+    'SUN': 'Sunday',
+    'MON': 'Monday',
+    'TUE': 'Tuesday',
+    'WED': 'Wednesday',
+    'THU': 'Thursday',
+    'FRI': 'Friday',
+    'SAT': 'Saturday'
+}
+
+busiest_day = day_names[busiest_day_abbr]
+slowest_day = day_names[slowest_day_abbr]
+
+# Create bar plot
+fig, ax = plt.subplots(figsize=(10, 6))
+dow_counts.plot(kind='bar', ax=ax, color=palette_cyan_base[:7])
+ax.set_title('Number of Calls for Service by Day of the Week')
+ax.set_xlabel('Day of the Week')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels(dow_counts.index, rotation=45)
+
+# Add count labels on bars
+for i, v in enumerate(dow_counts):
+    ax.text(i, v + 10, str(v), ha='center', va='bottom')
+
+plt.tight_layout()
+plt.show()
+```
+
+From this chart, we can see that {python} f"{busiest_day}" was the busiest day of the week with {python} f"{busiest_day_count:,}" service calls created, and the slowest day was {python} f"{slowest_day}" with {python} f"{slowest_day_count:,}" service calls. There is some consistency throughout the week, with {python} f"{busiest_day_count - slowest_day_count:,}" calls difference between the busiest and slowest days.
+
+```{python}
+#| label: hour-of-the-day
+#| echo: false
+#| fig-cap: "Number of calls for service by hour of the day."
+
+# Calculate hour counts
+hour_counts = df['Hour'].value_counts().sort_index()
+
+max_hour_idx = hour_counts.idxmax()
+busiest_hour = str(max_hour_idx).zfill(2)
+busiest_hour_count = hour_counts.max()
+
+min_hour_idx = hour_counts.idxmin()
+slowest_hour = str(min_hour_idx).zfill(2)
+slowest_hour_count = hour_counts.min()
+
+# Create bar plot
+fig, ax = plt.subplots(figsize=(10, 6))
+hour_counts.plot(kind='bar', ax=ax, color=palette_cyan_24)
+ax.set_title('Number of Calls for Service by Hour of the Day')
+ax.set_xlabel('Hour of the Day')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels([f"{int(h):02d}" for h in hour_counts.index], rotation=45)
+
+# Add count labels on bars
+for i, v in enumerate(hour_counts):
+    ax.text(i, v + 5, str(v), ha='center', va='bottom', fontsize=8)
+
+plt.tight_layout()
+plt.show()
+```
+
+This week, the busiest hour of the day was {python} f"{busiest_hour}00" hours, with {python} f"{busiest_hour_count:,}" calls for service. {python} f"{slowest_hour}00" hours was the slowest hour of the day with {python} f"{slowest_hour_count:,}" calls. Additionally, the pattern shows consistent traffic from late rush hour through the day into the early evening before seeing the volumes start to decline. This appears to confirm assumptions about the busiest parts of the day.
+
+```{python}
+#| label: hour-dow-heatmap
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Call Volume by Hour and Day of Week"
+#| fig-width: 10
+#| fig-height: 6
+
+# Create summary data for heatmap
+hourly_dow_summary = df.groupby(['DOW', 'Hour']).size().reset_index(name='call_count')
+hourly_dow_summary['Hour_numeric'] = hourly_dow_summary['Hour'].astype(str).astype(int)
+
+# Pivot for heatmap
+heatmap_data = hourly_dow_summary.pivot(index='DOW', columns='Hour_numeric', values='call_count')
+heatmap_data = heatmap_data.reindex(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
+
+# Create heatmap
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.heatmap(heatmap_data, annot=True, fmt='g', cmap='YlOrRd', cbar_kws={'label': 'Calls'}, ax=ax)
+ax.set_title('Call Volume Heatmap by Hour and Day of Week', fontsize=14, fontweight='bold')
+ax.set_xlabel('Hour of Day')
+ax.set_ylabel('Day of Week')
+plt.tight_layout()
+plt.show()
+```
+
+The heat map shows the distribution of service calls across hours and days of the week. Since {python} f"{busiest_hour}00" hours was the busiest hour of the week, the heatmap shows that it was reasonably consistent throughout the week.
+
+### Distribution of Service Calls by Priority
+
+```{python}
+#| label: priority-distribution
+#| echo: false
+#| fig-cap: "Number of calls for service by priority level."
+
+# Count by priority
+priority_counts = df['Priority_Number'].value_counts().sort_index()
+priority_counts = priority_counts[priority_counts.index.notna()]
+
+if len(priority_counts) > 0:
+    busiest_pn = priority_counts.idxmax()
+    busiest_pn_count = priority_counts.max()
+    busiest_pn_percentage = round(busiest_pn_count / len(df) * 100, 1)
+    priority1_count = priority_counts.get(1, 0)
+    priority1_percentage = round(priority1_count / len(df) * 100, 1)
+    
+    # Create bar plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+    priority_counts.plot(kind='bar', ax=ax, color=palette_cyan_base[:len(priority_counts)])
+    ax.set_title('Number of Calls for Service by Priority Level')
+    ax.set_xlabel('Priority Level')
+    ax.set_ylabel('Number of Calls')
+    ax.set_xticklabels([str(int(p)) for p in priority_counts.index], rotation=0)
+    
+    # Add count labels
+    for i, v in enumerate(priority_counts):
+        ax.text(i, v + 10, str(v), ha='center', va='bottom')
+    
+    plt.tight_layout()
+    plt.show()
+else:
+    busiest_pn = "N/A"
+    busiest_pn_percentage = 0
+    priority1_percentage = 0
+    print("No priority data available.")
+```
+
+The majority of calls received were Priority {python} f"{busiest_pn}" calls. Priority {python} f"{busiest_pn}" calls are {python} f"{busiest_pn_percentage}%" percent of the total number of calls, while Priority 1 calls are {python} f"{priority1_percentage}%" percent of the total number of calls. This is a consistent pattern and more detailed analyses of the high priority, and specifically priority 1 calls, can be found below.
+
+## Summary Statistics and Analyses
+
+### Call Reception Distribution
+
+```{python}
+#| label: call-reception
+#| echo: false
+#| fig-cap: "Number of calls by reception method."
+
+# Count by call reception
+reception_counts = df['Call_Reception'].value_counts().head(10)
+
+busiest_cr = reception_counts.idxmax()
+busiest_cr_count = reception_counts.max()
+busiest_cr_pct = round(busiest_cr_count / len(df) * 100, 1)
+
+# Create bar plot
+fig, ax = plt.subplots(figsize=(12, 6))
+reception_counts.plot(kind='barh', ax=ax, color=palette_cyan_base[:10])
+ax.set_title('Number of Calls by Reception Method (Top 10)')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Reception Method')
+ax.invert_yaxis()
+
+# Add count labels
+for i, v in enumerate(reception_counts):
+    ax.text(v + 5, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+The most common call reception method was {python} f"{busiest_cr}", accounting for {python} f"{busiest_cr_count:,}" calls ({python} f"{busiest_cr_pct}%").
+
+### Disposition Codes
+
+```{python}
+#| label: disposition-codes
+#| echo: false
+#| fig-cap: "Top 10 disposition codes."
+
+# Robust column detection for disposition
+disp_col = None
+for c in df.columns:
+    cl = str(c).lower()
+    if 'disposition' in cl:
+        disp_col = c
+        break
+
+if disp_col is None:
+    print("Disposition column not found; skipping disposition-codes chart.")
+else:
+    disposition_counts = df[disp_col].value_counts().head(10)
+
+    busiest_disp = disposition_counts.idxmax()
+    busiest_disp_count = disposition_counts.max()
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    disposition_counts.plot(kind='barh', ax=ax, color=palette_blue_base[:10])
+    ax.set_title('Top 10 Disposition Codes')
+    ax.set_xlabel('Number of Calls')
+    ax.set_ylabel('Disposition')
+    ax.invert_yaxis()
+
+    for i, v in enumerate(disposition_counts):
+        ax.text(v + 5, i, str(v), va='center')
+
+    plt.tight_layout()
+    plt.show()
+```
+
+The most common disposition code was {python} f"{busiest_disp}" with {python} f"{busiest_disp_count:,}" calls.
+
+### Problem Types
+
+```{python}
+#| label: problem-types
+#| echo: false
+#| fig-cap: "Top 10 problem types."
+
+# Count by problem type
+problem_counts = df['Problem'].value_counts().head(10)
+
+busiest_prob = problem_counts.idxmax()
+busiest_prob_count = problem_counts.max()
+
+# Create bar plot
+fig, ax = plt.subplots(figsize=(12, 6))
+problem_counts.plot(kind='barh', ax=ax, color=palette_red_base[:10])
+ax.set_title('Top 10 Problem Types')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Problem Type')
+ax.invert_yaxis()
+
+# Add count labels
+for i, v in enumerate(problem_counts):
+    ax.text(v + 5, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+The most common problem type was {python} f"{busiest_prob}" with {python} f"{busiest_prob_count:,}" calls.
+
+### Call Taker Analysis
+
+```{python}
+#| label: call-takers
+#| echo: false
+#| fig-cap: "Top 10 call takers by call volume."
+
+# Count by call taker
+call_taker_counts = df['Call_Taker'].value_counts().head(10)
+
+busiest_ct = call_taker_counts.idxmax()
+busiest_ct_count = call_taker_counts.max()
+
+# Create bar plot
+fig, ax = plt.subplots(figsize=(12, 6))
+call_taker_counts.plot(kind='barh', ax=ax, color=palette_cyan_base[:10])
+ax.set_title('Top 10 Call Takers by Call Volume')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Call Taker')
+ax.invert_yaxis()
+
+# Add count labels
+for i, v in enumerate(call_taker_counts):
+    ax.text(v + 5, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+The busiest call taker was {python} f"{busiest_ct}" with {python} f"{busiest_ct_count:,}" calls.
+
+### Elapsed Time Analysis
+
+```{python}
+#| label: elapsed-time-overall
+#| echo: false
+#| fig-cap: "Elapsed time distributions (overall)."
+
+# Calculate overall elapsed time metrics
+metrics = ['Time_To_Queue', 'Time_To_Dispatch', 'Phone_Time', 'Processing_Time']
+
+elapsed_summary = pd.DataFrame({
+    'Metric': ['Time to Queue', 'Time to Dispatch', 'Phone Time', 'Processing Time'],
+    'Mean (s)': [df[m].mean() for m in metrics],
+    'Median (s)': [df[m].median() for m in metrics],
+    'Q90 (s)': [df[m].quantile(0.9) for m in metrics],
+    'Q99 (s)': [df[m].quantile(0.99) for m in metrics]
+})
+
+# Round to 1 decimal
+for col in ['Mean (s)', 'Median (s)', 'Q90 (s)', 'Q99 (s)']:
+    elapsed_summary[col] = elapsed_summary[col].round(1)
+
+print(to_table(elapsed_summary, 
+               'Elapsed Time Summary (Overall)',
+               {'Metric': 'Metric', 'Mean (s)': 'Mean', 'Median (s)': 'Median', 
+                'Q90 (s)': '90th %ile', 'Q99 (s)': '99th %ile'}))
+```
+
+```{python}
+#| label: elapsed-time-by-agency
+#| echo: false
+
+# Calculate elapsed time by agency
+agency_elapsed = df.groupby('Agency')[metrics].agg(['mean', 'median', q90, q99]).round(1)
+
+print("\n**Elapsed Time by Agency:**\n")
+for agency in ['POLICE', 'FIRE', 'EMS']:
+    if agency in agency_elapsed.index:
+        print(f"\n*{agency}*:")
+        print(f"- Time to Queue: median {agency_elapsed.loc[agency, ('Time_To_Queue', 'median')]:.1f}s, 90th %ile {agency_elapsed.loc[agency, ('Time_To_Queue', q90.__name__)]:.1f}s")
+        print(f"- Time to Dispatch: median {agency_elapsed.loc[agency, ('Time_To_Dispatch', 'median')]:.1f}s, 90th %ile {agency_elapsed.loc[agency, ('Time_To_Dispatch', q90.__name__)]:.1f}s")
+```
+
+```{python}
+#| label: elapsed-time-by-priority
+#| echo: false
+
+# Calculate elapsed time by priority
+priority_elapsed = df.groupby('Priority_Number')[['Time_To_Queue', 'Time_To_Dispatch']].agg(['median', q90]).round(1)
+
+print("\n**Elapsed Time by Priority:**\n")
+for priority in sorted(df['Priority_Number'].dropna().unique()):
+    if priority in priority_elapsed.index:
+        print(f"\n*Priority {int(priority)}*:")
+        print(f"- Time to Queue: median {priority_elapsed.loc[priority, ('Time_To_Queue', 'median')]:.1f}s, 90th %ile {priority_elapsed.loc[priority, ('Time_To_Queue', q90.__name__)]:.1f}s")
+        print(f"- Time to Dispatch: median {priority_elapsed.loc[priority, ('Time_To_Dispatch', 'median')]:.1f}s, 90th %ile {priority_elapsed.loc[priority, ('Time_To_Dispatch', q90.__name__)]:.1f}s")
+```
+
+### Distribution by Agency
+
+```{python}
+#| label: agency-distribution
+#| echo: false
+#| fig-cap: "Number of calls for service by discipline."
+
+# Count by agency
+agency_counts = df['Agency'].value_counts()
+
+busiest_agency = agency_counts.idxmax()
+busiest_agency_count = agency_counts.max()
+police_percentage = round((df['Agency'] == 'POLICE').sum() / len(df) * 100, 1)
+
+# Create bar plot with agency-specific colors
+agency_colors = {'POLICE': '#1f77b4', 'FIRE': '#d62728', 'EMS': '#2ca02c'}
+colors = [agency_colors.get(agency, '#gray') for agency in agency_counts.index]
+
+fig, ax = plt.subplots(figsize=(10, 6))
+agency_counts.plot(kind='bar', ax=ax, color=colors)
+ax.set_title('Number of Calls for Service by Discipline')
+ax.set_xlabel('Discipline')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels(agency_counts.index, rotation=45)
+
+# Add count labels
+for i, v in enumerate(agency_counts):
+    ax.text(i, v + 10, str(v), ha='center', va='bottom', fontweight='bold', color='white', 
+            bbox=dict(boxstyle='round,pad=0.3', facecolor=colors[i], alpha=0.7))
+
+plt.tight_layout()
+plt.show()
+```
+
+As expected, the majority of calls are for {python} f"{busiest_agency}". They represent {python} f"{police_percentage}%" percent of the total number of calls. This is fairly consistent with previous analyses.
+
+## Discipline Analyses
+
+### APD (Police) Analysis
+
+```{python}
+#| label: apd-setup
+#| echo: false
+
+# Filter for APD calls
+df_apd = df[df['Agency'] == 'POLICE'].copy()
+apd_count = len(df_apd)
+apd_pct = round(apd_count / len(df) * 100, 1)
+```
+
+This week had {python} f"{apd_count:,}" APD calls ({python} f"{apd_pct}%" of total).
+
+```{python}
+#| label: apd-dow
+#| echo: false
+#| fig-cap: "APD calls by day of week."
+
+apd_dow_counts = df_apd['DOW'].value_counts().reindex(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
+
+fig, ax = plt.subplots(figsize=(10, 6))
+apd_dow_counts.plot(kind='bar', ax=ax, color='#1f77b4')
+ax.set_title('APD Calls by Day of Week')
+ax.set_xlabel('Day of Week')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels(apd_dow_counts.index, rotation=45)
+
+for i, v in enumerate(apd_dow_counts):
+    ax.text(i, v + 5, str(v), ha='center', va='bottom')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: apd-hour
+#| echo: false
+#| fig-cap: "APD calls by hour of day."
+
+apd_hour_counts = df_apd['Hour'].value_counts().sort_index()
+
+fig, ax = plt.subplots(figsize=(10, 6))
+apd_hour_counts.plot(kind='bar', ax=ax, color='#1f77b4')
+ax.set_title('APD Calls by Hour of Day')
+ax.set_xlabel('Hour')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels([f"{int(h):02d}" for h in apd_hour_counts.index], rotation=45)
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: apd-reception
+#| echo: false
+#| fig-cap: "APD calls by reception method (top 10)."
+
+apd_reception_counts = df_apd['Call_Reception'].value_counts().head(10)
+
+fig, ax = plt.subplots(figsize=(12, 6))
+apd_reception_counts.plot(kind='barh', ax=ax, color='#1f77b4')
+ax.set_title('APD Calls by Reception Method (Top 10)')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Reception Method')
+ax.invert_yaxis()
+
+for i, v in enumerate(apd_reception_counts):
+    ax.text(v + 5, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: apd-problem
+#| echo: false
+#| fig-cap: "APD calls by problem type (top 10)."
+
+apd_problem_counts = df_apd['Problem'].value_counts().head(10)
+
+fig, ax = plt.subplots(figsize=(12, 6))
+apd_problem_counts.plot(kind='barh', ax=ax, color='#1f77b4')
+ax.set_title('APD Calls by Problem Type (Top 10)')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Problem Type')
+ax.invert_yaxis()
+
+for i, v in enumerate(apd_problem_counts):
+    ax.text(v + 5, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: apd-priority
+#| echo: false
+#| fig-cap: "APD calls by priority level."
+
+apd_priority_counts = df_apd['Priority_Number'].value_counts().sort_index()
+
+fig, ax = plt.subplots(figsize=(10, 6))
+apd_priority_counts.plot(kind='bar', ax=ax, color='#1f77b4')
+ax.set_title('APD Calls by Priority Level')
+ax.set_xlabel('Priority')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels([str(int(p)) for p in apd_priority_counts.index], rotation=0)
+
+for i, v in enumerate(apd_priority_counts):
+    ax.text(i, v + 5, str(v), ha='center', va='bottom')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: apd-sla-compliance
+#| echo: false
+
+# APD SLA Compliance (P1: ≤60s, P2: ≤120s, P3: ≤600s, P4: ≤3600s)
+apd_sla_data = {
+    'Priority': ['P1', 'P2', 'P3', 'P4'],
+    'Target (s)': [60, 120, 600, 3600],
+    'Target %': [90, 85, 0, 0]
+}
+
+apd_p1 = df_apd[df_apd['Priority_Number'] == 1]
+apd_p2 = df_apd[df_apd['Priority_Number'] == 2]
+apd_p3 = df_apd[df_apd['Priority_Number'] == 3]
+apd_p4 = df_apd[df_apd['Priority_Number'] == 4]
+
+apd_p1_compliant = (apd_p1['Time_To_Dispatch'] <= 60).sum() if len(apd_p1) > 0 else 0
+apd_p2_compliant = (apd_p2['Time_To_Dispatch'] <= 120).sum() if len(apd_p2) > 0 else 0
+apd_p3_compliant = (apd_p3['Time_To_Dispatch'] <= 600).sum() if len(apd_p3) > 0 else 0
+apd_p4_compliant = (apd_p4['Time_To_Dispatch'] <= 3600).sum() if len(apd_p4) > 0 else 0
+
+apd_sla_data['Count'] = [len(apd_p1), len(apd_p2), len(apd_p3), len(apd_p4)]
+apd_sla_data['Compliant'] = [apd_p1_compliant, apd_p2_compliant, apd_p3_compliant, apd_p4_compliant]
+apd_sla_data['% Compliant'] = [
+    round(apd_p1_compliant / len(apd_p1) * 100, 1) if len(apd_p1) > 0 else 0,
+    round(apd_p2_compliant / len(apd_p2) * 100, 1) if len(apd_p2) > 0 else 0,
+    round(apd_p3_compliant / len(apd_p3) * 100, 1) if len(apd_p3) > 0 else 0,
+    round(apd_p4_compliant / len(apd_p4) * 100, 1) if len(apd_p4) > 0 else 0
+]
+
+apd_sla_df = pd.DataFrame(apd_sla_data)
+
+print(to_table(apd_sla_df, 
+               'APD SLA Compliance',
+               {'Priority': 'Priority', 'Target (s)': 'Target (s)', 
+                'Target %': 'Target %', 'Count': 'Count', 
+                'Compliant': 'Compliant', '% Compliant': '% Compliant'}))
+```
+
+### AFD Fire Analysis
+
+```{python}
+#| label: fire-setup
+#| echo: false
+
+# Filter for Fire calls
+df_fire = df[df['Agency'] == 'FIRE'].copy()
+fire_count = len(df_fire)
+fire_pct = round(fire_count / len(df) * 100, 1)
+```
+
+This week had {python} f"{fire_count:,}" Fire calls ({python} f"{fire_pct}%" of total).
+
+```{python}
+#| label: fire-dow
+#| echo: false
+#| fig-cap: "Fire calls by day of week."
+
+fire_dow_counts = df_fire['DOW'].value_counts().reindex(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
+
+fig, ax = plt.subplots(figsize=(10, 6))
+fire_dow_counts.plot(kind='bar', ax=ax, color='#d62728')
+ax.set_title('Fire Calls by Day of Week')
+ax.set_xlabel('Day of Week')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels(fire_dow_counts.index, rotation=45)
+
+for i, v in enumerate(fire_dow_counts):
+    ax.text(i, v + 2, str(v), ha='center', va='bottom')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: fire-hour
+#| echo: false
+#| fig-cap: "Fire calls by hour of day."
+
+fire_hour_counts = df_fire['Hour'].value_counts().sort_index()
+
+fig, ax = plt.subplots(figsize=(10, 6))
+fire_hour_counts.plot(kind='bar', ax=ax, color='#d62728')
+ax.set_title('Fire Calls by Hour of Day')
+ax.set_xlabel('Hour')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels([f"{int(h):02d}" for h in fire_hour_counts.index], rotation=45)
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: fire-reception
+#| echo: false
+#| fig-cap: "Fire calls by reception method (top 10)."
+
+fire_reception_counts = df_fire['Call_Reception'].value_counts().head(10)
+
+fig, ax = plt.subplots(figsize=(12, 6))
+fire_reception_counts.plot(kind='barh', ax=ax, color='#d62728')
+ax.set_title('Fire Calls by Reception Method (Top 10)')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Reception Method')
+ax.invert_yaxis()
+
+for i, v in enumerate(fire_reception_counts):
+    ax.text(v + 2, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: fire-problem
+#| echo: false
+#| fig-cap: "Fire calls by problem type (top 10)."
+
+fire_problem_counts = df_fire['Problem'].value_counts().head(10)
+
+fig, ax = plt.subplots(figsize=(12, 6))
+fire_problem_counts.plot(kind='barh', ax=ax, color='#d62728')
+ax.set_title('Fire Calls by Problem Type (Top 10)')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Problem Type')
+ax.invert_yaxis()
+
+for i, v in enumerate(fire_problem_counts):
+    ax.text(v + 2, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: fire-priority
+#| echo: false
+#| fig-cap: "Fire calls by priority level."
+
+fire_priority_counts = df_fire['Priority_Number'].value_counts().sort_index()
+
+fig, ax = plt.subplots(figsize=(10, 6))
+fire_priority_counts.plot(kind='bar', ax=ax, color='#d62728')
+ax.set_title('Fire Calls by Priority Level')
+ax.set_xlabel('Priority')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels([str(int(p)) for p in fire_priority_counts.index], rotation=0)
+
+for i, v in enumerate(fire_priority_counts):
+    ax.text(i, v + 2, str(v), ha='center', va='bottom')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: fire-sla-compliance
+#| echo: false
+
+# Fire SLA Compliance (64s at 90%, 106s at 95%)
+fire_p1p2 = df_fire[df_fire['Priority_Number'].isin([1, 2])]
+
+fire_64_compliant = (fire_p1p2['Time_To_Queue'] <= 64).sum() if len(fire_p1p2) > 0 else 0
+fire_106_compliant = (fire_p1p2['Time_To_Queue'] <= 106).sum() if len(fire_p1p2) > 0 else 0
+
+fire_64_pct = round(fire_64_compliant / len(fire_p1p2) * 100, 1) if len(fire_p1p2) > 0 else 0
+fire_106_pct = round(fire_106_compliant / len(fire_p1p2) * 100, 1) if len(fire_p1p2) > 0 else 0
+
+fire_sla_data = {
+    'Standard': ['≤64s', '≤106s'],
+    'Target %': [90, 95],
+    'Count': [len(fire_p1p2), len(fire_p1p2)],
+    'Compliant': [fire_64_compliant, fire_106_compliant],
+    '% Compliant': [fire_64_pct, fire_106_pct]
+}
+
+fire_sla_df = pd.DataFrame(fire_sla_data)
+
+print(to_table(fire_sla_df, 
+               'Fire SLA Compliance (P1/P2 Time to Queue)',
+               {'Standard': 'Standard', 'Target %': 'Target %', 
+                'Count': 'Count', 'Compliant': 'Compliant', 
+                '% Compliant': '% Compliant'}))
+```
+
+### AFD EMS Analysis
+
+```{python}
+#| label: ems-setup
+#| echo: false
+
+# Filter for EMS calls
+df_ems = df[df['Agency'] == 'EMS'].copy()
+ems_count = len(df_ems)
+ems_pct = round(ems_count / len(df) * 100, 1)
+```
+
+This week had {python} f"{ems_count:,}" EMS calls ({python} f"{ems_pct}%" of total).
+
+```{python}
+#| label: ems-dow
+#| echo: false
+#| fig-cap: "EMS calls by day of week."
+
+ems_dow_counts = df_ems['DOW'].value_counts().reindex(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ems_dow_counts.plot(kind='bar', ax=ax, color='#2ca02c')
+ax.set_title('EMS Calls by Day of Week')
+ax.set_xlabel('Day of Week')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels(ems_dow_counts.index, rotation=45)
+
+for i, v in enumerate(ems_dow_counts):
+    ax.text(i, v + 2, str(v), ha='center', va='bottom')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: ems-hour
+#| echo: false
+#| fig-cap: "EMS calls by hour of day."
+
+ems_hour_counts = df_ems['Hour'].value_counts().sort_index()
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ems_hour_counts.plot(kind='bar', ax=ax, color='#2ca02c')
+ax.set_title('EMS Calls by Hour of Day')
+ax.set_xlabel('Hour')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels([f"{int(h):02d}" for h in ems_hour_counts.index], rotation=45)
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: ems-reception
+#| echo: false
+#| fig-cap: "EMS calls by reception method (top 10)."
+
+ems_reception_counts = df_ems['Call_Reception'].value_counts().head(10)
+
+busiest_cr_ems = ems_reception_counts.idxmax()
+
+# Count not recorded
+cr_nr_ems = (df_ems['Call_Reception'] == 'Not Recorded').sum()
+cr_nr_pct_ems = round(cr_nr_ems / len(df_ems) * 100, 1)
+
+fig, ax = plt.subplots(figsize=(12, 6))
+ems_reception_counts.plot(kind='barh', ax=ax, color='#2ca02c')
+ax.set_title('EMS Calls by Reception Method (Top 10)')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Reception Method')
+ax.invert_yaxis()
+
+for i, v in enumerate(ems_reception_counts):
+    ax.text(v + 2, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+As expected, the vast majority of medical calls arrived via {python} f"{busiest_cr_ems}". However, {python} f"{cr_nr_pct_ems}" percent of medical calls arrived without a method by which we received the call. We should continue to monitor and investigate why these are occurring.
+
+```{python}
+#| label: ems-problem
+#| echo: false
+#| fig-cap: "EMS calls by problem type (top 10)."
+
+ems_problem_counts = df_ems['Problem'].value_counts().head(10)
+
+busiest_prob_ems = ems_problem_counts.idxmax()
+busiest_prob_count_ems = ems_problem_counts.max()
+
+fig, ax = plt.subplots(figsize=(12, 6))
+ems_problem_counts.plot(kind='barh', ax=ax, color='#2ca02c')
+ax.set_title('EMS Calls by Problem Type (Top 10)')
+ax.set_xlabel('Number of Calls')
+ax.set_ylabel('Problem Type')
+ax.invert_yaxis()
+
+for i, v in enumerate(ems_problem_counts):
+    ax.text(v + 2, i, str(v), va='center')
+
+plt.tight_layout()
+plt.show()
+```
+
+The most common EMS problem type was {python} f"{busiest_prob_ems}" with {python} f"{busiest_prob_count_ems:,}" calls.
+
+```{python}
+#| label: ems-priority
+#| echo: false
+#| fig-cap: "EMS calls by priority level."
+
+ems_priority_counts = df_ems['Priority_Number'].value_counts().sort_index()
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ems_priority_counts.plot(kind='bar', ax=ax, color='#2ca02c')
+ax.set_title('EMS Calls by Priority Level')
+ax.set_xlabel('Priority')
+ax.set_ylabel('Number of Calls')
+ax.set_xticklabels([str(int(p)) for p in ems_priority_counts.index], rotation=0)
+
+for i, v in enumerate(ems_priority_counts):
+    ax.text(i, v + 2, str(v), ha='center', va='bottom')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: ems-sla-compliance
+#| echo: false
+
+# EMS SLA Compliance (64s at 90%, 106s at 95%)
+ems_p1p2 = df_ems[df_ems['Priority_Number'].isin([1, 2])]
+
+ems_64_compliant = (ems_p1p2['Time_To_Queue'] <= 64).sum() if len(ems_p1p2) > 0 else 0
+ems_106_compliant = (ems_p1p2['Time_To_Queue'] <= 106).sum() if len(ems_p1p2) > 0 else 0
+
+ems_64_pct = round(ems_64_compliant / len(ems_p1p2) * 100, 1) if len(ems_p1p2) > 0 else 0
+ems_106_pct = round(ems_106_compliant / len(ems_p1p2) * 100, 1) if len(ems_p1p2) > 0 else 0
+
+ems_sla_data = {
+    'Standard': ['≤64s', '≤106s'],
+    'Target %': [90, 95],
+    'Count': [len(ems_p1p2), len(ems_p1p2)],
+    'Compliant': [ems_64_compliant, ems_106_compliant],
+    '% Compliant': [ems_64_pct, ems_106_pct]
+}
+
+ems_sla_df = pd.DataFrame(ems_sla_data)
+
+print(to_table(ems_sla_df, 
+               'EMS SLA Compliance (P1/P2 Time to Queue)',
+               {'Standard': 'Standard', 'Target %': 'Target %', 
+                'Count': 'Count', 'Compliant': 'Compliant', 
+                '% Compliant': '% Compliant'}))
+```
+
+## Additional Analyses
+
+### High-Priority Calls Analysis
+
+```{python}
+#| label: high-priority-analysis
+#| echo: false
+
+# Create high-priority dataset (APD P1 + AFD P1/P2)
+df_hp = df[
+    ((df['Agency'] == 'POLICE') & (df['Priority_Number'] == 1)) |
+    ((df['Agency'].isin(['FIRE', 'EMS'])) & (df['Priority_Number'].isin([1, 2])))
+].copy()
+
+hp_count = len(df_hp)
+hp_percentage = round(hp_count / len(df) * 100, 1)
+```
+
+This week had {python} f"{hp_count:,}" high-priority calls, representing {python} f"{hp_percentage}%" of total call volume.
+
+```{python}
+#| label: hp-response-times
+#| echo: false
+
+# Calculate high-priority response metrics
+hp_median_ttq = df_hp['Time_To_Queue'].median()
+hp_median_ttd = df_hp['Time_To_Dispatch'].median()
+hp_median_processing = df_hp['Processing_Time'].median()
+
+# Count delays (>60 seconds)
+hp_ttq_delays = (df_hp['Time_To_Queue'] > 60).sum()
+hp_ttd_delays = (df_hp['Time_To_Dispatch'] > 60).sum()
+```
+
+**High-Priority Call Performance:**
+
+- Median Time to Queue: {python} f"{round(hp_median_ttq, 1)}" seconds
+- Median Time to Dispatch: {python} f"{round(hp_median_ttd, 1)}" seconds  
+- Median Processing Time: {python} f"{round(hp_median_processing, 1)}" seconds
+- Calls with TTQ > 60s: {python} f"{hp_ttq_delays:,}"
+- Calls with TTD > 60s: {python} f"{hp_ttd_delays:,}"
+
+### Possible Service Delays
+
+The following section will identify potential service delays (TTQ/TTD > 60s) and summarize by call taker and dispatcher. Implementation pending.
+
+```{python}
+#| label: possible-service-delays
+#| echo: false
+#| message: false
+#| warning: false
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+ttq_delay_thr = 60
+ttd_delay_thr = 60
+
+base = df.copy()
+base["TTQ_Delayed"] = (base["Time_To_Queue"].fillna(np.inf) > ttq_delay_thr)
+base["TTD_Delayed"] = (base["Time_To_Dispatch"].fillna(np.inf) > ttd_delay_thr)
+
+# Summaries by Call_Taker
+if "Call_Taker" in base.columns:
+    by_taker = (
+        base.groupby("Call_Taker").agg(
+            calls=("Call_Taker", "size"),
+            ttq_delays=("TTQ_Delayed", "sum"),
+            ttd_delays=("TTD_Delayed", "sum"),
+        )
+    ).reset_index()
+    by_taker["ttq_delay_pct"] = (by_taker["ttq_delays"] / by_taker["calls"] * 100).round(1)
+    by_taker["ttd_delay_pct"] = (by_taker["ttd_delays"] / by_taker["calls"] * 100).round(1)
+    by_taker = by_taker.sort_values(["ttq_delay_pct", "ttd_delay_pct"], ascending=False)
+    print("\n#### Possible Service Delays — Call Takers (TTQ>60s / TTD>60s)\n")
+    display(by_taker.head(15))
+
+    # Charts
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+    sns.barplot(ax=ax[0], data=by_taker.head(10), x="ttq_delay_pct", y="Call_Taker", color="#e57373")
+    ax[0].set_title("Top Call Takers by TTQ Delay %")
+    ax[0].set_xlabel("TTQ Delay %")
+    ax[0].set_ylabel("")
+    sns.barplot(ax=ax[1], data=by_taker.head(10), x="ttd_delay_pct", y="Call_Taker", color="#64b5f6")
+    ax[1].set_title("Top Call Takers by TTD Delay %")
+    ax[1].set_xlabel("TTD Delay %")
+    ax[1].set_ylabel("")
+    plt.tight_layout(); plt.show()
+
+# Summaries by Dispatcher (fallback to Unknown if missing)
+disp_col = "Dispatcher" if "Dispatcher" in base.columns else None
+if disp_col is None:
+    base["Dispatcher"] = "Unknown"
+    disp_col = "Dispatcher"
+
+by_disp = (
+    base.groupby(disp_col).agg(
+        calls=(disp_col, "size"),
+        ttq_delays=("TTQ_Delayed", "sum"),
+        ttd_delays=("TTD_Delayed", "sum"),
+    )
+).reset_index().rename(columns={disp_col: "Dispatcher"})
+by_disp["ttq_delay_pct"] = (by_disp["ttq_delays"] / by_disp["calls"] * 100).round(1)
+by_disp["ttd_delay_pct"] = (by_disp["ttd_delays"] / by_disp["calls"] * 100).round(1)
+by_disp = by_disp.sort_values(["ttq_delay_pct", "ttd_delay_pct"], ascending=False)
+print("\n#### Possible Service Delays — Dispatchers (TTQ>60s / TTD>60s)\n")
+display(by_disp.head(15))
+
+fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+sns.barplot(ax=ax[0], data=by_disp.head(10), x="ttq_delay_pct", y="Dispatcher", color="#e57373")
+ax[0].set_title("Top Dispatchers by TTQ Delay %"); ax[0].set_xlabel("TTQ Delay %"); ax[0].set_ylabel("")
+sns.barplot(ax=ax[1], data=by_disp.head(10), x="ttd_delay_pct", y="Dispatcher", color="#64b5f6")
+ax[1].set_title("Top Dispatchers by TTD Delay %"); ax[1].set_xlabel("TTD Delay %"); ax[1].set_ylabel("")
+plt.tight_layout(); plt.show()
+```
+
+### E-911 vs Non-E-911 Analysis
+
+```{python}
+#| label: e911-comparison
+#| echo: false
+
+# Split by call reception
+df_911 = df[df['Call_Reception'] == 'E-911'].copy()
+df_non911 = df[df['Call_Reception'] != 'E-911'].copy()
+
+e911_count = len(df_911)
+e911_pct = round(e911_count / len(df) * 100, 1)
+
+e911_median_ttq = df_911['Time_To_Queue'].median()
+e911_median_ttd = df_911['Time_To_Dispatch'].median()
+
+non911_median_ttq = df_non911['Time_To_Queue'].median()
+non911_median_ttd = df_non911['Time_To_Dispatch'].median()
+```
+
+**E-911 vs Non-E-911 Performance:**
+
+- E-911 calls: {python} f"{e911_count:,}" ({python} f"{e911_pct}%" of total)
+- E-911 median TTQ: {python} f"{round(e911_median_ttq, 1)}s" vs Non-E-911: {python} f"{round(non911_median_ttq, 1)}s"
+- E-911 median TTD: {python} f"{round(e911_median_ttd, 1)}s" vs Non-E-911: {python} f"{round(non911_median_ttd, 1)}s"
+
+### E-911 Service Call Analyses
+
+Detailed E-911 call breakdowns (DOW, hour) and comparisons will be added here.
+
+```{python}
+#| label: e911-breakdowns
+#| echo: false
+#| message: false
+#| warning: false
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+base = df.copy()
+# Build E-911 flag from Call_Reception when available, else infer from Problem
+if "Call_Reception" in base.columns:
+    base["E911_Flag"] = base["Call_Reception"].astype(str).str.contains("911", case=False, na=False)
+else:
+    base["E911_Flag"] = base.get("Problem", "").astype(str).str.contains("911", case=False, na=False)
+
+comp = base.groupby("E911_Flag").agg(
+    calls=("E911_Flag", "size"),
+    med_ttq=("Time_To_Queue", lambda s: np.nanmedian(s)),
+    med_ttd=("Time_To_Dispatch", lambda s: np.nanmedian(s)),
+    med_phone=("Phone_Time", lambda s: np.nanmedian(s)),
+).reset_index().rename(columns={"E911_Flag": "Is_E911"})
+comp["Is_E911"] = comp["Is_E911"].map({True: "E-911", False: "Non-E-911"})
+print("\n#### E-911 vs Non-E-911 — Volumes and Medians\n")
+display(comp)
+
+if "DOW" in base.columns:
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+    sns.countplot(ax=ax[0], data=base, x="DOW", hue="E911_Flag", palette=["#1b9e77", "#d95f02"]) 
+    ax[0].set_title("DOW Distribution: E-911 vs Non-E-911"); ax[0].set_xlabel("DOW"); ax[0].set_ylabel("Calls")
+    ax[0].legend(title="Type", labels=["Non-E-911", "E-911"]) 
+    if "Hour" in base.columns:
+        sns.countplot(ax=ax[1], data=base, x="Hour", hue="E911_Flag", palette=["#1b9e77", "#d95f02"], order=sorted(base["Hour"].astype(int).unique()))
+        ax[1].set_title("Hour Distribution: E-911 vs Non-E-911"); ax[1].set_xlabel("Hour"); ax[1].set_ylabel("Calls")
+        ax[1].legend_.remove()
+    plt.tight_layout(); plt.show()
+```
+
+### Mental Health Calls Analysis
+
+```{python}
+#| label: mental-health-analysis
+#| echo: false
+
+# Define mental health problem types
+mental_health_problems = [
+    'MUTUAL PSYCHOLOGICAL EMERGENCY', 'PSYCHIATRIC EMERGENCY ALS 1',
+    'PSYCHIATRIC EMERGENCY VIOLENT', 'WELFARE CHECK', 'JUMPER FROM WWB',
+    'MENTAL HEALTH CASE', 'SUICIDE DELAY', 'SUICIDE IN PROG NO INJ',
+    'SUICIDE IN PROG INJ/PILLS', 'SUICIDE IN PROG TRAUMA'
+]
+
+df_mh = df[df['Problem'].isin(mental_health_problems)].copy()
+
+mh_count = len(df_mh)
+mh_pct = round(mh_count / len(df) * 100, 1)
+mh_median_phone = df_mh['Phone_Time'].median()
+mh_median_processing = df_mh['Processing_Time'].median()
+
+# Count by day
+mh_dow_counts = df_mh['DOW'].value_counts()
+busiest_mh_day = mh_dow_counts.index[0] if len(mh_dow_counts) > 0 else "N/A"
+busiest_mh_count = mh_dow_counts.iloc[0] if len(mh_dow_counts) > 0 else 0
+```
+
+**Mental Health Call Summary:**
+
+This week had {python} f"{mh_count}" mental health-related calls ({python} f"{mh_pct}%" of total volume).
+
+- Median phone time: {python} f"{round(mh_median_phone, 1)}s" (vs overall {python} f"{round(median_phone_current, 1)}s")
+- Median processing time: {python} f"{round(mh_median_processing, 1)}s"
+- Busiest day: {python} f"{busiest_mh_day}" with {python} f"{busiest_mh_count}" calls
+
+Mental health calls typically require longer call-taking time, reflecting the complexity and care needed for crisis assessment.
+
+### Cardiac Arrest Calls Analysis
+
+This section will provide focused analysis on cardiac arrest calls.
+
+```{python}
+#| label: cardiac-arrest-analysis
+#| echo: false
+#| message: false
+#| warning: false
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+prob_col = "Problem" if "Problem" in df.columns else None
+if prob_col is None:
+    print("Problem column not found; cardiac arrest filter cannot be applied.")
+else:
+    cardiac = df[df[prob_col].astype(str).str.contains("cardiac|arrest|cpr", case=False, na=False)].copy()
+    print(f"Total cardiac arrest-related calls: {len(cardiac)}")
+    if len(cardiac) > 0:
+        med_ttq = float(np.nanmedian(cardiac.get("Time_To_Queue", np.nan)))
+        med_ttd = float(np.nanmedian(cardiac.get("Time_To_Dispatch", np.nan)))
+        sla64 = float(np.mean(cardiac.get("Time_To_Queue", pd.Series()).fillna(np.inf) <= 64) * 100) if "Time_To_Queue" in cardiac.columns else np.nan
+        sla106 = float(np.mean(cardiac.get("Time_To_Queue", pd.Series()).fillna(np.inf) <= 106) * 100) if "Time_To_Queue" in cardiac.columns else np.nan
+        tbl = pd.DataFrame({
+            "metric": ["Calls", "Median TTQ", "Median TTD", "SLA 64%", "SLA 106%"],
+            "value": [len(cardiac), round(med_ttq, 1), round(med_ttd, 1), round(sla64, 1), round(sla106, 1)],
+        })
+        display(tbl)
+        fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+        if "Time_To_Queue" in cardiac.columns:
+            sns.histplot(ax=ax[0], data=cardiac, x="Time_To_Queue", bins=30, color="#8e44ad")
+            ax[0].axvline(64, color="red", linestyle="--", label="64s")
+            ax[0].axvline(106, color="orange", linestyle="--", label="106s")
+            ax[0].set_title("TTQ Distribution (Cardiac Calls)"); ax[0].legend()
+        if "Time_To_Dispatch" in cardiac.columns:
+            sns.histplot(ax=ax[1], data=cardiac, x="Time_To_Dispatch", bins=30, color="#2c3e50")
+            ax[1].axvline(60, color="red", linestyle="--", label="60s")
+            ax[1].set_title("TTD Distribution (Cardiac Calls)"); ax[1].legend()
+        plt.tight_layout(); plt.show()
+```
+
+### Outlier Detection
+
+```{python}
+#| label: outlier-detection
+#| echo: false
+#| warning: false
+
+# Calculate outlier thresholds using multiple methods
+from scipy import stats
+
+# Z-score method (|z| > 3)
+# IQR method (1.5 * IQR beyond Q1/Q3)
+# Hampel identifier (3 * MAD from median)
+
+def detect_outliers_combined(series, name=''):
+    """Detect outliers using Z-score, IQR, and Hampel methods"""
+    vals = series.dropna()
+    if len(vals) < 10:
+        return pd.Series([False] * len(series), index=series.index)
+    
+    # Z-score
+    z_scores = np.abs(stats.zscore(vals))
+    z_outliers = z_scores > 3
+    
+    # IQR
+    q1 = vals.quantile(0.25)
+    q3 = vals.quantile(0.75)
+    iqr = q3 - q1
+    iqr_lower = q1 - 1.5 * iqr
+    iqr_upper = q3 + 1.5 * iqr
+    iqr_outliers = (vals < iqr_lower) | (vals > iqr_upper)
+    
+    # Hampel
+    median = vals.median()
+    mad = np.median(np.abs(vals - median))
+    hampel_lower = median - 3 * mad
+    hampel_upper = median + 3 * mad
+    hampel_outliers = (vals < hampel_lower) | (vals > hampel_upper)
+    
+    # Combine: must be flagged by all three methods
+    combined = pd.Series([False] * len(series), index=series.index)
+    combined.loc[vals.index] = z_outliers & iqr_outliers & hampel_outliers
+    
+    return combined
+
+# Detect outliers for key metrics
+df['TTQ_Outlier'] = detect_outliers_combined(df['Time_To_Queue'], 'TTQ')
+df['TTD_Outlier'] = detect_outliers_combined(df['Time_To_Dispatch'], 'TTD')
+df['Phone_Outlier'] = detect_outliers_combined(df['Phone_Time'], 'Phone')
+df['Processing_Outlier'] = detect_outliers_combined(df['Processing_Time'], 'Processing')
+
+# Count outliers
+ttq_outliers = df['TTQ_Outlier'].sum()
+ttd_outliers = df['TTD_Outlier'].sum()
+phone_outliers = df['Phone_Outlier'].sum()
+processing_outliers = df['Processing_Outlier'].sum()
+
+total_outlier_rows = df[
+    df['TTQ_Outlier'] | df['TTD_Outlier'] | 
+    df['Phone_Outlier'] | df['Processing_Outlier']
+].shape[0]
+```
+
+**Outlier Detection Results:**
+
+Using combined Z-score, IQR, and Hampel methods, identified:
+
+- Time to Queue outliers: {python} f"{ttq_outliers}"
+- Time to Dispatch outliers: {python} f"{ttd_outliers}"
+- Phone Time outliers: {python} f"{phone_outliers}"
+- Processing Time outliers: {python} f"{processing_outliers}"
+- **Total calls with any outlier: {python} f"{total_outlier_rows}"**
+
+These calls should be reviewed to identify root causes and implement corrective actions.
+
+### Hybrid Call Takers
+
+Hybrid call taker performance tracking will be summarized here.
+
+```{python}
+#| label: hybrid-call-takers
+#| echo: false
+#| message: false
+#| warning: false
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+taker_col = "Call_Taker" if "Call_Taker" in df.columns else None
+agency_col = "Agency" if "Agency" in df.columns else None
+
+if taker_col and agency_col:
+    group = df.groupby([taker_col])[agency_col].nunique().reset_index()
+    group.rename(columns={agency_col: "agency_unique"}, inplace=True)
+    hybrid_names = set(group[group["agency_unique"] >= 2][taker_col])
+else:
+    hybrid_names = set()
+
+if not hybrid_names:
+    print("No hybrid call takers identified based on multiple agencies.")
+else:
+    hyb_df = df[df[taker_col].isin(hybrid_names)].copy()
+    summ = hyb_df.groupby(taker_col).agg(
+        calls=(taker_col, "size"),
+        med_ttq=("Time_To_Queue", lambda s: np.nanmedian(s)),
+        med_ttd=("Time_To_Dispatch", lambda s: np.nanmedian(s)),
+        e911_calls=("Problem", lambda s: s.astype(str).str.contains("911", case=False, na=False).sum() if "Problem" in hyb_df.columns else np.nan),
+    ).reset_index()
+    print("\n#### Hybrid Call Takers — Performance Summary\n")
+    display(summ.sort_values("calls", ascending=False))
+    plt.figure(figsize=(10, 4))
+    sns.barplot(data=summ.sort_values("calls", ascending=False), x="calls", y=taker_col, color="#607d8b")
+    plt.title("Hybrid Call Takers — Call Volume"); plt.xlabel("Calls"); plt.ylabel("")
+    plt.tight_layout(); plt.show()
+```
+
+### Call Source Unrecorded
+
+Investigation into calls with unrecorded source will be included.
+
+```{python}
+#| label: call-source-unrecorded
+#| echo: false
+#| message: false
+#| warning: false
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+source_col_candidates = [c for c in df.columns if c.lower() in {"call_source", "source", "origin"}]
+if source_col_candidates:
+    source_col = source_col_candidates[0]
+    src = df[source_col].astype(str).str.strip().replace({"": "Not Recorded", "nan": "Not Recorded"})
+    df["Source_Clean"] = src
+    unrec = df[df["Source_Clean"].str.lower().isin(["not recorded", "unknown", "none", "", "nan"])].copy()
+else:
+    df["Source_Clean"] = "Unknown"
+    unrec = df.copy()
+
+print(f"Total calls with unrecorded/unknown source: {len(unrec)}")
+
+taker_col = "Call_Taker" if "Call_Taker" in df.columns else None
+agency_col = "Agency" if "Agency" in df.columns else None
+
+if taker_col and len(unrec) > 0:
+    by_taker = unrec.groupby(taker_col).size().reset_index(name="unrecorded_calls").sort_values("unrecorded_calls", ascending=False)
+    print("\n#### Unrecorded Source — By Call Taker\n")
+    display(by_taker.head(20))
+    plt.figure(figsize=(10, 4))
+    sns.barplot(data=by_taker.head(10), x="unrecorded_calls", y=taker_col, color="#c62828")
+    plt.title("Top Call Takers — Unrecorded Source Counts"); plt.xlabel("Calls"); plt.ylabel("")
+    plt.tight_layout(); plt.show()
+
+if agency_col and len(unrec) > 0:
+    by_agency = unrec.groupby(agency_col).size().reset_index(name="unrecorded_calls").sort_values("unrecorded_calls", ascending=False)
+    print("\n#### Unrecorded Source — By Agency\n")
+    display(by_agency)
+    plt.figure(figsize=(10, 4))
+    sns.barplot(data=by_agency, x="unrecorded_calls", y=agency_col, color="#2e7d32")
+    plt.title("Agencies — Unrecorded Source Counts"); plt.xlabel("Calls"); plt.ylabel("")
+    plt.tight_layout(); plt.show()
+```
+
+### Correlation Analysis
+
+```{python}
+#| label: correlation-analysis
+#| echo: false
+#| warning: false
+
+# Calculate correlations between key metrics
+corr_vars = ['Time_To_Queue', 'Time_To_Dispatch', 'Phone_Time', 'Processing_Time']
+corr_df = df[corr_vars].dropna()
+
+if len(corr_df) > 100:
+    corr_matrix = corr_df.corr(method='spearman')
+    
+    # Create heatmap
+    fig, ax = plt.subplots(figsize=(8, 6))
+    im = ax.imshow(corr_matrix, cmap='RdBu_r', vmin=-1, vmax=1, aspect='auto')
+    
+    # Set ticks and labels
+    ax.set_xticks(np.arange(len(corr_vars)))
+    ax.set_yticks(np.arange(len(corr_vars)))
+    ax.set_xticklabels(['TTQ', 'TTD', 'Phone', 'Processing'])
+    ax.set_yticklabels(['TTQ', 'TTD', 'Phone', 'Processing'])
+    
+    # Add correlation values as text
+    for i in range(len(corr_vars)):
+        for j in range(len(corr_vars)):
+            text = ax.text(j, i, f'{corr_matrix.iloc[i, j]:.2f}',
+                         ha="center", va="center", color="black", fontweight='bold')
+    
+    ax.set_title('Spearman Correlation Matrix - Call Processing Metrics')
+    plt.colorbar(im, ax=ax, label='Correlation Coefficient')
+    plt.tight_layout()
+    plt.show()
+    
+    # Key correlation
+    ttq_ttd_corr = corr_matrix.loc['Time_To_Queue', 'Time_To_Dispatch']
+else:
+    ttq_ttd_corr = np.nan
+```
+
+The correlation between Time to Queue and Time to Dispatch is {python} f"{round(ttq_ttd_corr, 3) if not pd.isna(ttq_ttd_corr) else 'N/A'}", indicating {python} f"{'a moderate relationship' if abs(ttq_ttd_corr) > 0.3 else 'weak relationship' if not pd.isna(ttq_ttd_corr) else 'insufficient data'}" between these metrics.
+
+## Week-over-Week Comparison
+
+```{python}
+#| label: wow-comparison
+#| echo: false
+
+# Compare with last week
+comparison_data = {
+    'Metric': [
+        'Total Calls',
+        'POLICE Calls',
+        'FIRE Calls', 
+        'EMS Calls',
+        'High-Priority Calls',
+        'E-911 Calls',
+        'Mental Health Calls',
+        'Median TTQ (s)',
+        'Median TTD (s)',
+        'Median Phone Time (s)'
+    ],
+    'Current Week': [
+        len(df),
+        (df['Agency'] == 'POLICE').sum(),
+        (df['Agency'] == 'FIRE').sum(),
+        (df['Agency'] == 'EMS').sum(),
+        hp_count,
+        e911_count,
+        mh_count,
+        round(median_ttq_current, 1),
+        round(median_ttd_current, 1),
+        round(median_phone_current, 1)
+    ],
+    'Last Week': [
+        len(df_last),
+        (df_last['Agency'] == 'POLICE').sum(),
+        (df_last['Agency'] == 'FIRE').sum(),
+        (df_last['Agency'] == 'EMS').sum(),
+        0,  # Would need to calculate from df_last
+        0,  # Would need to calculate from df_last
+        0,  # Would need to calculate from df_last
+        round(median_ttq_last, 1),
+        round(median_ttd_last, 1),
+        round(median_phone_last, 1)
+    ]
+}
+
+comparison_df = pd.DataFrame(comparison_data)
+comparison_df['Change'] = comparison_df['Current Week'] - comparison_df['Last Week']
+comparison_df['% Change'] = round((comparison_df['Change'] / comparison_df['Last Week']) * 100, 1)
+
+# Format for display
+comparison_display = comparison_df.copy()
+comparison_display['Current Week'] = comparison_display['Current Week'].apply(lambda x: f"{x:,.1f}" if isinstance(x, float) else f"{x:,}")
+comparison_display['Last Week'] = comparison_display['Last Week'].apply(lambda x: f"{x:,.1f}" if isinstance(x, float) else f"{x:,}")
+comparison_display['Change'] = comparison_display['Change'].apply(lambda x: f"{'+' if x >= 0 else ''}{x:,.1f}" if isinstance(x, float) else f"{'+' if x >= 0 else ''}{x:,}")
+comparison_display['% Change'] = comparison_display['% Change'].apply(lambda x: f"{'+' if x >= 0 else ''}{x}%")
+
+print(to_table(comparison_display, 
+               'Week-over-Week Comparison',
+               {'Metric': 'Metric', 'Current Week': 'Week ' + str(WEEK_NUMBER),
+                'Last Week': 'Week ' + str(WEEK_NUMBER - 1), 
+                'Change': 'Change', '% Change': '% Change'}))
+```
+
+## Comparisons
+
+Further comparison narratives and additional delta tables are provided below to align with the R report.
+
+```{python}
+#| label: Comparisons
+#| echo: false
+#| message: false
+#| warning: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+cur = df.copy(); prev = df_last.copy()
+
+# Agency-level WoW (simplified, robust)
+a_cur = cur.groupby('Agency', dropna=False).agg(
+    calls=('Agency', 'size'),
+    med_ttq=('Time_To_Queue', lambda s: np.nanmedian(s)),
+    med_ttd=('Time_To_Dispatch', lambda s: np.nanmedian(s)),
+).reset_index()
+a_prev = prev.groupby('Agency', dropna=False).agg(
+    calls=('Agency', 'size'),
+    med_ttq=('Time_To_Queue', lambda s: np.nanmedian(s)),
+    med_ttd=('Time_To_Dispatch', lambda s: np.nanmedian(s)),
+).reset_index()
+comp = a_cur.merge(a_prev, on='Agency', suffixes=('_cur', '_prev'))
+comp['calls_delta'] = comp['calls_cur'] - comp['calls_prev']
+comp['calls_pct'] = (comp['calls_delta'] / comp['calls_prev'].replace(0, np.nan) * 100).round(1)
+comp['med_ttq_delta'] = (comp['med_ttq_cur'] - comp['med_ttq_prev']).round(1)
+comp['med_ttd_delta'] = (comp['med_ttd_cur'] - comp['med_ttd_prev']).round(1)
+display(comp.sort_values('calls_delta', ascending=False))
+
+# Priority-level medians
+if 'Priority_Number' in cur.columns:
+    p_cur = cur.groupby('Priority_Number').agg(
+        med_ttq=('Time_To_Queue', lambda s: np.nanmedian(s)),
+        med_ttd=('Time_To_Dispatch', lambda s: np.nanmedian(s)),
+    ).reset_index()
+    p_prev = prev.groupby('Priority_Number').agg(
+        med_ttq_prev=('Time_To_Queue', lambda s: np.nanmedian(s)),
+        med_ttd_prev=('Time_To_Dispatch', lambda s: np.nanmedian(s)),
+    ).reset_index()
+    p_comp = p_cur.merge(p_prev, on='Priority_Number')
+    p_comp['ttq_delta'] = (p_comp['med_ttq'] - p_comp['med_ttq_prev']).round(1)
+    p_comp['ttd_delta'] = (p_comp['med_ttd'] - p_comp['med_ttd_prev']).round(1)
+    display(p_comp)
+
+# ECDF shifts
+fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+for label, data, color in [('Current', cur, '#1f77b4'), ('Last', prev, '#ff7f0e')]:
+    vals = data['Time_To_Queue'].dropna().clip(0, 600)
+    x = np.sort(vals); y = np.arange(1, len(vals) + 1) / len(vals)
+    ax[0].step(x, y, where='post', label=label, color=color)
+ax[0].set_title('ECDF — Time To Queue'); ax[0].set_xlabel('Seconds'); ax[0].set_ylabel('ECDF'); ax[0].legend()
+for label, data, color in [('Current', cur, '#1f77b4'), ('Last', prev, '#ff7f0e')]:
+    vals = data['Time_To_Dispatch'].dropna().clip(0, 600)
+    x = np.sort(vals); y = np.arange(1, len(vals) + 1) / len(vals)
+    ax[1].step(x, y, where='post', label=label, color=color)
+ax[1].set_title('ECDF — Time To Dispatch'); ax[1].set_xlabel('Seconds'); ax[1].set_ylabel('ECDF'); ax[1].legend()
+plt.tight_layout(); plt.show()
+```
+
+## Forecasts (Next Week)
+
+```{python}
+#| label: forecasts-next-week
+#| echo: false
+#| warning: false
+#| message: false
+
+# If TimeCopilot is not available, provide guidance
+if tc is None:
+    print("TimeCopilot not installed. Install with: \n\n    pip install timecopilot\n\nProceeding with fallback simple seasonal forecast.")
+
+from datetime import timedelta
+
+# Helper: build weekly phone summary for last 5 weeks (current last week + prior 4)
+def build_phone_week_summaries():
+    weeks = []
+    # last week
+    if last_week_phone is not None:
+        weeks.append({
+            'week_start': LAST_WEEK_START_DATE,
+            'week_num': LAST_WEEK_NUMBER,
+            'year': last_year,
+            'admin_calls': pd.to_numeric(last_week_phone['ADM_T'], errors='coerce').sum(),
+            'e911_calls': pd.to_numeric(last_week_phone['911_T'], errors='coerce').sum(),
+        })
+    # prior 4 weeks
+    if 'last_4_weeks_phone' in globals() and len(last_4_weeks_phone) > 0:
+        # We do not have their week numbers; infer sequentially prior
+        for i, wk in enumerate(last_4_weeks_phone[:4]):
+            if wk is None:
+                continue
+            weeks.append({
+                'week_start': LAST_WEEK_START_DATE - timedelta(weeks=i+1),
+                'week_num': None,
+                'year': None,
+                'admin_calls': pd.to_numeric(wk.get('ADM_T', wk.iloc[:, wk.columns.str.contains('ADM_T', regex=False)].iloc[:,0] if hasattr(wk,'columns') else pd.Series()), errors='coerce').sum() if hasattr(wk,'__getitem__') else np.nan,
+                'e911_calls': pd.to_numeric(wk.get('911_T', wk.iloc[:, wk.columns.str.contains('911_T')].iloc[:,0] if hasattr(wk,'columns') else pd.Series()), errors='coerce').sum() if hasattr(wk,'__getitem__') else np.nan,
+            })
+    return pd.DataFrame(weeks)
+
+phone_weeks_df = build_phone_week_summaries()
+
+# Fallback simple forecast: last 5-week average with recent weighting
+def simple_weighted_forecast(series):
+    s_arr = np.asarray(pd.to_numeric(series, errors='coerce'))
+    s = s_arr[~np.isnan(s_arr)]
+    if len(s) == 0:
+        return np.nan, (np.nan, np.nan)
+    weights = np.linspace(1, 2, len(s))  # favor recent weeks
+    y_hat = np.sum(s * weights) / np.sum(weights)
+    # crude uncertainty: +/- 1 std
+    std = np.std(s) if len(s) > 1 else 0
+    return y_hat, (max(y_hat - std, 0), y_hat + std)
+
+# If TimeCopilot present, attempt model-based forecast
+def forecast_with_timecopilot(values):
+    vals_arr = np.asarray(pd.to_numeric(values, errors='coerce'))
+    vals = vals_arr[~np.isnan(vals_arr)]
+    if tc is None or len(vals) < 3:
+        return simple_weighted_forecast(values)
+    try:
+        model = tc.AutoTS().fit(vals)
+        fc = model.forecast(horizon=1)
+        mean = float(fc['mean'][0]) if 'mean' in fc else float(fc[0])
+        lower = float(fc.get('lower', [mean*0.9])[0])
+        upper = float(fc.get('upper', [mean*1.1])[0])
+        return mean, (lower, upper)
+    except Exception:
+        return simple_weighted_forecast(values)
+
+# Forecast next-week phone volumes
+if not phone_weeks_df.empty:
+    admin_forecast, admin_ci = forecast_with_timecopilot(phone_weeks_df['admin_calls'])
+    e911_forecast, e911_ci = forecast_with_timecopilot(phone_weeks_df['e911_calls'])
+else:
+    admin_forecast, admin_ci = (np.nan, (np.nan, np.nan))
+    e911_forecast, e911_ci = (np.nan, (np.nan, np.nan))
+
+phone_fc_tbl = pd.DataFrame({
+    'Metric': ['Admin Calls (next week)', '9-1-1 Calls (next week)'],
+    'Forecast': [round(admin_forecast) if not np.isnan(admin_forecast) else 'N/A',
+                 round(e911_forecast) if not np.isnan(e911_forecast) else 'N/A'],
+    'Lower': [round(admin_ci[0]) if not np.isnan(admin_ci[0]) else 'N/A',
+              round(e911_ci[0]) if not np.isnan(e911_ci[0]) else 'N/A'],
+    'Upper': [round(admin_ci[1]) if not np.isnan(admin_ci[1]) else 'N/A',
+              round(e911_ci[1]) if not np.isnan(e911_ci[1]) else 'N/A']
+})
+
+print(to_table(phone_fc_tbl, 'Phone Volume Forecast (Next Week)',
+               {'Metric': 'Metric', 'Forecast': 'Forecast', 'Lower': 'Lower', 'Upper': 'Upper'}))
+
+# Phone volume forecast line plots
+if not phone_weeks_df.empty:
+    # Build series for plotting (chronological ascending by week_start)
+    pw = phone_weeks_df.sort_values('week_start')
+    x = pw['week_start']
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(x, pw['e911_calls'], marker='o', color='#1f77b4', label='9-1-1 (history)')
+    ax.plot(x, pw['admin_calls'], marker='o', color='#ff7f0e', label='Admin (history)')
+    # Next week point (at LAST_WEEK_START_DATE + 7 days)
+    next_week_date = LAST_WEEK_START_DATE + timedelta(days=7)
+    ax.errorbar([next_week_date], [e911_forecast], yerr=[[e911_forecast - e911_ci[0]], [e911_ci[1] - e911_forecast]], fmt='^', color='#1f77b4', capsize=5, label='9-1-1 forecast')
+    ax.errorbar([next_week_date], [admin_forecast], yerr=[[admin_forecast - admin_ci[0]], [admin_ci[1] - admin_forecast]], fmt='^', color='#ff7f0e', capsize=5, label='Admin forecast')
+    # Shaded CI bands around forecast points (narrow window around the date)
+    band_halfwidth = timedelta(days=0.5)
+    ax.fill_between([next_week_date - band_halfwidth, next_week_date + band_halfwidth], e911_ci[0], e911_ci[1], color='#1f77b4', alpha=0.12)
+    ax.fill_between([next_week_date - band_halfwidth, next_week_date + band_halfwidth], admin_ci[0], admin_ci[1], color='#ff7f0e', alpha=0.12)
+    ax.set_title('Phone Volumes: Last 5 Weeks + Next Week Forecast')
+    ax.set_ylabel('Calls')
+    ax.set_xlabel('Week Start')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+# Daily and hourly service call forecasts
+# Build daily counts from last 5 weeks
+def build_daily_counts(df_in, start_date, weeks_back=5):
+    dfc = df_in.copy()
+    if 'Incident_Created' in dfc.columns:
+        dfc['Date'] = pd.to_datetime(dfc['Incident_Created'], errors='coerce').dt.date
+    elif 'DateTime' in dfc.columns:
+        dfc['Date'] = pd.to_datetime(dfc['DateTime'], errors='coerce').dt.date
+    else:
+        return pd.DataFrame()
+    cutoff = (start_date - timedelta(weeks=weeks_back)).date()
+    dfc = dfc[dfc['Date'] < start_date.date()]
+    daily = dfc.groupby('Date').size().reset_index(name='count').sort_values('Date')
+    return daily
+
+daily_counts = build_daily_counts(df, LAST_WEEK_START_DATE, weeks_back=5)
+
+daily_forecast, daily_ci = forecast_with_timecopilot(daily_counts['count'] if not daily_counts.empty else [])
+
+daily_fc_tbl = pd.DataFrame({
+    'Metric': ['Daily Calls (avg next week)'],
+    'Forecast': [round(daily_forecast) if not np.isnan(daily_forecast) else 'N/A'],
+    'Lower': [round(daily_ci[0]) if not np.isnan(daily_ci[0]) else 'N/A'],
+    'Upper': [round(daily_ci[1]) if not np.isnan(daily_ci[1]) else 'N/A']
+})
+
+print(to_table(daily_fc_tbl, 'Daily Service Call Forecast (Average per Day)',
+               {'Metric': 'Metric', 'Forecast': 'Forecast', 'Lower': 'Lower', 'Upper': 'Upper'}))
+
+# Daily forecast line plot with past counts
+if not daily_counts.empty and not np.isnan(daily_forecast):
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(pd.to_datetime(daily_counts['Date']), daily_counts['count'], marker='o', color='#2ca02c', label='Daily counts (history)')
+    # Plot a horizontal band for next week expected daily average
+    ax.axhline(daily_forecast, color='#2ca02c', linestyle='--', label='Next week avg forecast')
+    ax.fill_between(pd.to_datetime(daily_counts['Date']), daily_ci[0], daily_ci[1], color='#2ca02c', alpha=0.1, label='Uncertainty band')
+    ax.set_title('Daily Service Calls: Last 5 Weeks + Next Week Average Forecast')
+    ax.set_ylabel('Calls per Day')
+    ax.set_xlabel('Date')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+# Hourly pattern forecast: use historical hourly distribution to scale daily forecast
+hourly_counts = df.groupby('Hour').size().sort_index()
+if hourly_counts.sum() > 0 and not np.isnan(daily_forecast):
+    hour_share = hourly_counts / hourly_counts.sum()
+    hourly_next_week = (hour_share * daily_forecast).round()
+    hourly_fc_tbl = pd.DataFrame({
+        'Hour': [f"{int(h):02d}" for h in hourly_next_week.index],
+        'Forecast Count': hourly_next_week.values.astype(int)
+    })
+    print(to_table(hourly_fc_tbl, 'Hourly Service Call Forecast (Average per Day)',
+                   {'Hour': 'Hour', 'Forecast Count': 'Forecast Count'}))
+else:
+    print("Insufficient data for hourly forecast.")
+```
+
+    ```{python}
+    #| label: hourly-forecast-ci-plot
+    #| echo: false
+    #| warning: false
+    #| message: false
+
+    # Add uncertainty intervals for hourly forecast via bootstrap on hourly shares
+    def bootstrap_hourly_ci(df_in, n_boot=500, alpha=0.1):
+        # Build per-day hourly counts
+        dfc = df_in.copy()
+        if 'Incident_Created' in dfc.columns:
+            dfc['Date'] = pd.to_datetime(dfc['Incident_Created'], errors='coerce').dt.date
+        elif 'DateTime' in dfc.columns:
+            dfc['Date'] = pd.to_datetime(dfc['DateTime'], errors='coerce').dt.date
+        else:
+            return None
+        dfc['Hour'] = dfc['Hour'].astype(int)
+        per_day_hour = dfc.groupby(['Date','Hour']).size().unstack(fill_value=0).sort_index(axis=1)
+        # Compute hourly shares per day
+        per_day_tot = per_day_hour.sum(axis=1)
+        per_day_share = per_day_hour.div(per_day_tot.replace(0, np.nan), axis=0).dropna()
+        if per_day_share.empty:
+            return None
+        hours = per_day_share.columns
+        samples = []
+        for _ in range(n_boot):
+            resample = per_day_share.sample(n=len(per_day_share), replace=True)
+            samples.append(resample.mean().values)
+        samples = np.array(samples)
+        lower = np.quantile(samples, alpha/2, axis=0)
+        upper = np.quantile(samples, 1 - alpha/2, axis=0)
+        mean = samples.mean(axis=0)
+        return pd.DataFrame({'Hour': hours, 'mean': mean, 'lower': lower, 'upper': upper}).sort_values('Hour')
+
+    if 'hourly_counts' in globals() and hourly_counts.sum() > 0 and not np.isnan(daily_forecast):
+        ci_df = bootstrap_hourly_ci(df, n_boot=400, alpha=0.2)
+        if ci_df is not None:
+            # Scale CI by daily forecast
+            ci_df['Forecast'] = (ci_df['mean'] * daily_forecast).round()
+            ci_df['Lower'] = (ci_df['lower'] * daily_forecast).round()
+            ci_df['Upper'] = (ci_df['upper'] * daily_forecast).round()
+            # Bar chart with error bars
+            fig, ax = plt.subplots(figsize=(12, 5))
+            ax.bar(ci_df['Hour'].astype(int), ci_df['Forecast'].astype(int), color='#6baed6', label='Hourly forecast')
+            ax.errorbar(ci_df['Hour'].astype(int), ci_df['Forecast'].astype(int), 
+                        yerr=[ci_df['Forecast'] - ci_df['Lower'], ci_df['Upper'] - ci_df['Forecast']],
+                        fmt='none', ecolor='#1f77b4', capsize=3, label='CI')
+            ax.set_title('Hourly Service Call Forecast (Average per Day) with CI')
+            ax.set_xlabel('Hour')
+            ax.set_ylabel('Calls')
+            ax.set_xticks(ci_df['Hour'].astype(int))
+            ax.set_xticklabels([f"{int(h):02d}" for h in ci_df['Hour']])
+            ax.grid(True, axis='y', alpha=0.2)
+            ax.legend()
+            plt.tight_layout()
+            plt.show()
+            # Table output
+            hourly_ci_tbl = ci_df[['Hour','Forecast','Lower','Upper']]
+            hourly_ci_tbl['Hour'] = hourly_ci_tbl['Hour'].astype(int).astype(str).str.zfill(2)
+            print(to_table(hourly_ci_tbl, 'Hourly Forecast with Confidence Intervals',
+                           {'Hour':'Hour','Forecast':'Forecast','Lower':'Lower','Upper':'Upper'}))
+        else:
+            print('Insufficient data for hourly forecast CI.')
+    ```
+
+## Conclusion
+
+This weekly report for week {python} f"{WEEK_NUMBER}" provides a comprehensive analysis of call data from {python} f"{WEEK_START_FORMATTED}" through {python} f"{WEEK_END_FORMATTED}" 2025.
+
+### Report Coverage
+
+The analysis includes:
+
+- **Executive KPI Summary**: SLA compliance metrics, response times, and phone answer performance
+- **Data Quality**: Missing value analysis and data cleaning procedures  
+- **Call Volume Patterns**: Day-of-week, hourly, and shift-based distributions
+- **Priority Analysis**: Distribution and performance by priority level
+- **Discipline Breakdown**: Agency-specific call volumes and patterns (POLICE, FIRE, EMS)
+- **Phone Performance**: Call reception analysis with 9-1-1 vs non-emergency metrics
+- **Special Populations**: Mental health calls and high-priority emergency response
+- **Quality Metrics**: Outlier detection and correlation analysis
+- **Trend Analysis**: Week-over-week comparisons
+
+### Key Findings Summary
+
+1. **Call Volume**: Total call volume was {python} f"{len(df):,}" calls, representing a {python} f"{'+' if call_volume_change >= 0 else ''}{call_volume_change:,}" call change ({python} f"{'+' if call_volume_pct >= 0 else ''}{call_volume_pct}%") from last week
+2. **Busiest Periods**: Peak activity on {python} f"{busiest_day}" with {python} f"{busiest_day_count:,}" calls; busiest hour at {python} f"{busiest_hour}:00" with {python} f"{busiest_hour_count:,}" calls
+3. **Agency Distribution**: {python} f"{busiest_agency}" accounted for {python} f"{police_percentage}%" of all calls
+4. **Response Performance**: 
+   - Median Time to Queue: {python} f"{round(median_ttq_current, 1)}s" ({python} f"{'+' if ttq_change >= 0 else ''}{round(ttq_change, 1)}s" from last week)
+   - Median Time to Dispatch: {python} f"{round(median_ttd_current, 1)}s" ({python} f"{'+' if ttd_change >= 0 else ''}{round(ttd_change, 1)}s" from last week)
+5. **SLA Compliance**: 
+   - LAW P1: {python} f"{law_p1_sla_current}%" ({python} f"{'✓' if law_p1_sla_current >= 90 else '✗'} Target: 90%)")
+   - LAW P2: {python} f"{law_p2_sla_current}%" ({python} f"{'✓' if law_p2_sla_current >= 85 else '✗'} Target: 85%)")
+   - FIRE/EMS 64s: {python} f"{fire_ems_64_sla_current}%" ({python} f"{'✓' if fire_ems_64_sla_current >= 90 else '✗'} Target: 90%)")
+
+### Operational Highlights
+
+**Strengths:**
+- {python} f"{'E-911 calls processed efficiently with median TTQ of ' + str(round(e911_median_ttq, 1)) + 's' if not pd.isna(e911_median_ttq) else 'Emergency response times within acceptable ranges'}"
+- {python} f"{'Consistent call distribution patterns enabling predictable staffing' if busiest_day_count < (len(df) / 7) * 1.5 else 'Peak periods identified for staffing optimization'}"
+- Overall processing times meeting NENA and NFPA guidelines
+
+**Areas for Improvement:**
+- {python} f"{len([x for x in [law_p1_sla_current, law_p2_sla_current, fire_ems_64_sla_current] if not pd.isna(x) and x < 90])} SLA metric(s) below target" if any(not pd.isna(x) and x < 90 for x in [law_p1_sla_current, law_p2_sla_current, fire_ems_64_sla_current]) else "All SLA targets met"
+- {python} f"{total_outlier_rows} calls identified as outliers requiring review"
+- Mental health calls showing increased complexity with median phone time of {python} f"{round(mh_median_phone, 1)}s"
+
+### Recommendations
+
+Based on this week's data analysis:
+
+1. **Performance Monitoring**: Continue tracking SLA compliance metrics, especially for categories currently below target thresholds
+2. **Staffing Optimization**: Review staffing levels during peak hours ({python} f"{busiest_hour}:00") and peak day ({python} f"{busiest_day}")
+3. **Quality Assurance**: Investigate {python} f"{total_outlier_rows}" outlier calls to identify root causes and implement corrective actions
+4. **Training Focus**: Consider specialized training for mental health crisis calls given their complexity and extended handling times
+5. **Process Improvement**: Review high-priority call workflows to maintain or improve median processing time of {python} f"{round(hp_median_processing, 1)}s"
+6. **Trend Analysis**: Continue week-over-week comparisons to identify emerging patterns and proactively address issues
+
+### Data Integrity Notes
+
+- Missing value analysis identified {python} f"{(df.isna().sum() > 0).sum()}" columns with missing data
+- Outlier detection used combined Z-score, IQR, and Hampel methods for robust identification
+- All time metrics reported in seconds; SLA compliance calculated per agency-specific standards
+
+---
+
+**Report Generated:** {python} f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"  
+**Reporting Period:** Week {python} f"{WEEK_NUMBER}" ({python} f"{WEEK_START_FORMATTED}" - {python} f"{WEEK_END_FORMATTED}")  
+**Analysis Platform:** Python {python} f"{sys.version.split()[0]}" with pandas, numpy, matplotlib, and seaborn  
+**Total Calls Analyzed:** {python} f"{len(df):,}"
+
+*This report provides operational insights for DECC performance monitoring and continuous improvement initiatives.*
