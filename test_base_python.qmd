@@ -1788,12 +1788,271 @@ print(to_table(ems_sla_df,
                 '% Compliant': '% Compliant'}))
 ```
 
-## Additional Analyses
+## Advanced Analytics & Strategic Insights
 
-### High-Priority Calls Analysis
+This section provides advanced analytics, staffing insights, and automated recommendations to complement the operational metrics above.
+
+### All Dispatcher Performance Analysis
+
+This section analyzes performance across all dispatchers to identify workload distribution, efficiency patterns, and development opportunities.
 
 ```{python}
-#| label: high-priority-analysis
+#| label: all-dispatcher-performance
+#| echo: false
+#| message: false
+#| warning: false
+
+# Comprehensive dispatcher analysis
+# Exclude non-person dispatcher values from peer comparisons
+excluded_dispatchers = ["Automatic Dispatch", "CAD to CAD Service 1", "NULL", "null", ""]
+
+dispatcher_performance = df[
+    df['Dispatcher'].notna() & 
+    ~df['Dispatcher'].isin(excluded_dispatchers)
+].groupby('Dispatcher').agg(
+    Total_Calls=('Dispatcher', 'size'),
+    Median_TTD=('Time_To_Dispatch', lambda x: x.median()),
+    Mean_TTD=('Time_To_Dispatch', lambda x: x.mean()),
+    SD_TTD=('Time_To_Dispatch', lambda x: x.std()),
+    P1_Calls=('Priority_Number', lambda x: (x == 1).sum()),
+    P2_Calls=('Priority_Number', lambda x: (x == 2).sum())
+).reset_index()
+
+# Calculate high priority percentage
+total_p12 = dispatcher_performance['P1_Calls'] + dispatcher_performance['P2_Calls']
+dispatcher_performance['High_Priority_Pct'] = round((total_p12 / dispatcher_performance['Total_Calls']) * 100, 1)
+
+# Round numeric columns
+for col in ['Median_TTD', 'Mean_TTD', 'SD_TTD']:
+    dispatcher_performance[col] = round(dispatcher_performance[col], 1)
+
+# Sort by total calls
+dispatcher_performance = dispatcher_performance.sort_values('Total_Calls', ascending=False)
+
+# Add performance and workload quartiles
+dispatcher_performance['Performance_Quartile'] = pd.qcut(
+    dispatcher_performance['Median_TTD'], q=4, labels=False, duplicates='drop'
+) + 1
+dispatcher_performance['Workload_Quartile'] = pd.qcut(
+    dispatcher_performance['Total_Calls'], q=4, labels=False, duplicates='drop'
+) + 1
+
+# Display performance table
+perf_display = dispatcher_performance[['Dispatcher', 'Total_Calls', 'Median_TTD', 'Mean_TTD', 'P1_Calls', 'P2_Calls', 'High_Priority_Pct']]
+
+print(to_table(perf_display, 
+               'Dispatcher Performance Summary - Current Week',
+               {'Dispatcher': 'Dispatcher', 'Total_Calls': 'Total Calls', 
+                'Median_TTD': 'Median TTD (s)', 'Mean_TTD': 'Mean TTD (s)',
+                'P1_Calls': 'P1 Calls', 'P2_Calls': 'P2 Calls',
+                'High_Priority_Pct': 'High Priority %'}))
+```
+
+#### Automated/CAD-to-CAD/Null Dispatches (Separate View)
+
+These entries are operational mechanisms (e.g., system auto-routes or inter-CAD transfers) and are shown separately to avoid skewing peer comparisons of individual dispatchers.
+
+```{python}
+#| label: automated-cad-null-summary
+#| echo: false
+#| message: false
+#| warning: false
+
+# Categorize automated/CAD/null dispatches
+auto_cad_df = df.copy()
+auto_cad_df['Dispatcher_Categorized'] = auto_cad_df['Dispatcher'].apply(
+    lambda x: '[NA]' if pd.isna(x) else (
+        x if x in ["Automatic Dispatch", "CAD to CAD Service 1", "NULL"] else None
+    )
+)
+
+auto_cad_summary = auto_cad_df[auto_cad_df['Dispatcher_Categorized'].notna()].groupby('Dispatcher_Categorized').agg(
+    Total_Calls=('Dispatcher_Categorized', 'size'),
+    Median_TTQ=('Time_To_Queue', lambda x: round(x.median(), 1)),
+    Median_TTD=('Time_To_Dispatch', lambda x: round(x.median(), 1)),
+    Median_Phone=('Phone_Time', lambda x: round(x.median(), 1))
+).reset_index().sort_values('Total_Calls', ascending=False)
+
+print(to_table(auto_cad_summary,
+               'Automated/CAD-to-CAD/Null Dispatch Summary (Excluded from Peer Comparison)',
+               {'Dispatcher_Categorized': 'Category', 'Total_Calls': 'Total Calls',
+                'Median_TTQ': 'Med TTQ (s)', 'Median_TTD': 'Med TTD (s)',
+                'Median_Phone': 'Med Phone (s)'}))
+```
+
+#### Workload Distribution
+
+```{python}
+#| label: workload-distribution
+#| echo: false
+#| fig-cap: "Dispatcher Workload Distribution"
+#| fig-width: 10
+#| fig-height: 6
+
+# Top 15 dispatchers by call volume
+top_dispatchers = dispatcher_performance.nlargest(15, 'Total_Calls')
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Create color mapping based on high priority percentage
+colors = plt.cm.RdYlGn_r(top_dispatchers['High_Priority_Pct'] / 100)
+
+bars = ax.barh(range(len(top_dispatchers)), top_dispatchers['Total_Calls'], color=colors)
+ax.set_yticks(range(len(top_dispatchers)))
+ax.set_yticklabels(top_dispatchers['Dispatcher'])
+ax.set_xlabel('Total Calls')
+ax.set_ylabel('Dispatcher')
+ax.set_title('Top 15 Dispatchers by Call Volume\nColor indicates percentage of high-priority (P1/P2) calls')
+ax.invert_yaxis()
+
+# Add call count labels
+for i, (idx, row) in enumerate(top_dispatchers.iterrows()):
+    ax.text(row['Total_Calls'], i, f" {row['Total_Calls']}", 
+            va='center', ha='left', fontsize=9)
+
+# Add colorbar
+sm = plt.cm.ScalarMappable(cmap=plt.cm.RdYlGn_r, norm=plt.Normalize(vmin=0, vmax=100))
+sm.set_array([])
+cbar = plt.colorbar(sm, ax=ax)
+cbar.set_label('High Priority %', rotation=270, labelpad=20)
+
+plt.tight_layout()
+plt.show()
+```
+
+### Staff Development Insights
+
+```{python}
+#| label: performance-quartiles
+#| echo: false
+
+# Identify top and bottom performers (min 10 calls threshold)
+min_calls_threshold = 10
+
+top_performers = dispatcher_performance[
+    (dispatcher_performance['Total_Calls'] >= min_calls_threshold) &
+    (~dispatcher_performance['Dispatcher'].isin(excluded_dispatchers))
+].nsmallest(5, 'Median_TTD')
+
+needs_support = dispatcher_performance[
+    (dispatcher_performance['Total_Calls'] >= min_calls_threshold) &
+    (~dispatcher_performance['Dispatcher'].isin(excluded_dispatchers))
+].nlargest(5, 'Median_TTD')
+```
+
+#### Top Performers (Fastest Median TTD)
+
+```{python}
+#| label: top-performers-table
+#| echo: false
+
+top_perf_display = top_performers[['Dispatcher', 'Total_Calls', 'Median_TTD', 'High_Priority_Pct']]
+
+print(to_table(top_perf_display,
+               'Top 5 Performers - Fastest Dispatch Times (min 10 calls)',
+               {'Dispatcher': 'Dispatcher', 'Total_Calls': 'Calls',
+                'Median_TTD': 'Median TTD (s)', 'High_Priority_Pct': 'High Priority %'}))
+```
+
+#### Development Opportunities (Slowest Median TTD)
+
+```{python}
+#| label: needs-support-table
+#| echo: false
+
+needs_support_display = needs_support[['Dispatcher', 'Total_Calls', 'Median_TTD', 'High_Priority_Pct']]
+
+print(to_table(needs_support_display,
+               'Dispatchers with Longest Dispatch Times (min 10 calls)',
+               {'Dispatcher': 'Dispatcher', 'Total_Calls': 'Calls',
+                'Median_TTD': 'Median TTD (s)', 'High_Priority_Pct': 'High Priority %'}))
+```
+
+**Coaching Recommendations:**
+
+- Consider pairing dispatchers from the development opportunities list with top performers for mentoring
+- Analyze call types handled by slower dispatchers - are they inherently more complex?
+- Review procedures and protocols with dispatchers showing high TTD variance
+
+### Automated Recommendations
+
+```{python}
+#| label: automated-recommendations
+#| echo: false
+
+recommendations = []
+
+# Staffing recommendations based on volume trends
+if 'call_volume_change' in locals() and call_volume_change > 100:
+    recommendations.append(f"📊 **Staffing**: Call volume increased by {call_volume_change} calls. Consider reviewing staffing levels for peak periods.")
+
+# Performance recommendations
+if 'ttq_change' in locals() and ttq_change > 5:
+    recommendations.append(f"⏱️ **Efficiency**: Time to Queue increased by {round(ttq_change, 1)} seconds. Review call intake procedures and staffing during peak hours.")
+
+# Training recommendations based on dispatcher performance
+high_variance_dispatchers = len(dispatcher_performance[
+    (dispatcher_performance['Total_Calls'] >= 10) &
+    (dispatcher_performance['SD_TTD'] > 100) &
+    (~dispatcher_performance['Dispatcher'].isin(excluded_dispatchers))
+])
+
+if high_variance_dispatchers > 3:
+    recommendations.append(f"🎓 **Training**: {high_variance_dispatchers} dispatchers show high variability in dispatch times. Consider consistency training and standard operating procedure reviews.")
+
+# SLA-based recommendations
+if 'law_p1_sla_current' in locals() and law_p1_sla_current < 90:
+    recommendations.append("🚨 **Compliance**: LAW P1 SLA compliance below 90% target. See KPI Summary section for details. Immediate review recommended.")
+
+if 'law_p2_sla_current' in locals() and law_p2_sla_current < 85:
+    recommendations.append("🚨 **Compliance**: LAW P2 SLA compliance below 85% target. See KPI Summary section for details. Immediate review recommended.")
+```
+
+#### Priority Action Items
+
+```{python}
+#| label: recommendations-output
+#| echo: false
+#| output: asis
+
+if len(recommendations) > 0:
+    print("\n**Recommended Actions:**\n")
+    for i, rec in enumerate(recommendations, 1):
+        print(f"{i}. {rec}\n")
+else:
+    print("\n✅ **No critical action items identified - Operations within normal parameters**\n")
+```
+
+### Process Improvement Opportunities
+
+```{python}
+#| label: process-improvements
+#| echo: false
+#| output: asis
+
+# Identify problem types with longest handling times
+complex_call_types = df[df['Processing_Time'].notna()].groupby('Problem').agg(
+    Call_Count=('Problem', 'size'),
+    Mean_Processing=('Processing_Time', 'mean')
+).reset_index()
+
+complex_call_types = complex_call_types[complex_call_types['Call_Count'] >= 5].sort_values('Mean_Processing', ascending=False).head(5)
+
+if len(complex_call_types) > 0:
+    print("\n**Complex Call Types Requiring Extended Handling:**\n")
+    for idx, row in complex_call_types.iterrows():
+        print(f"- **{row['Problem']}**: {round(row['Mean_Processing'])} seconds mean processing time ({row['Call_Count']} calls)")
+    print("\nConsider developing specialized protocols or additional training for these call types.\n")
+```
+
+---
+
+## High-Priority and Critical Calls
+
+### High-Priority Call Types
+
+```{python}
+#| label: high-priority-call-types
 #| echo: false
 
 # Create high-priority dataset (APD P1 + AFD P1/P2)
@@ -1804,9 +2063,16 @@ df_hp = df[
 
 hp_count = len(df_hp)
 hp_percentage = round(hp_count / len(df) * 100, 1)
+
+# Count by problem type
+hp_problems = df_hp.groupby('Problem').size().reset_index(name='count').sort_values('count', ascending=False).head(10)
+
+print(to_table(hp_problems,
+               f'Top 10 High-Priority Call Types (Total: {hp_count:,} calls, {hp_percentage}% of all calls)',
+               {'Problem': 'Call Type', 'count': 'Count'}))
 ```
 
-This week had {python} f"{hp_count:,}" high-priority calls, representing {python} f"{hp_percentage}%" of total call volume.
+### High-Priority Response Times
 
 ```{python}
 #| label: hp-response-times
@@ -1820,6 +2086,20 @@ hp_median_processing = df_hp['Processing_Time'].median()
 # Count delays (>60 seconds)
 hp_ttq_delays = (df_hp['Time_To_Queue'] > 60).sum()
 hp_ttd_delays = (df_hp['Time_To_Dispatch'] > 60).sum()
+
+# Agency breakdown
+hp_by_agency = df_hp.groupby('Agency').agg(
+    Count=('Agency', 'size'),
+    Median_TTQ=('Time_To_Queue', lambda x: round(x.median(), 1)),
+    Median_TTD=('Time_To_Dispatch', lambda x: round(x.median(), 1)),
+    Median_Processing=('Processing_Time', lambda x: round(x.median(), 1))
+).reset_index()
+
+print(to_table(hp_by_agency,
+               'High-Priority Calls by Agency',
+               {'Agency': 'Agency', 'Count': 'Calls', 
+                'Median_TTQ': 'Med TTQ (s)', 'Median_TTD': 'Med TTD (s)',
+                'Median_Processing': 'Med Processing (s)'}))
 ```
 
 **High-Priority Call Performance:**
@@ -1830,9 +2110,309 @@ hp_ttd_delays = (df_hp['Time_To_Dispatch'] > 60).sum()
 - Calls with TTQ > 60s: {python} f"{hp_ttq_delays:,}"
 - Calls with TTD > 60s: {python} f"{hp_ttd_delays:,}"
 
+## E-911 Service Call Analyses
+
+### E-911 Call Response Summary
+
+```{python}
+#| label: e911-call-summary
+#| echo: false
+
+# Filter E-911 calls
+df_911 = df[df['Call_Reception'] == 'E-911'].copy()
+e911_count = len(df_911)
+e911_percentage = round(e911_count / len(df) * 100, 1)
+
+# Calculate E-911 metrics
+e911_median_ttq = df_911['Time_To_Queue'].median()
+e911_median_ttd = df_911['Time_To_Dispatch'].median()
+e911_median_phone = df_911['Phone_Time'].median()
+
+# E-911 by agency
+e911_by_agency = df_911.groupby('Agency').agg(
+    Count=('Agency', 'size'),
+    Median_TTQ=('Time_To_Queue', lambda x: round(x.median(), 1)),
+    Median_TTD=('Time_To_Dispatch', lambda x: round(x.median(), 1)),
+    Median_Phone=('Phone_Time', lambda x: round(x.median(), 1))
+).reset_index().sort_values('Count', ascending=False)
+
+print(to_table(e911_by_agency,
+               f'E-911 Calls by Agency (Total: {e911_count:,} calls, {e911_percentage}% of all calls)',
+               {'Agency': 'Agency', 'Count': 'Calls',
+                'Median_TTQ': 'Med TTQ (s)', 'Median_TTD': 'Med TTD (s)',
+                'Median_Phone': 'Med Phone (s)'}))
+```
+
+### E-911 Call Breakdowns
+
+```{python}
+#| label: e911-breakdowns
+#| echo: false
+#| fig-cap: "E-911 Call Distribution"
+#| fig-width: 12
+#| fig-height: 4
+
+# Create visualizations
+fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+
+# By agency
+agency_counts = df_911.groupby('Agency').size().sort_values(ascending=True)
+axes[0].barh(range(len(agency_counts)), agency_counts.values, color=palette_cyan_base[:len(agency_counts)])
+axes[0].set_yticks(range(len(agency_counts)))
+axes[0].set_yticklabels(agency_counts.index)
+axes[0].set_xlabel('Number of Calls')
+axes[0].set_title('E-911 Calls by Agency')
+
+# By day of week
+dow_counts = df_911.groupby('DOW').size().reindex(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
+axes[1].bar(range(len(dow_counts)), dow_counts.values, color=palette_cyan_base[:7])
+axes[1].set_xticks(range(len(dow_counts)))
+axes[1].set_xticklabels(dow_counts.index, rotation=45)
+axes[1].set_ylabel('Number of Calls')
+axes[1].set_title('E-911 Calls by Day of Week')
+
+# By hour
+hour_counts = df_911.groupby('Hour').size().sort_index()
+axes[2].bar(range(len(hour_counts)), hour_counts.values, color=palette_cyan_24[:len(hour_counts)])
+axes[2].set_xlabel('Hour of Day')
+axes[2].set_ylabel('Number of Calls')
+axes[2].set_title('E-911 Calls by Hour')
+axes[2].set_xticks(range(0, 24, 4))
+
+plt.tight_layout()
+plt.show()
+```
+
+## Topical Analyses
+
+### Cardiac Arrest Calls Analysis
+
+```{python}
+#| label: cardiac-arrest-analysis
+#| echo: false
+
+# Filter cardiac arrest calls
+df_ca = df[df['Problem'].str.contains('CARDIAC ARREST', case=False, na=False)].copy()
+ca_count = len(df_ca)
+
+if ca_count > 0:
+    ca_median_ttq = df_ca['Time_To_Queue'].median()
+    ca_median_ttd = df_ca['Time_To_Dispatch'].median()
+    ca_median_processing = df_ca['Processing_Time'].median()
+    
+    print(f"**Cardiac Arrest Calls This Week:** {ca_count}")
+    print(f"\n- Median Time to Queue: {round(ca_median_ttq, 1)}s")
+    print(f"- Median Time to Dispatch: {round(ca_median_ttd, 1)}s")
+    print(f"- Median Processing Time: {round(ca_median_processing, 1)}s\n")
+else:
+    print("No cardiac arrest calls recorded this week.\n")
+```
+
+### Mental Health Analyses
+
+```{python}
+#| label: mental-health-analysis
+#| echo: false
+
+# Define mental health keywords
+mental_health_keywords = [
+    'PSYCHIATRIC', 'MENTAL HEALTH', 'SUICIDE', 'PSYCHOLOGICAL', 
+    'WELFARE CHECK', 'JUMPER'
+]
+
+# Filter mental health calls
+mh_mask = df['Problem'].str.contains('|'.join(mental_health_keywords), case=False, na=False)
+df_mh = df[mh_mask].copy()
+mh_count = len(df_mh)
+mh_percentage = round(mh_count / len(df) * 100, 1)
+
+if mh_count > 0:
+    mh_median_phone = df_mh['Phone_Time'].median()
+    mh_median_ttq = df_mh['Time_To_Queue'].median()
+    mh_median_processing = df_mh['Processing_Time'].median()
+    
+    # Most common mental health call types
+    mh_problems = df_mh.groupby('Problem').size().reset_index(name='count').sort_values('count', ascending=False).head(5)
+    
+    print(f"**Mental Health Calls:** {mh_count:,} ({mh_percentage}% of all calls)")
+    print(f"\n- Median Phone Time: {round(mh_median_phone, 1)}s")
+    print(f"- Median Time to Queue: {round(mh_median_ttq, 1)}s")
+    print(f"- Median Processing Time: {round(mh_median_processing, 1)}s\n")
+    
+    print(to_table(mh_problems,
+                   'Top 5 Mental Health Call Types',
+                   {'Problem': 'Call Type', 'count': 'Count'}))
+else:
+    print("No mental health-related calls identified this week.\n")
+```
+
+### Call Source Unrecorded
+
+```{python}
+#| label: unrecorded-call-source
+#| echo: false
+
+# Filter calls with unrecorded source
+unrec_mask = df['Call_Reception'].isna() | df['Call_Reception'].str.upper().str.contains('NOT', na=False)
+df_nrr = df[unrec_mask].copy()
+nrr_count = len(df_nrr)
+nrr_percentage = round(nrr_count / len(df) * 100, 1)
+
+print(f"**Calls with Unrecorded Source:** {nrr_count:,} ({nrr_percentage}% of all calls)\n")
+
+if nrr_count > 0:
+    # By agency
+    nrr_by_agency = df_nrr.groupby('Agency').size().reset_index(name='count').sort_values('count', ascending=False)
+    print(to_table(nrr_by_agency,
+                   'Unrecorded Call Source by Agency',
+                   {'Agency': 'Agency', 'count': 'Count'}))
+```
+
+### Hybrid Call Takers
+
+```{python}
+#| label: hybrid-call-takers
+#| echo: false
+
+# Define hybrid call takers list
+hybrid_takers = ["PICKERAL, LAUREN", "VALENTIN, EMERITA", "FARRI, ANGELINE", 
+                 "PATTERSON, JAHAIRA", "MAIOBELLO, BERMARI"]
+
+# Filter hybrid and non-hybrid calls
+df_hybrid = df[df['Call_Taker'].isin(hybrid_takers)].copy()
+df_nonhybrid = df[~df['Call_Taker'].isin(hybrid_takers) & df['Call_Taker'].notna()].copy()
+
+hybrid_count = len(df_hybrid)
+hybrid_median_phone = df_hybrid['Phone_Time'].median()
+hybrid_median_ttq = df_hybrid['Time_To_Queue'].median()
+
+nonhybrid_median_phone = df_nonhybrid['Phone_Time'].median()
+nonhybrid_median_ttq = df_nonhybrid['Time_To_Queue'].median()
+
+if hybrid_count > 0:
+    print(f"**Hybrid Call Taker Performance:**")
+    print(f"\n- Calls handled: {hybrid_count:,}")
+    print(f"- Median Phone Time: {round(hybrid_median_phone, 1)}s (Non-hybrid: {round(nonhybrid_median_phone, 1)}s)")
+    print(f"- Median Time to Queue: {round(hybrid_median_ttq, 1)}s (Non-hybrid: {round(nonhybrid_median_ttq, 1)}s)\n")
+else:
+    print("No calls handled by hybrid call takers this week.\n")
+```
+
+## Outlier Identification
+
+```{python}
+#| label: outlier-detection
+#| echo: false
+#| warning: false
+
+# Combined outlier detection using Z-score, IQR, and Hampel methods
+def detect_outliers_combined(series, z_threshold=3, iqr_multiplier=1.5):
+    """Detect outliers using multiple methods"""
+    clean_series = series.dropna()
+    if len(clean_series) < 10:
+        return pd.Series(False, index=series.index)
+    
+    outliers = pd.Series(False, index=series.index)
+    
+    # Z-score method
+    z_scores = np.abs(stats.zscore(clean_series))
+    z_outliers = z_scores > z_threshold
+    
+    # IQR method
+    Q1 = clean_series.quantile(0.25)
+    Q3 = clean_series.quantile(0.75)
+    IQR = Q3 - Q1
+    iqr_outliers = (clean_series < (Q1 - iqr_multiplier * IQR)) | (clean_series > (Q3 + iqr_multiplier * IQR))
+    
+    # Hampel method
+    median = clean_series.median()
+    mad = np.median(np.abs(clean_series - median))
+    if mad > 0:
+        modified_z = 0.6745 * (clean_series - median) / mad
+        hampel_outliers = np.abs(modified_z) > 3.5
+    else:
+        hampel_outliers = pd.Series(False, index=clean_series.index)
+    
+    # Combine: flag as outlier if detected by at least 2 methods
+    outliers[clean_series.index] = (z_outliers.astype(int) + iqr_outliers.astype(int) + hampel_outliers.astype(int)) >= 2
+    
+    return outliers
+
+# Detect outliers for key time metrics
+time_columns = ['Time_To_Queue', 'Time_To_Dispatch', 'Phone_Time', 'Processing_Time']
+outlier_flags = pd.DataFrame(index=df.index)
+
+for col in time_columns:
+    if col in df.columns:
+        outlier_flags[f'{col}_outlier'] = detect_outliers_combined(df[col])
+
+# Combine outlier flags
+df['is_outlier'] = outlier_flags.any(axis=1)
+total_outlier_rows = df['is_outlier'].sum()
+outlier_percentage = round(total_outlier_rows / len(df) * 100, 1)
+
+print(f"**Outlier Detection Summary:**\n")
+print(f"- Total outlier calls: {total_outlier_rows:,} ({outlier_percentage}% of all calls)")
+
+# Outlier breakdown by column
+outlier_counts = outlier_flags.sum().sort_values(ascending=False)
+outlier_counts = outlier_counts[outlier_counts > 0]
+
+if len(outlier_counts) > 0:
+    outlier_summary = pd.DataFrame({
+        'Metric': [col.replace('_outlier', '') for col in outlier_counts.index],
+        'Outlier Count': outlier_counts.values
+    })
+    print("\n" + to_table(outlier_summary,
+                   'Outliers by Metric',
+                   {'Metric': 'Metric', 'Outlier Count': 'Count'}))
+```
+
+```{python}
+#| label: outlier-visualization
+#| echo: false
+#| fig-cap: "Outlier Distribution"
+#| fig-width: 12
+#| fig-height: 6
+
+# Visualize outliers
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+axes = axes.flatten()
+
+for idx, col in enumerate(time_columns):
+    if col in df.columns and f'{col}_outlier' in outlier_flags.columns:
+        ax = axes[idx]
+        
+        # Regular values
+        regular = df[~outlier_flags[f'{col}_outlier']][col].dropna()
+        outliers = df[outlier_flags[f'{col}_outlier']][col].dropna()
+        
+        # Box plot
+        bp = ax.boxplot([regular], positions=[1], widths=0.6, patch_artist=True,
+                        boxprops=dict(facecolor='lightblue'),
+                        medianprops=dict(color='red', linewidth=2))
+        
+        # Scatter outliers
+        if len(outliers) > 0:
+            y_pos = np.random.normal(1, 0.04, size=len(outliers))
+            ax.scatter(y_pos, outliers, color='red', alpha=0.6, s=20, label=f'Outliers ({len(outliers)})')
+        
+        ax.set_ylabel('Seconds')
+        ax.set_title(f'{col.replace("_", " ")}')
+        ax.set_xticks([1])
+        ax.set_xticklabels(['Distribution'])
+        if len(outliers) > 0:
+            ax.legend()
+
+plt.tight_layout()
+plt.show()
+```
+
+## Additional Analyses
+
 ### Possible Service Delays
 
-The following section will identify potential service delays (TTQ/TTD > 60s) and summarize by call taker and dispatcher. Implementation pending.
+The following section will identify potential service delays (TTQ/TTD > 60s) and summarize by call taker and dispatcher.
 
 ```{python}
 #| label: possible-service-delays
@@ -2219,48 +2799,534 @@ if agency_col and len(unrec) > 0:
     plt.tight_layout(); plt.show()
 ```
 
-### Correlation Analysis
+## Correlation Studies
+
+This section examines associations between elapsed-time performance and key categorical factors using ANOVA-based effect sizes (correlation ratio/eta-squared) and multivariable models:
+
+- TTQ ~ Call Taker (excluding C2C and NULL)
+- TTD ~ Dispatcher (excluding Automatic Dispatch, CAD to CAD Service 1, NULL)
+- TTQ ~ Call Type (`Problem`)
+- TTD ~ Call Type (`Problem`)
+- TTQ ~ Call Type + Call Taker (joint model)
+- TTD ~ Call Type + Dispatcher (joint model)
+
+We report eta-squared (η²) for one-way models and partial eta-squared (η²p) for multivariable models. The correlation-ratio is reported as r = sqrt(η² or η²p) for interpretability on a 0–1 scale.
 
 ```{python}
-#| label: correlation-analysis
+#| label: correlation-studies
 #| echo: false
-#| warning: false
 
-# Calculate correlations between key metrics
-corr_vars = ['Time_To_Queue', 'Time_To_Dispatch', 'Phone_Time', 'Processing_Time']
-corr_df = df[corr_vars].dropna()
+import warnings
+from scipy import stats
+from scipy.stats import f_oneway
+import itertools
 
-if len(corr_df) > 100:
-    corr_matrix = corr_df.corr(method='spearman')
+warnings.filterwarnings('ignore')
+
+# Helper function to compute eta-squared from ANOVA
+def compute_eta_squared(groups, values):
+    """
+    Compute eta-squared (η²) effect size from grouped data.
+    groups: categorical variable (Series)
+    values: continuous variable (Series)
+    Returns: dict with eta2, f_stat, p_value, df_between, df_within
+    """
+    # Create groups for ANOVA
+    group_data = {}
+    for grp in groups.unique():
+        if pd.notna(grp):
+            group_data[grp] = values[groups == grp].dropna()
     
-    # Create heatmap
-    fig, ax = plt.subplots(figsize=(8, 6))
-    im = ax.imshow(corr_matrix, cmap='RdBu_r', vmin=-1, vmax=1, aspect='auto')
+    if len(group_data) < 2:
+        return None
     
-    # Set ticks and labels
-    ax.set_xticks(np.arange(len(corr_vars)))
-    ax.set_yticks(np.arange(len(corr_vars)))
-    ax.set_xticklabels(['TTQ', 'TTD', 'Phone', 'Processing'])
-    ax.set_yticklabels(['TTQ', 'TTD', 'Phone', 'Processing'])
+    # Perform one-way ANOVA
+    f_stat, p_value = f_oneway(*group_data.values())
     
-    # Add correlation values as text
-    for i in range(len(corr_vars)):
-        for j in range(len(corr_vars)):
-            text = ax.text(j, i, f'{corr_matrix.iloc[i, j]:.2f}',
-                         ha="center", va="center", color="black", fontweight='bold')
+    # Calculate eta-squared
+    df_between = len(group_data) - 1
+    df_within = sum(len(vals) for vals in group_data.values()) - len(group_data)
     
-    ax.set_title('Spearman Correlation Matrix - Call Processing Metrics')
-    plt.colorbar(im, ax=ax, label='Correlation Coefficient')
-    plt.tight_layout()
-    plt.show()
+    # SS between groups
+    grand_mean = values.mean()
+    ss_between = sum(len(vals) * (vals.mean() - grand_mean)**2 for vals in group_data.values())
     
-    # Key correlation
-    ttq_ttd_corr = corr_matrix.loc['Time_To_Queue', 'Time_To_Dispatch']
+    # SS total
+    ss_total = ((values - grand_mean)**2).sum()
+    
+    eta2 = ss_between / ss_total if ss_total > 0 else 0
+    
+    return {
+        'eta2': eta2,
+        'f_stat': f_stat,
+        'p_value': p_value,
+        'df_between': df_between,
+        'df_within': df_within
+    }
+
+# Helper function to compute partial eta-squared from two-way ANOVA
+def compute_partial_eta_squared(df_model, outcome, factor1, factor2):
+    """
+    Compute partial eta-squared for two-way model using OLS regression.
+    Returns dict with results for each factor.
+    """
+    from sklearn.linear_model import LinearRegression
+    from sklearn.preprocessing import LabelEncoder
+    
+    # Prepare data
+    model_df = df_model[[outcome, factor1, factor2]].dropna()
+    if len(model_df) < 10:
+        return None
+    
+    # Encode categorical variables
+    le1 = LabelEncoder()
+    le2 = LabelEncoder()
+    
+    f1_encoded = le1.fit_transform(model_df[factor1].astype(str))
+    f2_encoded = le2.fit_transform(model_df[factor2].astype(str))
+    
+    # Create dummy variables
+    f1_dummies = pd.get_dummies(f1_encoded, prefix='f1', drop_first=True)
+    f2_dummies = pd.get_dummies(f2_encoded, prefix='f2', drop_first=True)
+    
+    X = pd.concat([f1_dummies, f2_dummies], axis=1)
+    y = model_df[outcome].values
+    
+    if X.shape[1] == 0 or len(y) < X.shape[1] + 1:
+        return None
+    
+    # Fit full model
+    lr = LinearRegression()
+    lr.fit(X, y)
+    ss_total = ((y - y.mean())**2).sum()
+    ss_res = ((y - lr.predict(X))**2).sum()
+    
+    # Calculate partial eta-squared for each factor
+    results = {}
+    
+    # For factor 1: remove factor 1, refit
+    if f2_dummies.shape[1] > 0:
+        lr_reduced = LinearRegression()
+        lr_reduced.fit(f2_dummies, y)
+        ss_res_reduced = ((y - lr_reduced.predict(f2_dummies))**2).sum()
+        ss_factor1 = ss_res_reduced - ss_res
+        partial_eta2_f1 = ss_factor1 / (ss_factor1 + ss_res) if (ss_factor1 + ss_res) > 0 else 0
+    else:
+        partial_eta2_f1 = 1 - (ss_res / ss_total)
+    
+    # For factor 2: remove factor 2, refit
+    if f1_dummies.shape[1] > 0:
+        lr_reduced = LinearRegression()
+        lr_reduced.fit(f1_dummies, y)
+        ss_res_reduced = ((y - lr_reduced.predict(f1_dummies))**2).sum()
+        ss_factor2 = ss_res_reduced - ss_res
+        partial_eta2_f2 = ss_factor2 / (ss_factor2 + ss_res) if (ss_factor2 + ss_res) > 0 else 0
+    else:
+        partial_eta2_f2 = 1 - (ss_res / ss_total)
+    
+    # Calculate adjusted R²
+    n = len(y)
+    k = X.shape[1]
+    r2 = 1 - (ss_res / ss_total)
+    adj_r2 = 1 - ((1 - r2) * (n - 1) / (n - k - 1)) if n > k + 1 else 0
+    
+    return {
+        factor1: partial_eta2_f1,
+        factor2: partial_eta2_f2,
+        'adj_r2': adj_r2
+    }
+
+# Filter settings
+non_person_dispatch = ["Automatic Dispatch", "CAD to CAD Service 1", "NULL"]
+non_person_taker = ["C2C", "NULL"]
+min_group_n = 5
+keep_top_n_ct = 10
+keep_top_n_disp = 10
+keep_top_n_prob = 15
+
+# Helper to lump rare categories
+def lump_categories(series, keep_top_n, min_count):
+    """Lump rare categories into 'Other'"""
+    value_counts = series.value_counts()
+    top_values = value_counts.head(keep_top_n).index
+    
+    # Also keep values with sufficient count
+    sufficient_values = value_counts[value_counts >= min_count].index
+    keep_values = set(top_values) | set(sufficient_values)
+    
+    return series.apply(lambda x: x if x in keep_values else 'Other')
+
+# 1. One-way: TTQ ~ Call_Taker
+df_ct = df[df['Call_Taker'].notna() & df['Time_To_Queue'].notna()].copy()
+df_ct = df_ct[~df_ct['Call_Taker'].isin(non_person_taker)]
+if len(df_ct) > 0:
+    df_ct['Call_Taker'] = lump_categories(df_ct['Call_Taker'], keep_top_n_ct, min_group_n)
+    es_ttq_ct = compute_eta_squared(df_ct['Call_Taker'], df_ct['Time_To_Queue'])
 else:
-    ttq_ttd_corr = np.nan
+    es_ttq_ct = None
+
+# 2. One-way: TTD ~ Dispatcher
+df_disp = df[df['Dispatcher'].notna() & df['Time_To_Dispatch'].notna()].copy()
+df_disp = df_disp[~df_disp['Dispatcher'].isin(non_person_dispatch)]
+if len(df_disp) > 0:
+    df_disp['Dispatcher'] = lump_categories(df_disp['Dispatcher'], keep_top_n_disp, min_group_n)
+    es_ttd_disp = compute_eta_squared(df_disp['Dispatcher'], df_disp['Time_To_Dispatch'])
+else:
+    es_ttd_disp = None
+
+# 3. One-way: TTQ ~ Problem (Call Type)
+df_prob_ttq = df[df['Problem'].notna() & df['Time_To_Queue'].notna()].copy()
+if len(df_prob_ttq) > 0:
+    df_prob_ttq['Problem'] = lump_categories(df_prob_ttq['Problem'], keep_top_n_prob, min_group_n)
+    es_ttq_type = compute_eta_squared(df_prob_ttq['Problem'], df_prob_ttq['Time_To_Queue'])
+else:
+    es_ttq_type = None
+
+# 4. One-way: TTD ~ Problem (Call Type)
+df_prob_ttd = df[df['Problem'].notna() & df['Time_To_Dispatch'].notna()].copy()
+if len(df_prob_ttd) > 0:
+    df_prob_ttd['Problem'] = lump_categories(df_prob_ttd['Problem'], keep_top_n_prob, min_group_n)
+    es_ttd_type = compute_eta_squared(df_prob_ttd['Problem'], df_prob_ttd['Time_To_Dispatch'])
+else:
+    es_ttd_type = None
+
+# 5. Multivariable: TTQ ~ Problem + Call_Taker
+df_ttq_multi = df[df['Problem'].notna() & df['Call_Taker'].notna() & df['Time_To_Queue'].notna()].copy()
+df_ttq_multi = df_ttq_multi[~df_ttq_multi['Call_Taker'].isin(non_person_taker)]
+if len(df_ttq_multi) > 0:
+    df_ttq_multi['Problem'] = lump_categories(df_ttq_multi['Problem'], keep_top_n_prob, min_group_n)
+    df_ttq_multi['Call_Taker'] = lump_categories(df_ttq_multi['Call_Taker'], keep_top_n_ct, min_group_n)
+    es_ttq_multi = compute_partial_eta_squared(df_ttq_multi, 'Time_To_Queue', 'Problem', 'Call_Taker')
+else:
+    es_ttq_multi = None
+
+# 6. Multivariable: TTD ~ Problem + Dispatcher
+df_ttd_multi = df[df['Problem'].notna() & df['Dispatcher'].notna() & df['Time_To_Dispatch'].notna()].copy()
+df_ttd_multi = df_ttd_multi[~df_ttd_multi['Dispatcher'].isin(non_person_dispatch)]
+if len(df_ttd_multi) > 0:
+    df_ttd_multi['Problem'] = lump_categories(df_ttd_multi['Problem'], keep_top_n_prob, min_group_n)
+    df_ttd_multi['Dispatcher'] = lump_categories(df_ttd_multi['Dispatcher'], keep_top_n_disp, min_group_n)
+    es_ttd_multi = compute_partial_eta_squared(df_ttd_multi, 'Time_To_Dispatch', 'Problem', 'Dispatcher')
+else:
+    es_ttd_multi = None
+
+# Build one-way results table
+one_way_results = []
+
+if es_ttq_ct:
+    one_way_results.append({
+        'Model': 'TTQ ~ Call Taker',
+        'Term': 'Call_Taker',
+        'η²': es_ttq_ct['eta2'],
+        'r': np.sqrt(es_ttq_ct['eta2']),
+        'F': es_ttq_ct['f_stat'],
+        'p-value': es_ttq_ct['p_value'],
+        'Sig': '***' if es_ttq_ct['p_value'] < 0.001 else '**' if es_ttq_ct['p_value'] < 0.01 else '*' if es_ttq_ct['p_value'] < 0.05 else '.' if es_ttq_ct['p_value'] < 0.1 else ''
+    })
+
+if es_ttd_disp:
+    one_way_results.append({
+        'Model': 'TTD ~ Dispatcher',
+        'Term': 'Dispatcher',
+        'η²': es_ttd_disp['eta2'],
+        'r': np.sqrt(es_ttd_disp['eta2']),
+        'F': es_ttd_disp['f_stat'],
+        'p-value': es_ttd_disp['p_value'],
+        'Sig': '***' if es_ttd_disp['p_value'] < 0.001 else '**' if es_ttd_disp['p_value'] < 0.01 else '*' if es_ttd_disp['p_value'] < 0.05 else '.' if es_ttd_disp['p_value'] < 0.1 else ''
+    })
+
+if es_ttq_type:
+    one_way_results.append({
+        'Model': 'TTQ ~ Call Type',
+        'Term': 'Problem',
+        'η²': es_ttq_type['eta2'],
+        'r': np.sqrt(es_ttq_type['eta2']),
+        'F': es_ttq_type['f_stat'],
+        'p-value': es_ttq_type['p_value'],
+        'Sig': '***' if es_ttq_type['p_value'] < 0.001 else '**' if es_ttq_type['p_value'] < 0.01 else '*' if es_ttq_type['p_value'] < 0.05 else '.' if es_ttq_type['p_value'] < 0.1 else ''
+    })
+
+if es_ttd_type:
+    one_way_results.append({
+        'Model': 'TTD ~ Call Type',
+        'Term': 'Problem',
+        'η²': es_ttd_type['eta2'],
+        'r': np.sqrt(es_ttd_type['eta2']),
+        'F': es_ttd_type['f_stat'],
+        'p-value': es_ttd_type['p_value'],
+        'Sig': '***' if es_ttd_type['p_value'] < 0.001 else '**' if es_ttd_type['p_value'] < 0.01 else '*' if es_ttd_type['p_value'] < 0.05 else '.' if es_ttd_type['p_value'] < 0.1 else ''
+    })
+
+if one_way_results:
+    one_way_df = pd.DataFrame(one_way_results)
+    print("\n**Table: One-Way Effect Sizes (η²) and Correlation Ratios (r)**\n")
+    to_table(one_way_df)
+else:
+    print("No one-way correlation results available.")
+
+# Build multivariable results table
+multi_results = []
+
+if es_ttq_multi:
+    multi_results.append({
+        'Model': 'TTQ ~ Call Type + Call Taker',
+        'Term': 'Problem',
+        'η²p': es_ttq_multi['Problem'],
+        'r': np.sqrt(es_ttq_multi['Problem']),
+        'Adj. R²': es_ttq_multi['adj_r2']
+    })
+    multi_results.append({
+        'Model': 'TTQ ~ Call Type + Call Taker',
+        'Term': 'Call_Taker',
+        'η²p': es_ttq_multi['Call_Taker'],
+        'r': np.sqrt(es_ttq_multi['Call_Taker']),
+        'Adj. R²': es_ttq_multi['adj_r2']
+    })
+
+if es_ttd_multi:
+    multi_results.append({
+        'Model': 'TTD ~ Call Type + Dispatcher',
+        'Term': 'Problem',
+        'η²p': es_ttd_multi['Problem'],
+        'r': np.sqrt(es_ttd_multi['Problem']),
+        'Adj. R²': es_ttd_multi['adj_r2']
+    })
+    multi_results.append({
+        'Model': 'TTD ~ Call Type + Dispatcher',
+        'Term': 'Dispatcher',
+        'η²p': es_ttd_multi['Dispatcher'],
+        'r': np.sqrt(es_ttd_multi['Dispatcher']),
+        'Adj. R²': es_ttd_multi['adj_r2']
+    })
+
+if multi_results:
+    multi_df = pd.DataFrame(multi_results)
+    print("\n**Table: Multivariable Effect Sizes (partial η²) with Adjusted R²**\n")
+    to_table(multi_df)
+else:
+    print("No multivariable correlation results available.")
 ```
 
-The correlation between Time to Queue and Time to Dispatch is {python} f"{round(ttq_ttd_corr, 3) if not pd.isna(ttq_ttd_corr) else 'N/A'}", indicating {python} f"{'a moderate relationship' if abs(ttq_ttd_corr) > 0.3 else 'weak relationship' if not pd.isna(ttq_ttd_corr) else 'insufficient data'}" between these metrics.
+```{python}
+#| label: correlation-heatmap
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5
+
+# Create heatmap visualization
+hm_data = []
+
+for result in one_way_results:
+    hm_data.append({
+        'Model': result['Model'],
+        'Term': result['Term'],
+        'r': result['r'],
+        'Type': 'One-way'
+    })
+
+for result in multi_results:
+    hm_data.append({
+        'Model': result['Model'],
+        'Term': result['Term'],
+        'r': result['r'],
+        'Type': 'Multivariable'
+    })
+
+if hm_data:
+    hm_df = pd.DataFrame(hm_data)
+    
+    # Create pivot table for heatmap
+    pivot_oneway = hm_df[hm_df['Type'] == 'One-way'].pivot_table(
+        index='Model', columns='Term', values='r', aggfunc='first'
+    )
+    pivot_multi = hm_df[hm_df['Type'] == 'Multivariable'].pivot_table(
+        index='Model', columns='Term', values='r', aggfunc='first'
+    )
+    
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # One-way heatmap
+    if not pivot_oneway.empty:
+        sns.heatmap(pivot_oneway, annot=True, fmt='.2f', cmap='Blues', 
+                   vmin=0, vmax=1, cbar_kws={'label': 'r'}, ax=axes[0])
+        axes[0].set_title('One-way Models: Correlation Ratio (r)', fontweight='bold')
+        axes[0].set_ylabel('')
+    else:
+        axes[0].text(0.5, 0.5, 'No one-way results', ha='center', va='center')
+        axes[0].set_title('One-way Models')
+    
+    # Multivariable heatmap
+    if not pivot_multi.empty:
+        sns.heatmap(pivot_multi, annot=True, fmt='.2f', cmap='Greens',
+                   vmin=0, vmax=1, cbar_kws={'label': 'r'}, ax=axes[1])
+        axes[1].set_title('Multivariable Models: Correlation Ratio (r)', fontweight='bold')
+        axes[1].set_ylabel('')
+    else:
+        axes[1].text(0.5, 0.5, 'No multivariable results', ha='center', va='center')
+        axes[1].set_title('Multivariable Models')
+    
+    plt.tight_layout()
+    plt.show()
+```
+
+**Key takeaways from these results:**
+
+- Higher r (closer to 1) indicates a stronger association between the time metric and the categorical factor.
+- η² (one-way) and η²p (multivariable) quantify variance explained by the factor(s).
+- The multivariable adjusted R² summarizes the joint explanatory power of Call Type and personnel.
+
+```{python}
+#| label: correlation-summary-text
+#| echo: false
+
+# Summarize strongest associations
+if one_way_results or multi_results:
+    print("\n**Strongest Associations (top r):**\n")
+    
+    all_results = [(r['Model'], r['Term'], r['r'], r.get('Sig', ''), 'One-way') 
+                   for r in one_way_results]
+    all_results += [(r['Model'], r['Term'], r['r'], '', 'Multivariable') 
+                    for r in multi_results]
+    
+    all_results_sorted = sorted(all_results, key=lambda x: x[2], reverse=True)
+    
+    for i, (model, term, r_val, sig, mtype) in enumerate(all_results_sorted[:6]):
+        sig_txt = f", {sig}" if sig else ""
+        print(f"- {mtype}: {model} — {term} (r={r_val:.2f}{sig_txt})")
+```
+
+## Time to Queue and Dispatch Scatter Analysis
+
+This section examines the relationship between Time to Queue (TTQ) and Time to Dispatch (TTD) through scatter plot visualizations. We analyze this relationship across different dimensions: overall patterns, by discipline (POLICE, FIRE, EMS), and by priority levels.
+
+### Overall TTQ vs TTD Relationship
+
+```{python}
+#| label: ttq-ttd-overall-scatter
+#| echo: false
+#| fig-width: 10
+#| fig-height: 6
+
+# Prepare data for scatter plot
+scatter_data = df[df['Time_To_Queue'].notna() & df['Time_To_Dispatch'].notna()].copy()
+scatter_data = scatter_data[(scatter_data['Time_To_Queue'] >= 0) & (scatter_data['Time_To_Dispatch'] >= 0)]
+
+# Cap extreme outliers for visualization clarity
+scatter_data['TTQ_capped'] = scatter_data['Time_To_Queue'].clip(upper=300)
+scatter_data['TTD_capped'] = scatter_data['Time_To_Dispatch'].clip(upper=600)
+
+# Calculate correlation
+overall_cor = scatter_data[['Time_To_Queue', 'Time_To_Dispatch']].corr(method='spearman').iloc[0, 1]
+
+# Calculate medians for reference lines
+median_ttq_scatter = scatter_data['Time_To_Queue'].median()
+median_ttd_scatter = scatter_data['Time_To_Dispatch'].median()
+
+# Create hexbin scatter plot
+fig, ax = plt.subplots(figsize=(10, 6))
+hexbin = ax.hexbin(scatter_data['TTQ_capped'], scatter_data['TTD_capped'], 
+                    gridsize=50, cmap='YlOrRd', mincnt=1, bins='log')
+
+# Add reference lines
+ax.axvline(median_ttq_scatter, color='blue', linestyle='--', alpha=0.7, label=f'Median TTQ: {median_ttq_scatter:.1f}s')
+ax.axhline(median_ttd_scatter, color='red', linestyle='--', alpha=0.7, label=f'Median TTD: {median_ttd_scatter:.1f}s')
+
+# Add regression line
+from scipy.stats import linregress
+slope, intercept, r_value, p_value, std_err = linregress(scatter_data['TTQ_capped'], scatter_data['TTD_capped'])
+line_x = np.array([scatter_data['TTQ_capped'].min(), scatter_data['TTQ_capped'].max()])
+line_y = slope * line_x + intercept
+ax.plot(line_x, line_y, 'b-', alpha=0.5, linewidth=2, label='Linear fit')
+
+ax.set_xlabel('Time to Queue (seconds, capped at 300)', fontsize=11)
+ax.set_ylabel('Time to Dispatch (seconds, capped at 600)', fontsize=11)
+ax.set_title(f'Time to Queue vs Time to Dispatch - Overall Pattern\nSpearman correlation: {overall_cor:.3f}', 
+             fontsize=12, fontweight='bold')
+ax.legend(loc='upper right')
+plt.colorbar(hexbin, ax=ax, label='Call Count (log scale)')
+plt.tight_layout()
+plt.show()
+
+# Narrative
+cor_strength = 'a moderate to strong' if abs(overall_cor) > 0.5 else 'a moderate' if abs(overall_cor) > 0.3 else 'a weak'
+cor_interpretation = "Calls with longer queue times tend to have longer dispatch times, suggesting systemic delays affect both metrics." if overall_cor > 0.3 else "The weak correlation suggests TTQ and TTD are largely independent, with different factors influencing each."
+```
+
+**Overall Analysis:**
+
+- **Correlation**: The Spearman correlation between TTQ and TTD is {python} f"{overall_cor:.3f}", indicating {python} cor_strength relationship.
+- **Pattern**: {python} cor_interpretation
+- **Median Performance**: The median TTQ is {python} f"{median_ttq_scatter:.1f}" seconds and median TTD is {python} f"{median_ttd_scatter:.1f}" seconds.
+
+### TTQ vs TTD by Discipline
+
+```{python}
+#| label: ttq-ttd-discipline-scatter
+#| echo: false
+#| fig-width: 12
+#| fig-height: 4
+
+# Filter to main disciplines
+discipline_data = scatter_data[scatter_data['Agency'].isin(['POLICE', 'FIRE', 'EMS'])].copy()
+
+# Calculate correlations by discipline
+discipline_cors = discipline_data.groupby('Agency').apply(
+    lambda x: pd.Series({
+        'correlation': x[['Time_To_Queue', 'Time_To_Dispatch']].corr(method='spearman').iloc[0, 1],
+        'n': len(x),
+        'median_ttq': x['Time_To_Queue'].median(),
+        'median_ttd': x['Time_To_Dispatch'].median()
+    })
+).reset_index()
+
+# Create faceted scatter plot
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+colors_disc = {'POLICE': '#2c7fb8', 'FIRE': '#e34a33', 'EMS': '#31a354'}
+
+for idx, agency in enumerate(['POLICE', 'FIRE', 'EMS']):
+    ax = axes[idx]
+    agency_data = discipline_data[discipline_data['Agency'] == agency]
+    
+    if len(agency_data) > 0:
+        ax.scatter(agency_data['TTQ_capped'], agency_data['TTD_capped'], 
+                  alpha=0.3, s=10, color=colors_disc[agency])
+        
+        # Add regression line
+        if len(agency_data) > 10:
+            slope, intercept, _, _, _ = linregress(agency_data['TTQ_capped'], agency_data['TTD_capped'])
+            line_x = np.array([agency_data['TTQ_capped'].min(), agency_data['TTQ_capped'].max()])
+            line_y = slope * line_x + intercept
+            ax.plot(line_x, line_y, color=colors_disc[agency], linewidth=2, alpha=0.7)
+    
+    ax.set_title(f'{agency}', fontweight='bold')
+    ax.set_xlabel('TTQ (sec, capped at 300)')
+    ax.set_ylabel('TTD (sec, capped at 600)' if idx == 0 else '')
+
+plt.suptitle('Time to Queue vs Time to Dispatch by Discipline', fontsize=13, fontweight='bold', y=1.02)
+plt.tight_layout()
+plt.show()
+
+# Summary table
+print("\n**TTQ-TTD Correlation and Performance by Discipline**\n")
+to_table(discipline_cors.round({'correlation': 3, 'median_ttq': 1, 'median_ttd': 1}))
+```
+
+**Discipline-Specific Insights:**
+
+```{python}
+#| label: discipline-insights
+#| echo: false
+
+for _, row in discipline_cors.iterrows():
+    agency = row['Agency']
+    cor_val = row['correlation']
+    med_ttq = row['median_ttq']
+    med_ttd = row['median_ttd']
+    
+    strength = 'strong' if abs(cor_val) > 0.5 else 'moderate' if abs(cor_val) > 0.3 else 'weak'
+    
+    print(f"- **{agency}**: Shows a {strength} correlation (ρ = {cor_val:.3f}) with median TTQ of {med_ttq:.1f}s and median TTD of {med_ttd:.1f}s.")
+```
 
 ## Week-over-Week Comparison
 
